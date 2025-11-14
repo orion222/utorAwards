@@ -1,0 +1,145 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum RoleType {
+  regular
+  cashier
+  manager
+  superuser
+}
+
+enum TransactionType {
+  purchase
+  redemption
+  adjustment
+  event
+  transfer
+}
+
+enum PromotionType {
+  automatic
+  onetime
+}
+
+enum RsvpStatus {
+  pending
+  confirmed
+  declined
+}
+
+model User {
+  // main fields
+  id                 Int    @id @default(autoincrement())
+  name               String
+  utorid             String  @unique
+  email              String  @unique
+  password           String?
+  role               RoleType
+  verified           Boolean @default(false)
+  suspicious         Boolean @default(false)
+  points             Int     @default(0)
+  lastLogin          DateTime?
+  avatarUrl          String?
+  birthday           String?
+  createdAt          DateTime @default(now())
+  resetToken         String?
+  // transaction relations
+  transactions       Transaction[]
+  targetTransactions Transaction[] @relation("TargetUserTransactions")
+  processedTransactions Transaction[] @relation("TransactionProcessedUser")
+  // event relations
+  organizedEvents    Event[] @relation("EventOrganizers")
+  createdEvents      Event[]
+  rsvps              Rsvp[]
+  // promotion relations
+  createdPromotions  Promotion[]
+  promotions         Promotion[] @relation("UserRedeemedPromotions") // promotions already used by a user
+}
+
+model Transaction {
+  // main fields
+  id                Int @id @default(autoincrement())
+  type              TransactionType
+  createdAt         DateTime @default(now())
+  spent             Float
+  amount            Int // amount of points in transaction
+  processed         Boolean @default(false)
+  suspicious        Boolean @default(false)
+  remark            String
+  // user relations
+  userId            Int?
+  user              User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  targetUserId      Int?
+  targetUser        User? @relation("TargetUserTransactions", fields: [targetUserId], references: [id], onDelete: SetNull)
+  processedById     Int?
+  processedByUser   User? @relation("TransactionProcessedUser", fields: [processedById], references: [id], onDelete: SetNull)
+  // promotion relations
+  promotions        Promotion[] @relation("AppliedTransactionPromotions")
+  // event relations
+  eventInvolvedId   Int?
+  eventInvolved     Event? @relation(fields: [eventInvolvedId], references: [id], onDelete: SetNull)
+  // transaction relations
+  relatedId         Int?
+}
+
+model Event {
+  // main fields
+  id              Int @id @default(autoincrement())
+  name            String
+  startTime       DateTime
+  endTime         DateTime
+  description     String
+  location        String
+  capacity        Int?
+  numGuests       Int @default(0)
+  points          Int
+  pointsAwarded   Int @default(0)
+  pointsRemain    Int 
+  published       Boolean @default(false)
+  // user relations
+  createdById     Int
+  createdBy       User @relation(fields: [createdById], references: [id])
+  organizers      User[] @relation("EventOrganizers")
+  rsvps           Rsvp[]
+  // transaction relations
+  transactions    Transaction[]
+}
+
+model Promotion {
+  // main fields
+  id                Int @id @default(autoincrement())
+  name              String
+  description       String
+  type              PromotionType
+  rate              Float?
+  minSpending       Float?
+  points            Int?
+  startTime         DateTime
+  endTime           DateTime
+  // transaction relations
+  transactions      Transaction[] @relation("AppliedTransactionPromotions")
+  // user relations
+  createdById       Int
+  createdBy         User @relation(fields: [createdById], references: [id])
+  users             User[] @relation("UserRedeemedPromotions") // users who have redeemed this promotion
+}
+
+model Rsvp {
+  // main fields
+  id        Int @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  status    RsvpStatus
+  // user and event relations
+  userId    Int
+  eventId   Int
+  user      User @relation(fields: [userId], references: [id])
+  event     Event @relation(fields: [eventId], references: [id])
+
+  @@unique([userId, eventId])
+}
