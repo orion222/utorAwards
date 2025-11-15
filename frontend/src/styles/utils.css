@@ -1,0 +1,23 @@
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.full-screen {
+    width: 100vw;
+    height: 100vh;
+}
+
+.primary-btn {
+    padding: 12px 24px ;
+    background-color: var(--primary);
+    border-radius: 8px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.primary-btn:hover {
+    background-color: var(--primary-hover);
+}

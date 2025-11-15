@@ -1,6 +1,19 @@
+@font-face {
+  font-family: "Inter";
+  src: url("/src/assets/fonts/Inter-Italic-VariableFont_opsz,wght.ttf") format("Inter Italic"),
+       url("/src/assets/fonts/Inter-VariableFont_opsz,wght.ttf") format("Inter");
+}
+
 :root {
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg);
+  font-family: "Inter";
 }
