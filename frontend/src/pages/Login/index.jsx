@@ -13,14 +13,20 @@ function Login() {
         e.preventDefault();
         
         try {
-            const { data } = await api.post("/auth/tokens", {
+            const { data: authData } = await api.post("/auth/tokens", {
                 utorid, password
             });
 
-            login(data.token);
+            const { data: userData } = await api.get("/users/me", {
+                headers: {
+                    "Authorization": `Bearer ${authData.token}`,
+                }
+            });
+
+            login(authData.token, userData);
             navigate('/dashboard');
         } catch (error) {
-            console.warn(error.message);
+            console.warn(error.response?.data || error.message);
         }
 
         setUtorid("");

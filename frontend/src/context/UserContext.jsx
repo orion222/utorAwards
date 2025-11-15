@@ -1,6 +1,7 @@
-import { useContext, useState, useEffect, createContext } from "react";
+import { useContext, useState, useEffect, createContext, useCallback } from "react";
 import { useCookies } from "react-cookie";
 import { jwtDecode } from 'jwt-decode';
+import api from "../api/api";
 
 const UserContext = createContext();
 
@@ -42,18 +43,33 @@ export const UserProvider = ({ children }) => {
         checkUserLoggedIn();
     }, [cookies.token]);
 
-    const login = (tokenValue) => {
+    const login = (tokenValue, user) => {
         setCookie("token", tokenValue, { path: "/", secure: false, sameSite: 'strict' });
-
-        const decoded = jwtDecode(tokenValue);
-        setUser(decoded);
-        console.log(user);
+        setUser(user);
     }
 
-    const logout = () => {
+    const logout = useCallback(() => {
         removeCookie("token", { path: '/' });
         setUser(null);
-    }
+    }, []);
+
+    // intercept invalid tokens as responses and auto-logout user
+    useEffect(() => {
+        const invalidTokenInterceptor = api.interceptors.response.use(
+            res => res,
+            error => {
+                if (error.response?.status === 401 && error.response?.data?.error.includes('token')) {
+                    logout();
+                }
+                console.log('test');
+                return Promise.reject(error);
+            }
+        )
+
+        return () => {
+            api.interceptors.response.eject(invalidTokenInterceptor);
+        }
+    }, [logout]);
 
     return (
         <UserContext.Provider value={{ user, login, logout, cookies, setCookie, removeCookie, loading }}>
