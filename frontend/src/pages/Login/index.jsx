@@ -1,31 +1,30 @@
 import { useState } from "react";
-import { UseUser } from "../../context/UserContext";
-import api from "../../api/axios";
-import { jwtDecode } from "jwt-decode";
+import { useUser } from "../../context/UserContext";
+import api from "../../api/api";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const { setCookie, cookies, setUser } = UseUser();
+    const { login } = useUser();
     const [utorid, setUtorid] = useState("");
     const [password, setPassword] = useState("");
+    const navigate = useNavigate();
 
-    const login = async (utorid, password) => {
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        
         try {
             const { data } = await api.post("/auth/tokens", {
                 utorid, password
             });
-            setCookie("token", data.token, { path: "/", secure: true, sameSite: 'strict' });
 
-            const decoded = jwtDecode(data.token);
-            setUser(decoded);
-            console.log(cookies.token)
+            login(data.token);
+            navigate('/regular/dashboard');
         } catch (error) {
             console.warn(error.message);
         }
-    }
 
-    const handleLogin = (e) => {
-        e.preventDefault();
-        login(utorid, password);
+        setUtorid("");
+        setPassword("");
     }
 
     return (
