@@ -18,7 +18,7 @@ function Login() {
             });
 
             login(data.token);
-            navigate('/regular/dashboard');
+            navigate('/dashboard');
         } catch (error) {
             console.warn(error.message);
         }

@@ -2,11 +2,12 @@ import './App.css';
 import { UserProvider } from './context/UserContext';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { CookiesProvider } from 'react-cookie';
-import ProtectedRoute from './components/routes/ProtectedRoute';
+import ProtectedClearanceRoute from './components/routes/ProtectedClearanceRoute';
 import AppLayout from './components/layout/AppLayout';
 import Dashboard from './pages/Dashboard';
-import Landing from './pages/Landing';
 import Login from './pages/Login';
+import ProtectedAuthRoute from './components/routes/ProtectedAuthRoute';
+import NotFound from './pages/NotFound';
 
 function App() {
 
@@ -15,16 +16,17 @@ function App() {
             <CookiesProvider>
                 <UserProvider>
                     <Routes>
-                        <Route index element={ <Landing /> } />
+                        <Route index element={ <ProtectedAuthRoute /> } />
                         <Route path="login" element={ <Login /> } />
 
                         <Route element={ <AppLayout /> }>
                             {/* ROUTES FOR REGULAR USERS */}
-                            <Route path="regular" element={ <ProtectedRoute /> }>
+                            <Route element={ <ProtectedClearanceRoute /> }>
                                 <Route path="dashboard" element={ <Dashboard /> } />
                             </Route>
 
-                            <Route path="cashier" element={ <ProtectedRoute requiredClearance={ ["cashier", "manager", "superuser"] } /> }>
+                            {/* ROUTES FOR CASHIERS */}
+                            <Route element={ <ProtectedClearanceRoute requiredClearance={ ["cashier", "manager", "superuser"] } /> }>
                                 <Route path="" element={ <div>test</div> } />
                             </Route>
 
@@ -33,16 +35,18 @@ function App() {
 
                             </Route> */}
 
-                            <Route path="manager" element={ <ProtectedRoute requiredClearance={ ["manager", "superuser"] } /> }>
+                            {/* ROUTES FOR MANAGERS */}
+                            <Route element={ <ProtectedClearanceRoute requiredClearance={ ["manager", "superuser"] } /> }>
 
                             </Route>
-
-                            <Route path="superuser" element={ <ProtectedRoute requiredClearance={ ["superuser"] } /> }>
+                            
+                            {/* ROUTES FOR SUPERUSERS */}
+                            <Route element={ <ProtectedClearanceRoute requiredClearance={ ["superuser"] } /> }>
 
                             </Route>
                         </Route>
 
-
+                        <Route path="*" element={ <NotFound /> } />
                     </Routes>
                 </UserProvider>
             </CookiesProvider>
