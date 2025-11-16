@@ -17,7 +17,6 @@ function ForgotPassword() {
         e.preventDefault();
         setForgotPasswordError("");
         setSentRequest(false);
-        setLoading(false);
 
         if (!email.trim()) {
             setEmailError("Enter your email");
