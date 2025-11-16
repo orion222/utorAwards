@@ -38,14 +38,14 @@ class AuthService {
     await sendResetPasswordEmail(email, resetToken);
   }
 
-  static async resetPassword(utorid, resetToken, password) {
+  static async resetPassword(email, resetToken, password) {
     const user = await prisma.user.findUnique({
       where: {
-        utorid
+        email
       }
     });
 
-    if (!user) throw new NotFoundError("User with given utorid");
+    if (!user) throw new NotFoundError("User with given email");
     if (!user.resetToken) throw new UnauthorizedError("No reset token found for user");
     if (user.resetToken !== resetToken) throw new NotFoundError("Invalid reset token");
 
@@ -53,13 +53,13 @@ class AuthService {
 
     await prisma.$transaction(async (tx) => {
       await tx.user.update({
-        where: {utorid: utorid},
+        where: {email},
         data: {password: hashedPassword}
       });
 
       // set resetToken to null
       await tx.user.update({
-        where: {utorid: utorid},
+        where: {email},
         data: {resetToken: null}
       });
     });

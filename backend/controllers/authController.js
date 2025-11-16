@@ -35,16 +35,16 @@ async function resetPassword(req, res) {
     return res.status(404).send("Token verification failed");
   }
 
-  const { utorid, password } = req.body;
+  const { email, password } = req.body;
   if (
-    !utorid ||
+    !email ||
     !password ||
-    typeof utorid !== "string" ||
+    typeof email !== "string" ||
     typeof password !== "string"
   ) {
     return res
       .status(400)
-      .json({ error: "Bad Request: Missing utorid or password" });
+      .json({ error: "Bad Request: Missing email or password" });
   }
 
   const regex =
@@ -56,7 +56,7 @@ async function resetPassword(req, res) {
   }
 
   try {
-    await AuthService.resetPassword(utorid, key, password);
+    await AuthService.resetPassword(email, key, password);
     res.status(200).send("Success");
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });

@@ -17,18 +17,19 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-async function sendResetPasswordEmail(recipient, resetToken) {
-    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+async function sendResetPasswordEmail(recipientEmail, resetToken) {
+    const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}&email=${recipientEmail}`;
 
     await transporter.sendMail({
         from: senderEmail,
-        to: recipient,
+        to: recipientEmail,
         subject: "UtorAwards: Reset your password",
         html: `
             <h2>Reset Your Password</h2>
             <p>Click below to reset:</p>
             <a href="${resetUrl}">Reset Password</a>
             <p>This link expires in 1 hour.</p>
+            <p>Didn't request a password reset? Feel free to ignore this email.</p>
         `
     });
 }
