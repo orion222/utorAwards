@@ -18,9 +18,9 @@ export default function Wallet() {
         <Tab label="Redeem points" />
       </Tabs>
       <Box sx={{ p: 2, border: 1, borderColor: "divider", borderTop: 0 }}>
-        {tab === 0 && <Typography>Content for Tab One</Typography>}
-        {tab === 1 && <Typography>Content for Tab Two</Typography>}
-        {tab === 2 && <Typography>Content for Tab Three</Typography>}
+        {tab === 0 && <QRCode />}
+        {tab === 1 && <TransferPoints />}
+        {tab === 2 && <RedeemPoints />}
       </Box>
     </>
   );
