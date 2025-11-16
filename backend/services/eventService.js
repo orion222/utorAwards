@@ -429,29 +429,43 @@ class EventService {
     });
     if (isGuest) throw new BadRequestError("User is a guest of the event.");
     const now = Date.now();
-    if (event.endTime < now) throw new ExpiredError("Gone.");
-    event = await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        organizers: {
-          connect: { id: user.id },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-        location: true,
-        organizers: {
-          select: {
-            id: true,
-            utorid: true,
-            name: true,
+    if (event.endTime < now) throw new ExpiredError("Event has ended");
+    const updatedEvent = await prisma.$transaction(async (tx) => {
+      if (!user.isEventOrganizer) {
+        await tx.user.update({
+          where: { utorid },
+          data: {
+            isEventOrganizer: true,
+          }
+        });        
+      }
+
+      const event = await tx.event.update({
+        where: { id: eventId },
+        data: {
+          organizers: {
+            connect: { id: user.id },
           },
         },
-      },
+        select: {
+          id: true,
+          name: true,
+          location: true,
+          organizers: {
+            select: {
+              id: true,
+              utorid: true,
+              name: true,
+            },
+          },
+        },
+      });
+      
+      return event;
     });
 
-    return event;
+
+    return updatedEvent;
   }
 
   static async removeEventOrganizer(eventId, userId) {
@@ -467,15 +481,39 @@ class EventService {
     });
     if (!event) throw new NotFoundError("Event not found!");
     if (!user) throw new NotFoundError("User not found!");
-    event = await prisma.event.update({
-      where: { id: eventId },
-      data: {
-        organizers: {
-          disconnect: { id: userId },
+    const updatedEvent = prisma.$transaction(async (tx) => {
+      const event = await tx.event.update({
+        where: { id: eventId },
+        data: {
+          organizers: {
+            disconnect: { id: userId },
+          },
         },
-      },
-    });
-    return event;
+      });     
+
+      const organizedEventsCount = await tx.events.count({
+        where: { 
+          organizers: {
+            some: {
+              utorid
+            }
+          } 
+        }
+      });
+
+      if (organizedEventsCount === 0) {
+        await tx.user.update({
+          where: { utorid },
+          data: {
+            isEventOrganizer: false,
+          }
+        });
+      }
+      
+      return event;
+    })
+
+    return updatedEvent;
   }
 
   static async addEventGuest(eventId, utorid) {

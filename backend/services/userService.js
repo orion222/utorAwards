@@ -106,6 +106,7 @@ class UserService {
       selectData.createdAt = true;
       selectData.lastLogin = true;
       selectData.avatarUrl = true;
+      selectData.isEventOrganizer = true;
     }
 
     const userData = await prisma.user.findUnique({
@@ -206,6 +207,7 @@ class UserService {
         verified: true,
         avatarUrl: true,
         promotions: true,
+        isEventOrganizer: true,
       },
     });
 

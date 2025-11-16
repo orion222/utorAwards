@@ -47,6 +47,7 @@ eventRouter.param("eventId", (req, res, next, eventId) => {
   req.eventId = eventIdInt;
   next();
 });
+
 eventRouter.get(
   "/",
   verifyToken,
