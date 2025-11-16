@@ -11,6 +11,8 @@ import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
 import ComponentLibrary from "./components/routes/ComponentLibrary";
 import Wallet from "./components/user/wallet";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -20,6 +22,9 @@ function App() {
           <Route index element={<ProtectedAuthRoute />} />
           <Route path="login" element={<Login />} />
           <Route path="components" element={<ComponentLibrary />}></Route>
+          <Route path="forgot-password" element={ <ForgotPassword /> } />
+          <Route path="reset-password" element={ <ResetPassword /> } />
+
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
