@@ -24,6 +24,7 @@ export const UserProvider = ({ children }) => {
 
             if (!token) {
                 setUser(null);
+                localStorage.removeItem("user");
                 setLoading(false);
                 return;
             }
@@ -37,14 +38,7 @@ export const UserProvider = ({ children }) => {
                     return;
                 }
                 
-                const { data: userData } = await api.get("/users/me", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    }
-                });
-
-                console.log(userData);
-                setUser(userData);
+                setUser(JSON.parse(localStorage.getItem("user")));
             } catch (error) {
                 console.warn("Invalid Token");
                 logout();
@@ -63,11 +57,13 @@ export const UserProvider = ({ children }) => {
       sameSite: "strict",
     });
     setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
   const logout = useCallback(() => {
     removeCookie("token", { path: "/" });
     setUser(null);
+    localStorage.removeItem("user");
   }, []);
 
   // intercept invalid tokens as responses and auto-logout user
@@ -81,7 +77,6 @@ export const UserProvider = ({ children }) => {
         ) {
           logout();
         }
-        console.log("test");
         return Promise.reject(error);
       },
     );
