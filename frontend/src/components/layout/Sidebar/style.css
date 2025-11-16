@@ -1,0 +1,29 @@
+aside {
+    display: flex;
+    flex-direction: column;
+    background-color: #E8EBDF;
+    padding: 1rem;
+    overflow-y: auto;
+}
+
+.nav-item {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+    border-bottom: 1px solid rgb(196, 196, 196);
+}
+
+.nav-item:last-child {
+    border-bottom: none;
+}
+
+.nav-item.collapsed {
+    justify-content: center;
+    padding: 0.75rem 0;
+}
