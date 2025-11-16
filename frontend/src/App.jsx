@@ -14,16 +14,21 @@ import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
 import ComponentLibrary from "./components/routes/ComponentLibrary";
 import Wallet from "./components/user/wallet";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
     <BrowserRouter>
-        <ThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <Routes>
-            <Route index element={<ProtectedAuthRoute />} />
-            <Route path="login" element={<Login />} />
-            <Route path="components" element={<ComponentLibrary />}></Route>
-            <Route element={<AppLayout />}>
+          <Route index element={<ProtectedAuthRoute />} />
+          <Route path="login" element={<Login />} />
+          <Route path="components" element={<ComponentLibrary />}></Route>
+          <Route path="forgot-password" element={ <ForgotPassword /> } />
+          <Route path="reset-password" element={ <ResetPassword /> } />
+
+          <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
                 <Route path="dashboard" element={<Dashboard />} />
@@ -34,13 +39,13 @@ function App() {
 
             {/* ROUTES FOR CASHIERS */}
             <Route
-                element={
+              element={
                 <ProtectedClearanceRoute
-                    requiredClearance={["cashier", "manager", "superuser"]}
+                  requiredClearance={["cashier", "manager", "superuser"]}
                 />
-                }
+              }
             >
-                <Route path="" element={<div>test</div>} />
+              <Route path="" element={<div>test</div>} />
             </Route>
 
             {/* temp route for wallet */}
@@ -53,26 +58,24 @@ function App() {
 
             {/* ROUTES FOR MANAGERS */}
             <Route
-                element={
+              element={
                 <ProtectedClearanceRoute
-                    requiredClearance={["manager", "superuser"]}
+                  requiredClearance={["manager", "superuser"]}
                 />
-                }
+              }
             ></Route>
 
             {/* ROUTES FOR SUPERUSERS */}
             <Route
-                element={
-                <ProtectedClearanceRoute
-                    requiredClearance={["superuser"]}
-                />
-                }
+              element={
+                <ProtectedClearanceRoute requiredClearance={["superuser"]} />
+              }
             ></Route>
-            </Route>
+          </Route>
 
-            <Route path="*" element={<NotFound />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
-        </ThemeProvider>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

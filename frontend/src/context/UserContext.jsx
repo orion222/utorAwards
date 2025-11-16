@@ -22,33 +22,33 @@ export const UserProvider = ({ children }) => {
 
       setLoading(true);
 
-            if (!token) {
-                setUser(null);
-                localStorage.removeItem("user");
-                setLoading(false);
-                return;
-            }
+      if (!token) {
+        setUser(null);
+        localStorage.removeItem("user");
+        setLoading(false);
+        return;
+      }
 
-            try {
-                const decoded = jwtDecode(token);
+      try {
+        const decoded = jwtDecode(token);
 
-                if (decoded.exp * 1000 < Date.now()) {
-                    logout();
-                    setLoading(false);
-                    return;
-                }
-                
-                setUser(JSON.parse(localStorage.getItem("user")));
-            } catch (error) {
-                console.warn("Invalid Token");
-                logout();
-            }
-
-            setLoading(false);
+        if (decoded.exp * 1000 < Date.now()) {
+          logout();
+          setLoading(false);
+          return;
         }
 
-        checkUserLoggedIn();
-    }, [cookies.token]);
+        setUser(JSON.parse(localStorage.getItem("user")));
+      } catch (error) {
+        console.warn("Invalid Token");
+        logout();
+      }
+
+      setLoading(false);
+    };
+
+    checkUserLoggedIn();
+  }, [cookies.token]);
 
   const login = (tokenValue, user) => {
     setCookie("token", tokenValue, {
