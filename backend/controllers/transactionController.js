@@ -1,166 +1,240 @@
-const { TransactionService } = require('../services/transactionService');
-const { validAdjustmentBody, validPurchaseBody, validRetrieveBody, mapByTransactionType } = require('../utils/transactionHelpers');
+const { TransactionService } = require("../services/transactionService");
+const {
+  validAdjustmentBody,
+  validPurchaseBody,
+  validRetrieveBody,
+  mapByTransactionType,
+} = require("../utils/transactionHelpers");
 
 async function createTransaction(req, res) {
-    const { type, spent, amount, relatedId } = req.body;
+  const { type, spent, amount, relatedId } = req.body;
 
-    if (type !== "purchase" && type !== "adjustment") {
-        return res.status(400).json({ error: 'Bad Request' });
+  if (type !== "purchase" && type !== "adjustment") {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  const spentNum = Number(spent);
+  const amountNum = Number(amount);
+
+  if (type === "purchase" && (isNaN(spentNum) || spentNum < 0)) {
+    return res
+      .status(400)
+      .json({ error: `Bad Request: Invalid spent parameter ${spent}` });
+  }
+
+  if (
+    type === "adjustment" &&
+    (isNaN(amountNum) || !Number.isInteger(amountNum))
+  ) {
+    return res
+      .status(400)
+      .json({ error: `Bad Request: Invalid amount parameter ${amount}` });
+  }
+
+  const { role } = req.user;
+
+  if (type === "adjustment" && role !== "manager" && role !== "superuser") {
+    return res.status(403).json({ error: "Forbidden" });
+  }
+
+  const { utorid, promotionIds, remark } = req.body;
+
+  if (
+    !utorid ||
+    typeof utorid !== "string" ||
+    (utorid.length !== 7 && utorid.length !== 8)
+  ) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  if (!type || (type !== "purchase" && type !== "adjustment")) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  if (
+    (promotionIds && !Array.isArray(promotionIds)) ||
+    (remark && typeof remark !== "string")
+  ) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  const relatedIdNum = Number(relatedId);
+  if (
+    type === "adjustment" &&
+    (!relatedId || !Number.isInteger(relatedIdNum))
+  ) {
+    return res
+      .status(400)
+      .json({ error: `Bad Request: Invalid relatedId parameter ${relatedId}` });
+  }
+
+  const promotionIdsArray = promotionIds ?? [];
+  const remarkText = remark ?? "";
+
+  for (id of promotionIdsArray) {
+    if (!Number.isInteger(id)) {
+      return res.status(400).json({ error: "Bad Request" });
     }
+  }
 
-    const spentNum = Number(spent);
-    const amountNum = Number(amount);
+  const validitity =
+    type === "purchase" ? validPurchaseBody(req) : validAdjustmentBody(req);
 
-    if (type === "purchase" && (isNaN(spentNum) || spentNum < 0)) {
-        return res.status(400).json({ error: `Bad Request: Invalid spent parameter ${spent}` });
+  if (!validitity) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  try {
+    const newTransaction =
+      type === "purchase"
+        ? await TransactionService.createPurchase(
+            req.user.utorid,
+            utorid,
+            type,
+            spentNum,
+            promotionIdsArray,
+            remarkText,
+          )
+        : await TransactionService.createAdjustment(
+            req.user.utorid,
+            utorid,
+            type,
+            amountNum,
+            relatedIdNum,
+            promotionIdsArray,
+            remarkText,
+          );
+    const response = {
+      id: newTransaction.id,
+      utorid: newTransaction.targetUser.utorid,
+      type: type,
+      remark: newTransaction.remark,
+      promotionIds: newTransaction.promotions.map((promo) => promo.id),
+      createdBy: newTransaction.user.utorid,
+    };
+
+    if (type === "purchase") {
+      response.spent = newTransaction.spent;
+      if (newTransaction.suspicious) {
+        response.earned = 0;
+      } else {
+        response.earned = newTransaction.amount;
+      }
+    } else if (type === "adjustment") {
+      response.relatedId = newTransaction.relatedId;
+      response.amount = newTransaction.amount;
     }
-
-    if (type === "adjustment" && (isNaN(amountNum) || !Number.isInteger(amountNum))) {
-        return res.status(400).json({ error: `Bad Request: Invalid amount parameter ${amount}` });
-    }
-
-    const { role } = req.user;
-
-    if (type === "adjustment" && role !== "manager" && role !== "superuser") {
-        return res.status(403).json({ error: 'Forbidden' });
-    }
-
-    const { utorid, promotionIds, remark } = req.body;
-
-    if (!utorid || typeof utorid !== "string" || (utorid.length !== 7 && utorid.length !== 8)) {
-        return res.status(400).json({ error: 'Bad Request' });
-    }
-
-    if (!type || (type !== "purchase" && type !== "adjustment")) {
-        return res.status(400).json({ error: 'Bad Request' });
-    }
-
-    if ((promotionIds && !Array.isArray(promotionIds)) || (remark && typeof remark !== "string")) {
-        return res.status(400).json({ error: 'Bad Request' });
-    }
-
-    const relatedIdNum = Number(relatedId);
-    if (type === "adjustment" && (!relatedId || !Number.isInteger(relatedIdNum))) {
-        return res.status(400).json({ error: `Bad Request: Invalid relatedId parameter ${relatedId}` });
-    }
-
-    const promotionIdsArray = promotionIds ?? [];
-    const remarkText = remark ?? "";
-
-    for (id of promotionIdsArray) {
-        if (!Number.isInteger(id)) {
-            return res.status(400).json({ error: 'Bad Request' });
-        }
-    }
-
-    const validitity = type === "purchase" ? validPurchaseBody(req) : validAdjustmentBody(req); 
-
-    if (!validitity) {
-        return res.status(400).json({ error: 'Bad Request' });
-    }
-
-    try {
-        const newTransaction = type === "purchase" ? await TransactionService.createPurchase(req.user.utorid, utorid, type, spentNum, promotionIdsArray, remarkText) : await TransactionService.createAdjustment(req.user.utorid, utorid, type, amountNum, relatedIdNum, promotionIdsArray, remarkText);
-        const response = {
-            id: newTransaction.id,
-            utorid: newTransaction.targetUser.utorid,
-            type: type,
-            remark: newTransaction.remark,
-            promotionIds: newTransaction.promotions.map(promo => promo.id),
-            createdBy: newTransaction.user.utorid
-        };
-
-        if (type === "purchase") {
-            response.spent = newTransaction.spent;
-            if (newTransaction.suspicious) {
-                response.earned = 0;
-            }
-            else {
-                response.earned = newTransaction.amount;
-            }
-        }
-        else if (type === "adjustment") {
-            response.relatedId = newTransaction.relatedId;
-            response.amount = newTransaction.amount;
-        }
-        await TransactionService.updatePoints(newTransaction);
-        res.status(201).json(response);
-    } catch (error) {
-        res.status(error.statusCode || 500).json({ error: error.message });
-    }
+    await TransactionService.updatePoints(newTransaction);
+    res.status(201).json(response);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
 }
 
-async function retrieveTransactions(req, res){
-    
-    if (!validRetrieveBody(req)) return res.status(400).json({ error: 'Bad Request' });
+async function retrieveTransactions(req, res) {
+  if (!validRetrieveBody(req))
+    return res.status(400).json({ error: "Bad Request" });
 
-    const { name, createdBy, suspicious, promotionId, type, relatedId, amount, operator, page, limit } = req.query;
+  const {
+    name,
+    createdBy,
+    suspicious,
+    promotionId,
+    type,
+    relatedId,
+    amount,
+    operator,
+    page,
+    limit,
+  } = req.query;
 
-    const suspiciousBool = suspicious === 'true' ? true : suspicious === 'false' ? false : null;
-    const promotionIdNum = promotionId ? Number(promotionId) : null;
-    const relatedIdNum = relatedId ? Number(relatedId) : null;
-    const amountNum = amount ? Number(amount) : null;
+  const suspiciousBool =
+    suspicious === "true" ? true : suspicious === "false" ? false : null;
+  const promotionIdNum = promotionId ? Number(promotionId) : null;
+  const relatedIdNum = relatedId ? Number(relatedId) : null;
+  const amountNum = amount ? Number(amount) : null;
 
-    const pageNum = page ? parseInt(page, 10) : 1;
-    const limitNum = limit ? parseInt(limit, 10) : 10;
-    
-    try {
-        const transactionData = await TransactionService.retrieveTransactions(name, createdBy, suspiciousBool, promotionIdNum, type, relatedIdNum, amountNum, operator, pageNum, limitNum);
-        const results = mapByTransactionType(transactionData.queryResults);
-        res.status(200).json({ count: transactionData.count, results: results });
-    } catch (error) {
-        res.status(error.statusCode || 500).json({ error: error.message });
-    }
+  const pageNum = page ? parseInt(page, 10) : 1;
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  try {
+    const transactionData = await TransactionService.retrieveTransactions(
+      name,
+      createdBy,
+      suspiciousBool,
+      promotionIdNum,
+      type,
+      relatedIdNum,
+      amountNum,
+      operator,
+      pageNum,
+      limitNum,
+    );
+    const results = mapByTransactionType(transactionData.queryResults);
+    res.status(200).json({ count: transactionData.count, results: results });
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
 }
 
 async function retrieveSingleTransaction(req, res) {
-    const transactionId = req.transactionId;
+  const transactionId = req.transactionId;
 
-    try {
-        const transaction = await TransactionService.retrieveSingleTransaction(transactionId);
-        res.status(200).json(transaction);
-    } catch (error) {
-        res.status(error.statusCode || 500).json({ error: error.message });
-    }
+  try {
+    const transaction =
+      await TransactionService.retrieveSingleTransaction(transactionId);
+    res.status(200).json(transaction);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
 }
 
 async function updateTransactionSuspicion(req, res) {
-    const transactionId = req.transactionId;
-    const { suspicious } = req.body;
+  const transactionId = req.transactionId;
+  const { suspicious } = req.body;
 
-    if (suspicious === undefined || typeof suspicious !== 'boolean') {
-        return res.status(400).json({ error: 'Bad Request: Invalid suspicious status' });
-    }
+  if (suspicious === undefined || typeof suspicious !== "boolean") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: Invalid suspicious status" });
+  }
 
-    try {
-        const updatedTransaction = await TransactionService.updateTransactionSuspicion(transactionId, suspicious);
-        res.status(200).json(updatedTransaction);
-    } catch (error) {
-        res.status(error.statusCode || 500).json({ error: error.message });
-    }
+  try {
+    const updatedTransaction =
+      await TransactionService.updateTransactionSuspicion(
+        transactionId,
+        suspicious,
+      );
+    res.status(200).json(updatedTransaction);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
 }
 
 async function updateTransactionProcessed(req, res) {
-    const transactionId = req.transactionId;
-    const { processed } = req.body;
-    const { id } = req.user;
+  const transactionId = req.transactionId;
+  const { processed } = req.body;
+  const { id } = req.user;
 
-    if (!processed || typeof processed !== 'boolean') {
-        return res.status(400).json({ error: 'Bad Request: Invalid processed status' });
-    }
+  if (!processed || typeof processed !== "boolean") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: Invalid processed status" });
+  }
 
-    try {
-        const updatedTransaction = await TransactionService.updateTransactionProcessed(id, transactionId);
-        res.status(200).json(updatedTransaction);
-    } catch (error) {
-        res.status(error.statusCode || 500).json({ error: error.message });
-    }
+  try {
+    const updatedTransaction =
+      await TransactionService.updateTransactionProcessed(id, transactionId);
+    res.status(200).json(updatedTransaction);
+  } catch (error) {
+    res.status(error.statusCode || 500).json({ error: error.message });
+  }
 }
 
 module.exports = {
-    createTransaction,
-    retrieveTransactions,
-    retrieveSingleTransaction,
-    updateTransactionSuspicion,
-    updateTransactionProcessed,
-}
+  createTransaction,
+  retrieveTransactions,
+  retrieveSingleTransaction,
+  updateTransactionSuspicion,
+  updateTransactionProcessed,
+};

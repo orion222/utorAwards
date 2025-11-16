@@ -1,11 +1,11 @@
 class BadRequestError extends Error {
-    constructor(message = "Bad Request") {
-        super(message);
-        this.name = 'BadRequestError';
-        this.statusCode = 400;
+  constructor(message = "Bad Request") {
+    super(message);
+    this.name = "BadRequestError";
+    this.statusCode = 400;
 
-        Object.setPrototypeOf(this, BadRequestError.prototype);
-    }
+    Object.setPrototypeOf(this, BadRequestError.prototype);
+  }
 }
 
 module.exports = BadRequestError;

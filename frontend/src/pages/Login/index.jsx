@@ -4,46 +4,59 @@ import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-    const { login } = useUser();
-    const [utorid, setUtorid] = useState("");
-    const [password, setPassword] = useState("");
-    const navigate = useNavigate();
+  const { login } = useUser();
+  const [utorid, setUtorid] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        
-        try {
-            const { data: authData } = await api.post("/auth/tokens", {
-                utorid, password
-            });
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-            const { data: userData } = await api.get("/users/me", {
-                headers: {
-                    "Authorization": `Bearer ${authData.token}`,
-                }
-            });
+    try {
+      const { data: authData } = await api.post("/auth/tokens", {
+        utorid,
+        password,
+      });
 
-            login(authData.token, userData);
-            navigate('/dashboard');
-        } catch (error) {
-            console.warn(error.response?.data || error.message);
-        }
+      const { data: userData } = await api.get("/users/me", {
+        headers: {
+          Authorization: `Bearer ${authData.token}`,
+        },
+      });
 
-        setUtorid("");
-        setPassword("");
+      login(authData.token, userData);
+      navigate("/dashboard");
+    } catch (error) {
+      console.warn(error.response?.data || error.message);
     }
 
-    return (
-        <div>
-            <form onSubmit={handleLogin}>
-                <label htmlFor="utorid">UTORid</label>
-                <input id="utorid" name="utorid" type="text" value={utorid} onChange={(e) => setUtorid(e.target.value)} />
-                <label htmlFor="password">Password</label>
-                <input id="password" name="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <button type="submit">Login</button>
-            </form>
-        </div>
-    );
+    setUtorid("");
+    setPassword("");
+  };
+
+  return (
+    <div>
+      <form onSubmit={handleLogin}>
+        <label htmlFor="utorid">UTORid</label>
+        <input
+          id="utorid"
+          name="utorid"
+          type="text"
+          value={utorid}
+          onChange={(e) => setUtorid(e.target.value)}
+        />
+        <label htmlFor="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Login</button>
+      </form>
+    </div>
+  );
 }
 
 export default Login;

@@ -1,5 +1,9 @@
-const express = require('express');
-const { generateJWT, resetPassword, requestPasswordReset } = require('../controllers/authController');
+const express = require("express");
+const {
+  generateJWT,
+  resetPassword,
+  requestPasswordReset,
+} = require("../controllers/authController");
 
 const authRouter = express.Router();
 
