@@ -1,21 +1,22 @@
 :root {
-  /* USE THEME STYLING WITH var(--variable_name) i.e var(--bg) */
-  --bg: #fcfefb;
-  --bg-dark: #e8ebdf;
-  --bg-light: #f8faf4;
+    /* USE THEME STYLING WITH var(--variable_name) i.e var(--bg) */
+    --bg: #FCFEFB;
+    --bg-dark: #E8EBDF;
+    --bg-light: #F8FAF4;
+    
+    --primary: #7CD93A;
+    --primary-neutral: #CFD4C0;
+    --primary-hover: #6ABB30;
+    --secondary: #F59B66;
+    --accent: #BBA3E5;
 
-  --primary: #7cd93a;
-  --primary-neutral: #cfd4c0;
-  --primary-hover: #6abb30;
-  --secondary: #f59b66;
-  --accent: #bba3e5;
+    --text: #232715;
+    --text-muted: #6B6F5A;
+    --text-muted-hover: #8C927A;
+    --border: #D9DCCF;
 
-  --text: #232715;
-  --text-muted: #6b6f5a;
-  --border: #d9dccf;
-
-  --success: #62c53c;
-  --error: #e4584f;
-  --info: #7da4f2;
-  --warning: #f2c94c;
+    --success: #62C53C;
+    --error: #E4584F;
+    --info: #7DA4F2;
+    --warning: #F2C94C;
 }

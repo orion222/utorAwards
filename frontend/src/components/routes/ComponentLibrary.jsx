@@ -79,7 +79,6 @@ import {
   Person,
 } from "@mui/icons-material";
 
-// Create a theme that matches your CSS variables
 const theme = createTheme({
   palette: {
     primary: {
@@ -109,6 +108,9 @@ const theme = createTheme({
     warning: {
       main: "#F2C94C",
     },
+  },
+  typography: {
+    fontFamily: `"Inter", sans-serif`,
   },
 });
 

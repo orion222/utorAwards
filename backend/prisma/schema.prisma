@@ -49,6 +49,7 @@ model User {
   birthday           String?
   createdAt          DateTime @default(now())
   resetToken         String?
+  isEventOrganizer   Boolean @default(false)
   // transaction relations
   transactions       Transaction[]
   targetTransactions Transaction[] @relation("TargetUserTransactions")
