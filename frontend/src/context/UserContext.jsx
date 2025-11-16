@@ -22,7 +22,47 @@ export const UserProvider = ({ children }) => {
 
       setLoading(true);
 
-      if (!token) {
+            if (!token) {
+                setUser(null);
+                setLoading(false);
+                return;
+            }
+
+            try {
+                const decoded = jwtDecode(token);
+
+                if (decoded.exp * 1000 < Date.now()) {
+                    logout();
+                    setLoading(false);
+                    return;
+                }
+                
+                const { data: userData } = await api.get("/users/me", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    }
+                });
+
+                console.log(userData);
+                setUser(userData);
+            } catch (error) {
+                console.warn("Invalid Token");
+                logout();
+            }
+
+            setLoading(false);
+        }
+
+        checkUserLoggedIn();
+    }, [cookies.token]);
+
+    const login = (tokenValue, user) => {
+        setCookie("token", tokenValue, { path: "/", secure: false, sameSite: 'strict' });
+        setUser(user);
+    }
+
+    const logout = useCallback(() => {
+        removeCookie("token", { path: '/' });
         setUser(null);
         setLoading(false);
         return;
