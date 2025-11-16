@@ -6,6 +6,9 @@ import theme from "./theme";
 import ProtectedClearanceRoute from "./components/routes/ProtectedClearanceRoute";
 import AppLayout from "./components/layout/AppLayout";
 import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions"
+import Events from "./pages/Events"
+import Promotions from "./pages/Promotions"
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
@@ -24,6 +27,9 @@ function App() {
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
                 <Route path="dashboard" element={<Dashboard />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route path="events" element={<Events />} />
+                <Route path="promotions" element={<Promotions />} />
             </Route>
 
             {/* ROUTES FOR CASHIERS */}
