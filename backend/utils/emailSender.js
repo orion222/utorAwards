@@ -23,10 +23,11 @@ async function sendResetPasswordEmail(recipientEmail, resetToken) {
     await transporter.sendMail({
         from: senderEmail,
         to: recipientEmail,
-        subject: "UtorAwards: Reset your password",
+        subject: "[UtorAwards] Reset your password",
         html: `
-            <h2>Reset Your Password</h2>
-            <p>Click below to reset:</p>
+            <h2>[UtorAwards] Password Reset Info</h2>
+            <p>A request has been received to change the password for your UtorAwards account.</p>
+            <p>Click the link below to reset:</p>
             <a href="${resetUrl}">Reset Password</a>
             <p>This link expires in 1 hour.</p>
             <p>Didn't request a password reset? Feel free to ignore this email.</p>
