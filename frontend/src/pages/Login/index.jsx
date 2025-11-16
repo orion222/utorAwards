@@ -49,7 +49,7 @@ function Login() {
                     <div className="form-item">
                         <label htmlFor="password">Password</label>
                         <input id="password" name="password" type="password" placeholder="Enter your password" alue={password} onChange={(e) => setPassword(e.target.value)} />
-                        <Link to="/forgotPassword">Forgot your password?</Link>
+                        <Link to="/forgot-password">Forgot your password?</Link>
                     </div>
                     <button type="submit" className="primary-btn">Login</button>
                 </form>

@@ -10,6 +10,7 @@ import ProtectedAuthRoute from './components/routes/ProtectedAuthRoute';
 import NotFound from './pages/NotFound';
 import ComponentLibrary from './components/routes/ComponentLibrary'
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
                         <Route index element={ <ProtectedAuthRoute /> } />
                         <Route path="login" element={ <Login /> } />
                         <Route path="forgot-password" element={ <ForgotPassword /> } />
+                        <Route path="reset-password" element={ <ResetPassword /> } />
                         <Route path="components" element = { <ComponentLibrary/>}></Route>
 
                         <Route element={ <AppLayout /> }>
