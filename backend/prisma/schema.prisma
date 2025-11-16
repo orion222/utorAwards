@@ -100,7 +100,7 @@ model Event {
   numGuests       Int @default(0)
   points          Int
   pointsAwarded   Int @default(0)
-  pointsRemain    Int 
+  pointsRemain    Int
   published       Boolean @default(false)
   // user relations
   createdById     Int

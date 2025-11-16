@@ -1,9 +1,5 @@
 function Header() {
-    return (
-        <header>
-            test
-        </header>
-    );
+  return <header>header</header>;
 }
 
 export default Header;

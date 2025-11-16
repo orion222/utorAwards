@@ -1,11 +1,9 @@
 function Sidebar() {
-    return (
-        <aside>
-            <nav>
-                test
-            </nav>
-        </aside>
-    );
+  return (
+    <aside>
+      <nav>navbar</nav>
+    </aside>
+  );
 }
 
 export default Sidebar;

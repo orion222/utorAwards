@@ -1,0 +1,29 @@
+repos:
+  # Some handy generic checks (optional but nice)
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Run ESLint on staged JS/TS files
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        entry: npx eslint
+        language: node
+        types: [javascript, jsx, ts, tsx]
+        args: ["--max-warnings=0"]
+        pass_filenames: true
+
+      # Optional: Prettier for formatting
+      - id: prettier
+        name: prettier
+        entry: npx prettier
+        language: node
+        types_or: [javascript, jsx, ts, tsx, json, css, scss, markdown, yaml]
+        args: ["--write"]
+        pass_filenames: true
