@@ -3,10 +3,12 @@ import { Container } from "@mui/system";
 import QRCode from "./QRCode";
 import RedeemPoints from "./RedeemPoints";
 import TransferPoints from "./TransferPoints";
+import { useTheme } from "@mui/material/styles";
 
 import { useState } from "react";
 export default function Wallet() {
   const [tab, setTab] = useState(0);
+  const theme = useTheme();
   return (
     <Container
       sx={{
@@ -14,6 +16,7 @@ export default function Wallet() {
         height: "100vh",
         padding: 3,
         border: "1px solid black",
+        backgroundColor: theme.palette.background.main,
       }}
     >
       <Typography variant="h3">My Wallet</Typography>
