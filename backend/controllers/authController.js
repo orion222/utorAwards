@@ -47,21 +47,17 @@ async function resetPassword(req, res) {
 }
 
 async function requestPasswordReset(req, res) {
-  const { utorid } = req.body;
+  const { email } = req.body;
 
-  if (!utorid || typeof utorid !== "string") {
-    return res.status(400).json({error: "Bad Request: Missing UTORid"});
-  }
-
-  if (utorid.length !== 7 && utorid.length !== 8) {
-    return res.status(400).json({error: "Bad Request: Invalid UTORid"});
+  if (!email || typeof email !== "string") {
+    return res.status(400).json({error: "Bad Request: Empty email"});
   }
 
   try {
-    const resetPasswordDetails = await AuthService.requestPasswordReset(req.ip, utorid);
-    res.status(202).json(resetPasswordDetails);
+    await AuthService.requestPasswordReset(email);
+    res.status(202).send();
   } catch (error) {
-    res.status(error.statusCode || 500).json({error: error.message});
+    res.status(202).send(); // Always return success for security purposes
   }
 }
 

@@ -5,39 +5,25 @@ const NotFoundError = require("../utils/errors/notFoundError");
 const BadRequestError = require("../utils/errors/badRequestError");
 const UnauthorizedError = require("../utils/errors/unauthorizedError");
 const TooManyRequestsError = require("../utils/errors/tooManyRequestsError");
+const { sendResetPasswordEmail } = require("../utils/emailSender");
 const SECRET_KEY = process.env.JWT_SECRET;
-
-const RATE_LIMIT_WINDOW_MS = 60 * 1000;
-const ipToLastRequestTime = new Map();
 
 class AuthService {
 
-  static async requestPasswordReset(clientIp, utorid) {
+  static async requestPasswordReset(email) {
     const resetDetails = await prisma.$transaction(async (tx) => {
       const user = await tx.user.findUnique({
-        where: { utorid }
+        where: { email }
       });    
       
       if (!user) {
-        throw new NotFoundError("User not found");
-      }
-      
-      // check request rate limiting
-      const now = Date.now();
-
-      const lastRequestTime = ipToLastRequestTime.get(clientIp) || 0;
-
-      if (now - lastRequestTime < RATE_LIMIT_WINDOW_MS) {
-        console.log("Rate limit exceeded for IP:", clientIp);
-        throw new TooManyRequestsError();
+        throw new Error();
       }
 
-      ipToLastRequestTime.set(clientIp, now);
-
-      const resetToken = jwt.sign({ utorid }, SECRET_KEY, { expiresIn: '1h' });
+      const resetToken = jwt.sign({ email }, SECRET_KEY, { expiresIn: '1h' });
 
       await tx.user.update({
-        where: { utorid },
+        where: { email },
         data: { resetToken }
       });
 
@@ -47,7 +33,9 @@ class AuthService {
       }
     });
 
-    return resetDetails;
+    const { resetToken } = resetDetails;
+
+    await sendResetPasswordEmail(email, resetToken);
   }
 
   static async resetPassword(utorid, resetToken, password) {
