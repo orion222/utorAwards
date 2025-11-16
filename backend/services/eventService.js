@@ -595,6 +595,12 @@ class EventService {
       });
     });
   }
+
+  static async retrieveEvents(userId, name, location, started, ended, showFull, pageNum, limitNum) {
+    const filter = {};
+
+
+  }
 }
 
 module.exports = { EventService };
