@@ -11,7 +11,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <CookiesProvider>
       <UserProvider>
-          <App />
+        <App />
       </UserProvider>
     </CookiesProvider>
   </StrictMode>,
