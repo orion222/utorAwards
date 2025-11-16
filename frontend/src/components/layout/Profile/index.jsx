@@ -28,7 +28,7 @@ export default function Profile() {
             {isOpen && (
                 <div className="profile-dropdown">
                     <ProfileItem icon={<User />} label="Profile" onClick={() => {}}/> {/* Need a link to the profile page */}
-                    <ProfileItem icon={<Bell />} label="Account" onClick={() => {}}/> {/* Need a link to the account page */}
+                    <ProfileItem icon={<Bell />} label="Notifications" onClick={() => {}}/> {/* Need a link to the notificaiton page */}
                     <ProfileItem icon={<Settings />} label="Settings" onClick={() => {}}/> {/* Need a link to the settings page */}
                     <ProfileItem icon={<LogOut />} label="Logout" onClick={() => {}}/> {/* Need to implement logout functionality */}
                 </div>
