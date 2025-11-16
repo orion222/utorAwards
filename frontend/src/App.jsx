@@ -9,6 +9,7 @@ import Login from './pages/Login';
 import ProtectedAuthRoute from './components/routes/ProtectedAuthRoute';
 import NotFound from './pages/NotFound';
 import ComponentLibrary from './components/routes/ComponentLibrary'
+import ForgotPassword from './pages/ForgotPassword';
 
 function App() {
 
@@ -19,7 +20,9 @@ function App() {
                     <Routes>
                         <Route index element={ <ProtectedAuthRoute /> } />
                         <Route path="login" element={ <Login /> } />
+                        <Route path="forgot-password" element={ <ForgotPassword /> } />
                         <Route path="components" element = { <ComponentLibrary/>}></Route>
+
                         <Route element={ <AppLayout /> }>
                             {/* ROUTES FOR REGULAR USERS */}
                             <Route element={ <ProtectedClearanceRoute /> }>
