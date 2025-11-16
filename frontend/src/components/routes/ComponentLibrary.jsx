@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -61,7 +60,7 @@ import {
   CssBaseline,
   ThemeProvider,
   createTheme,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Home,
   Settings,
@@ -78,37 +77,37 @@ import {
   Email,
   Phone,
   Person,
-} from '@mui/icons-material';
+} from "@mui/icons-material";
 
 // Create a theme that matches your CSS variables
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#7CD93A',
-      dark: '#6ABB30',
+      main: "#7CD93A",
+      dark: "#6ABB30",
     },
     secondary: {
-      main: '#F59B66',
+      main: "#F59B66",
     },
     background: {
-      default: '#FCFEFB',
-      paper: '#F8FAF4',
+      default: "#FCFEFB",
+      paper: "#F8FAF4",
     },
     text: {
-      primary: '#232715',
-      secondary: '#6B6F5A',
+      primary: "#232715",
+      secondary: "#6B6F5A",
     },
     success: {
-      main: '#62C53C',
+      main: "#62C53C",
     },
     error: {
-      main: '#E4584F',
+      main: "#E4584F",
     },
     info: {
-      main: '#7DA4F2',
+      main: "#7DA4F2",
     },
     warning: {
-      main: '#F2C94C',
+      main: "#F2C94C",
     },
   },
 });
@@ -118,8 +117,8 @@ export default function ComponentLibrary() {
   const [sliderValue, setSliderValue] = useState(30);
   const [switchValue, setSwitchValue] = useState(false);
   const [checkboxValue, setCheckboxValue] = useState(false);
-  const [radioValue, setRadioValue] = useState('option1');
-  const [selectValue, setSelectValue] = useState('');
+  const [radioValue, setRadioValue] = useState("option1");
+  const [selectValue, setSelectValue] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -127,12 +126,14 @@ export default function ComponentLibrary() {
 
   const ComponentSection = ({ title, children }) => (
     <Paper sx={{ p: 3, mb: 3 }}>
-      <Typography variant="h5" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ color: "primary.main", fontWeight: "bold" }}
+      >
         {title}
       </Typography>
-      <Box sx={{ mt: 2 }}>
-        {children}
-      </Box>
+      <Box sx={{ mt: 2 }}>{children}</Box>
     </Paper>
   );
 
@@ -141,8 +142,12 @@ export default function ComponentLibrary() {
       <CssBaseline />
       <Container maxWidth="lg" sx={{ py: 4 }}>
         {/* Header */}
-        <Box sx={{ mb: 4, textAlign: 'center' }}>
-          <Typography variant="h2" gutterBottom sx={{ color: 'primary.main', fontWeight: 'bold' }}>
+        <Box sx={{ mb: 4, textAlign: "center" }}>
+          <Typography
+            variant="h2"
+            gutterBottom
+            sx={{ color: "primary.main", fontWeight: "bold" }}
+          >
             MUI Component Library
           </Typography>
           <Typography variant="h6" color="text.secondary">
@@ -159,8 +164,12 @@ export default function ComponentLibrary() {
             <Typography variant="h4">Heading 4</Typography>
             <Typography variant="h5">Heading 5</Typography>
             <Typography variant="h6">Heading 6</Typography>
-            <Typography variant="body1">Body 1 - Lorem ipsum dolor sit amet, consectetur adipiscing elit.</Typography>
-            <Typography variant="body2">Body 2 - Smaller body text for secondary information.</Typography>
+            <Typography variant="body1">
+              Body 1 - Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+            </Typography>
+            <Typography variant="body2">
+              Body 2 - Smaller body text for secondary information.
+            </Typography>
             <Typography variant="caption">Caption text</Typography>
             <Typography variant="overline">OVERLINE TEXT</Typography>
           </Stack>
@@ -170,29 +179,51 @@ export default function ComponentLibrary() {
         <ComponentSection title="Buttons">
           <Stack spacing={3}>
             <Box>
-              <Typography variant="h6" gutterBottom>Contained Buttons</Typography>
+              <Typography variant="h6" gutterBottom>
+                Contained Buttons
+              </Typography>
               <Stack direction="row" spacing={2} flexWrap="wrap">
                 <Button variant="contained">Primary</Button>
-                <Button variant="contained" color="secondary">Secondary</Button>
-                <Button variant="contained" color="success">Success</Button>
-                <Button variant="contained" color="error">Error</Button>
-                <Button variant="contained" disabled>Disabled</Button>
-                <Button variant="contained" startIcon={<Add />}>With Icon</Button>
-              </Stack>
-            </Box>
-            
-            <Box>
-              <Typography variant="h6" gutterBottom>Outlined Buttons</Typography>
-              <Stack direction="row" spacing={2} flexWrap="wrap">
-                <Button variant="outlined">Primary</Button>
-                <Button variant="outlined" color="secondary">Secondary</Button>
-                <Button variant="outlined" color="success">Success</Button>
-                <Button variant="outlined" color="error">Error</Button>
+                <Button variant="contained" color="secondary">
+                  Secondary
+                </Button>
+                <Button variant="contained" color="success">
+                  Success
+                </Button>
+                <Button variant="contained" color="error">
+                  Error
+                </Button>
+                <Button variant="contained" disabled>
+                  Disabled
+                </Button>
+                <Button variant="contained" startIcon={<Add />}>
+                  With Icon
+                </Button>
               </Stack>
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Text Buttons</Typography>
+              <Typography variant="h6" gutterBottom>
+                Outlined Buttons
+              </Typography>
+              <Stack direction="row" spacing={2} flexWrap="wrap">
+                <Button variant="outlined">Primary</Button>
+                <Button variant="outlined" color="secondary">
+                  Secondary
+                </Button>
+                <Button variant="outlined" color="success">
+                  Success
+                </Button>
+                <Button variant="outlined" color="error">
+                  Error
+                </Button>
+              </Stack>
+            </Box>
+
+            <Box>
+              <Typography variant="h6" gutterBottom>
+                Text Buttons
+              </Typography>
               <Stack direction="row" spacing={2} flexWrap="wrap">
                 <Button>Primary</Button>
                 <Button color="secondary">Secondary</Button>
@@ -202,20 +233,36 @@ export default function ComponentLibrary() {
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Icon Buttons</Typography>
+              <Typography variant="h6" gutterBottom>
+                Icon Buttons
+              </Typography>
               <Stack direction="row" spacing={2}>
-                <IconButton><Home /></IconButton>
-                <IconButton color="primary"><Favorite /></IconButton>
-                <IconButton color="secondary"><Settings /></IconButton>
-                <IconButton disabled><Delete /></IconButton>
+                <IconButton>
+                  <Home />
+                </IconButton>
+                <IconButton color="primary">
+                  <Favorite />
+                </IconButton>
+                <IconButton color="secondary">
+                  <Settings />
+                </IconButton>
+                <IconButton disabled>
+                  <Delete />
+                </IconButton>
               </Stack>
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Floating Action Buttons</Typography>
+              <Typography variant="h6" gutterBottom>
+                Floating Action Buttons
+              </Typography>
               <Stack direction="row" spacing={2}>
-                <Fab color="primary"><Add /></Fab>
-                <Fab color="secondary"><Edit /></Fab>
+                <Fab color="primary">
+                  <Add />
+                </Fab>
+                <Fab color="secondary">
+                  <Edit />
+                </Fab>
                 <Fab variant="extended" color="primary">
                   <Add sx={{ mr: 1 }} />
                   Extended
@@ -233,8 +280,15 @@ export default function ComponentLibrary() {
                 <TextField label="Standard TextField" variant="standard" />
                 <TextField label="Filled TextField" variant="filled" />
                 <TextField label="Outlined TextField" variant="outlined" />
-                <TextField label="With Helper Text" helperText="Some important text" />
-                <TextField label="Error State" error helperText="This field is required" />
+                <TextField
+                  label="With Helper Text"
+                  helperText="Some important text"
+                />
+                <TextField
+                  label="Error State"
+                  error
+                  helperText="This field is required"
+                />
                 <TextField label="Disabled" disabled value="Disabled value" />
                 <TextField
                   label="With Icon"
@@ -245,7 +299,7 @@ export default function ComponentLibrary() {
                 <TextField label="Multiline" multiline rows={4} />
               </Stack>
             </Grid>
-            
+
             <Grid item xs={12} md={6}>
               <Stack spacing={3}>
                 <FormControl fullWidth>
@@ -287,9 +341,21 @@ export default function ComponentLibrary() {
                     value={radioValue}
                     onChange={(e) => setRadioValue(e.target.value)}
                   >
-                    <FormControlLabel value="option1" control={<Radio />} label="Option 1" />
-                    <FormControlLabel value="option2" control={<Radio />} label="Option 2" />
-                    <FormControlLabel value="option3" control={<Radio />} label="Option 3" />
+                    <FormControlLabel
+                      value="option1"
+                      control={<Radio />}
+                      label="Option 1"
+                    />
+                    <FormControlLabel
+                      value="option2"
+                      control={<Radio />}
+                      label="Option 2"
+                    />
+                    <FormControlLabel
+                      value="option3"
+                      control={<Radio />}
+                      label="Option 3"
+                    />
                   </RadioGroup>
                 </Box>
 
@@ -325,7 +391,7 @@ export default function ComponentLibrary() {
                 </CardActions>
               </Card>
             </Grid>
-            
+
             <Grid item xs={12} md={4}>
               <Card raised>
                 <CardContent>
@@ -337,14 +403,20 @@ export default function ComponentLibrary() {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  <IconButton><Favorite /></IconButton>
-                  <IconButton><Settings /></IconButton>
+                  <IconButton>
+                    <Favorite />
+                  </IconButton>
+                  <IconButton>
+                    <Settings />
+                  </IconButton>
                 </CardActions>
               </Card>
             </Grid>
 
             <Grid item xs={12} md={4}>
-              <Card sx={{ bgcolor: 'primary.main', color: 'primary.contrastText' }}>
+              <Card
+                sx={{ bgcolor: "primary.main", color: "primary.contrastText" }}
+              >
                 <CardContent>
                   <Typography variant="h5" gutterBottom>
                     Colored Card
@@ -362,7 +434,9 @@ export default function ComponentLibrary() {
         <ComponentSection title="Data Display">
           <Stack spacing={3}>
             <Box>
-              <Typography variant="h6" gutterBottom>Chips</Typography>
+              <Typography variant="h6" gutterBottom>
+                Chips
+              </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">
                 <Chip label="Default" />
                 <Chip label="Primary" color="primary" />
@@ -375,10 +449,12 @@ export default function ComponentLibrary() {
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Avatars & Badges</Typography>
+              <Typography variant="h6" gutterBottom>
+                Avatars & Badges
+              </Typography>
               <Stack direction="row" spacing={2} alignItems="center">
                 <Avatar>A</Avatar>
-                <Avatar sx={{ bgcolor: 'secondary.main' }}>B</Avatar>
+                <Avatar sx={{ bgcolor: "secondary.main" }}>B</Avatar>
                 <Avatar src="/api/placeholder/40/40" />
                 <Badge badgeContent={4} color="primary">
                   <Avatar>C</Avatar>
@@ -393,7 +469,9 @@ export default function ComponentLibrary() {
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Tooltips</Typography>
+              <Typography variant="h6" gutterBottom>
+                Tooltips
+              </Typography>
               <Stack direction="row" spacing={2}>
                 <Tooltip title="Basic tooltip">
                   <Button>Hover me</Button>
@@ -413,24 +491,32 @@ export default function ComponentLibrary() {
         <ComponentSection title="Feedback">
           <Stack spacing={3}>
             <Box>
-              <Typography variant="h6" gutterBottom>Alerts</Typography>
+              <Typography variant="h6" gutterBottom>
+                Alerts
+              </Typography>
               <Stack spacing={2}>
                 <Alert severity="success">This is a success alert</Alert>
                 <Alert severity="info">This is an info alert</Alert>
                 <Alert severity="warning">This is a warning alert</Alert>
                 <Alert severity="error">This is an error alert</Alert>
-                <Alert severity="success" variant="outlined">Outlined success alert</Alert>
-                <Alert severity="error" variant="filled">Filled error alert</Alert>
+                <Alert severity="success" variant="outlined">
+                  Outlined success alert
+                </Alert>
+                <Alert severity="error" variant="filled">
+                  Filled error alert
+                </Alert>
               </Stack>
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Progress Indicators</Typography>
+              <Typography variant="h6" gutterBottom>
+                Progress Indicators
+              </Typography>
               <Stack spacing={2}>
                 <LinearProgress />
                 <LinearProgress color="secondary" />
                 <LinearProgress variant="determinate" value={50} />
-                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                   <CircularProgress />
                   <CircularProgress color="secondary" />
                   <CircularProgress variant="determinate" value={75} />
@@ -439,7 +525,9 @@ export default function ComponentLibrary() {
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Interactive Elements</Typography>
+              <Typography variant="h6" gutterBottom>
+                Interactive Elements
+              </Typography>
               <Stack direction="row" spacing={2}>
                 <Button
                   variant="contained"
@@ -447,16 +535,10 @@ export default function ComponentLibrary() {
                 >
                   Show Snackbar
                 </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setDialogOpen(true)}
-                >
+                <Button variant="contained" onClick={() => setDialogOpen(true)}>
                   Open Dialog
                 </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setDrawerOpen(true)}
-                >
+                <Button variant="contained" onClick={() => setDrawerOpen(true)}>
                   Open Drawer
                 </Button>
               </Stack>
@@ -468,7 +550,9 @@ export default function ComponentLibrary() {
         <ComponentSection title="Navigation">
           <Stack spacing={3}>
             <Box>
-              <Typography variant="h6" gutterBottom>Breadcrumbs</Typography>
+              <Typography variant="h6" gutterBottom>
+                Breadcrumbs
+              </Typography>
               <Breadcrumbs>
                 <Link underline="hover" color="inherit" href="#">
                   Home
@@ -481,16 +565,25 @@ export default function ComponentLibrary() {
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Tabs</Typography>
-              <Tabs value={tabValue} onChange={(e, value) => setTabValue(value)}>
+              <Typography variant="h6" gutterBottom>
+                Tabs
+              </Typography>
+              <Tabs
+                value={tabValue}
+                onChange={(e, value) => setTabValue(value)}
+              >
                 <Tab label="Tab One" />
                 <Tab label="Tab Two" />
                 <Tab label="Tab Three" />
               </Tabs>
-              <Box sx={{ p: 2, border: 1, borderColor: 'divider', borderTop: 0 }}>
+              <Box
+                sx={{ p: 2, border: 1, borderColor: "divider", borderTop: 0 }}
+              >
                 {tabValue === 0 && <Typography>Content for Tab One</Typography>}
                 {tabValue === 1 && <Typography>Content for Tab Two</Typography>}
-                {tabValue === 2 && <Typography>Content for Tab Three</Typography>}
+                {tabValue === 2 && (
+                  <Typography>Content for Tab Three</Typography>
+                )}
               </Box>
             </Box>
           </Stack>
@@ -500,7 +593,9 @@ export default function ComponentLibrary() {
         <ComponentSection title="Surfaces">
           <Stack spacing={3}>
             <Box>
-              <Typography variant="h6" gutterBottom>Accordion</Typography>
+              <Typography variant="h6" gutterBottom>
+                Accordion
+              </Typography>
               <Accordion
                 expanded={expandedAccordion}
                 onChange={() => setExpandedAccordion(!expandedAccordion)}
@@ -510,28 +605,46 @@ export default function ComponentLibrary() {
                 </AccordionSummary>
                 <AccordionDetails>
                   <Typography>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-                    Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Suspendisse malesuada lacus ex, sit amet blandit leo
+                    lobortis eget.
                   </Typography>
                 </AccordionDetails>
               </Accordion>
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Lists</Typography>
+              <Typography variant="h6" gutterBottom>
+                Lists
+              </Typography>
               <Paper sx={{ maxWidth: 400 }}>
                 <List>
                   <ListItem>
-                    <ListItemIcon><Home /></ListItemIcon>
-                    <ListItemText primary="Home" secondary="Navigate to home page" />
+                    <ListItemIcon>
+                      <Home />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Home"
+                      secondary="Navigate to home page"
+                    />
                   </ListItem>
                   <ListItem>
-                    <ListItemIcon><Settings /></ListItemIcon>
-                    <ListItemText primary="Settings" secondary="Manage preferences" />
+                    <ListItemIcon>
+                      <Settings />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Settings"
+                      secondary="Manage preferences"
+                    />
                   </ListItem>
                   <ListItemButton>
-                    <ListItemIcon><Person /></ListItemIcon>
-                    <ListItemText primary="Profile" secondary="View profile information" />
+                    <ListItemIcon>
+                      <Person />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary="Profile"
+                      secondary="View profile information"
+                    />
                   </ListItemButton>
                 </List>
               </Paper>
@@ -585,22 +698,32 @@ export default function ComponentLibrary() {
         <ComponentSection title="Layout Examples">
           <Stack spacing={3}>
             <Box>
-              <Typography variant="h6" gutterBottom>Grid System</Typography>
+              <Typography variant="h6" gutterBottom>
+                Grid System
+              </Typography>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>xs=12 sm=6 md=4</Paper>
+                  <Paper sx={{ p: 2, textAlign: "center" }}>
+                    xs=12 sm=6 md=4
+                  </Paper>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>xs=12 sm=6 md=4</Paper>
+                  <Paper sx={{ p: 2, textAlign: "center" }}>
+                    xs=12 sm=6 md=4
+                  </Paper>
                 </Grid>
                 <Grid item xs={12} sm={6} md={4}>
-                  <Paper sx={{ p: 2, textAlign: 'center' }}>xs=12 sm=6 md=4</Paper>
+                  <Paper sx={{ p: 2, textAlign: "center" }}>
+                    xs=12 sm=6 md=4
+                  </Paper>
                 </Grid>
               </Grid>
             </Box>
 
             <Box>
-              <Typography variant="h6" gutterBottom>Stack Layout</Typography>
+              <Typography variant="h6" gutterBottom>
+                Stack Layout
+              </Typography>
               <Stack direction="row" spacing={2}>
                 <Paper sx={{ p: 2, flex: 1 }}>Item 1</Paper>
                 <Paper sx={{ p: 2, flex: 1 }}>Item 2</Paper>
@@ -637,11 +760,15 @@ export default function ComponentLibrary() {
             </Typography>
             <List>
               <ListItemButton>
-                <ListItemIcon><Home /></ListItemIcon>
+                <ListItemIcon>
+                  <Home />
+                </ListItemIcon>
                 <ListItemText primary="Home" />
               </ListItemButton>
               <ListItemButton>
-                <ListItemIcon><Settings /></ListItemIcon>
+                <ListItemIcon>
+                  <Settings />
+                </ListItemIcon>
                 <ListItemText primary="Settings" />
               </ListItemButton>
             </List>

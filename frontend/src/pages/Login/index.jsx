@@ -12,28 +12,25 @@ function Login() {
     const [error, setError] = useState("");
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        
-        try {
-            const { data: authData } = await api.post("/auth/tokens", {
-                utorid, password
-            });
+  const handleLogin = async (e) => {
+    e.preventDefault();
 
-            const { data: userData } = await api.get("/users/me", {
-                headers: {
-                    "Authorization": `Bearer ${authData.token}`,
-                }
-            });
+    try {
+      const { data: authData } = await api.post("/auth/tokens", {
+        utorid,
+        password,
+      });
 
-            login(authData.token, userData);
-            navigate('/dashboard');
-        } catch (error) {
-            console.warn(error.response?.data || error.message);
-        }
+      const { data: userData } = await api.get("/users/me", {
+        headers: {
+          Authorization: `Bearer ${authData.token}`,
+        },
+      });
 
-        setUtorid("");
-        setPassword("");
+      login(authData.token, userData);
+      navigate("/dashboard");
+    } catch (error) {
+      console.warn(error.response?.data || error.message);
     }
 
     return (

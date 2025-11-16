@@ -3,4 +3,8 @@
 # You should write detailed description on:
 
 # 1. All the packages you need to install
+npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
+npm i react-hook-form yup
+npm i @hookform/resolvers
+
 # 2. How to configure various servers (e.g., Nginx, Apache, etc)

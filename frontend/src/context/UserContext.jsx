@@ -1,23 +1,30 @@
-import { useContext, useState, useEffect, createContext, useCallback } from "react";
+import {
+  useContext,
+  useState,
+  useEffect,
+  createContext,
+  useCallback,
+} from "react";
 import { useCookies } from "react-cookie";
-import { jwtDecode } from 'jwt-decode';
+import { jwtDecode } from "jwt-decode";
 import api from "../api/api";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-    const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const checkUserLoggedIn = async () => {
-            const token = cookies.token;
+  useEffect(() => {
+    const checkUserLoggedIn = async () => {
+      const token = cookies.token;
 
-            setLoading(true);
+      setLoading(true);
 
             if (!token) {
                 setUser(null);
+                localStorage.removeItem("user");
                 setLoading(false);
                 return;
             }
@@ -31,14 +38,7 @@ export const UserProvider = ({ children }) => {
                     return;
                 }
                 
-                const { data: userData } = await api.get("/users/me", {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                    }
-                });
-
-                console.log(userData);
-                setUser(userData);
+                setUser(JSON.parse(localStorage.getItem("user")));
             } catch (error) {
                 console.warn("Invalid Token");
                 logout();
@@ -50,41 +50,51 @@ export const UserProvider = ({ children }) => {
         checkUserLoggedIn();
     }, [cookies.token]);
 
-    const login = (tokenValue, user) => {
-        setCookie("token", tokenValue, { path: "/", secure: false, sameSite: 'strict' });
-        setUser(user);
-    }
+  const login = (tokenValue, user) => {
+    setCookie("token", tokenValue, {
+      path: "/",
+      secure: false,
+      sameSite: "strict",
+    });
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+  };
 
-    const logout = useCallback(() => {
-        removeCookie("token", { path: '/' });
-        setUser(null);
-    }, []);
+  const logout = useCallback(() => {
+    removeCookie("token", { path: "/" });
+    setUser(null);
+    localStorage.removeItem("user");
+  }, []);
 
-    // intercept invalid tokens as responses and auto-logout user
-    useEffect(() => {
-        const invalidTokenInterceptor = api.interceptors.response.use(
-            res => res,
-            error => {
-                if (error.response?.status === 401 && error.response?.data?.error.includes('token')) {
-                    logout();
-                }
-                console.log('test');
-                return Promise.reject(error);
-            }
-        )
-
-        return () => {
-            api.interceptors.response.eject(invalidTokenInterceptor);
+  // intercept invalid tokens as responses and auto-logout user
+  useEffect(() => {
+    const invalidTokenInterceptor = api.interceptors.response.use(
+      (res) => res,
+      (error) => {
+        if (
+          error.response?.status === 401 &&
+          error.response?.data?.error.includes("token")
+        ) {
+          logout();
         }
-    }, [logout]);
-
-    return (
-        <UserContext.Provider value={{ user, login, logout, cookies, setCookie, removeCookie, loading }}>
-            {children}
-        </UserContext.Provider>
+        return Promise.reject(error);
+      },
     );
-}
+
+    return () => {
+      api.interceptors.response.eject(invalidTokenInterceptor);
+    };
+  }, [logout]);
+
+  return (
+    <UserContext.Provider
+      value={{ user, login, logout, cookies, setCookie, removeCookie, loading }}
+    >
+      {children}
+    </UserContext.Provider>
+  );
+};
 
 export const useUser = () => {
-    return useContext(UserContext);
-}
+  return useContext(UserContext);
+};

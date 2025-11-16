@@ -2,17 +2,17 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 
 function ProtectedClearanceRoute({ requiredClearance = [] }) {
-    const { user, loading } = useUser();
+  const { user, loading } = useUser();
 
-    if (loading) {
-        return <div>Loading...</div>;
-    }
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
-    if (requiredClearance.length > 0 && !requiredClearance.includes(user.role)) {
-        return <Navigate to="/dashboard" />; // TODO: replace with either a unauthorized page or something else
-    }
+  if (requiredClearance.length > 0 && !requiredClearance.includes(user.role)) {
+    return <Navigate to="/dashboard" />; // TODO: replace with either a unauthorized page or something else
+  }
 
-    return <Outlet />
+  return <Outlet />;
 }
 
 export default ProtectedClearanceRoute;
