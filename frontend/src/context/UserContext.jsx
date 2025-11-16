@@ -30,8 +30,15 @@ export const UserProvider = ({ children }) => {
                     setLoading(false);
                     return;
                 }
+                
+                const { data: userData } = await api.get("/users/me", {
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                    }
+                });
 
-                setUser({ id: decoded.id, role: decoded.role });
+                console.log(userData);
+                setUser(userData);
             } catch (error) {
                 console.warn("Invalid Token");
                 logout();
