@@ -1,29 +1,58 @@
 import './style.css';
 import { useState } from 'react';
-import Box from "@mui/material/Box";
+import { Box, IconButton, Typography } from '@mui/material';
 import {PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import Profile from '../Profile';
 
 function Header({ isNavOpen, onToggleNav }) {
-  // const [isNavOpen, setIsNavOpen] = useState(true);
 
-
-  // const toggleNav = () => {
-  //   setIsNavOpen(!isNavOpen);
-  // }
-
-  return <>
-    <header>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", height: "5vh" }} className="left-container">
-        <button className="toggle-button" onClick={onToggleNav}>
+  return (
+    <Box
+      component="header"
+      py={1}
+      px={2}
+      justifyContent="space-between"
+      alignItems="center"
+      display="flex"
+      flexDirection="row"
+      sx={{
+        backgroundColor: "#E8EBDF",
+        color: "#232715",
+        boxSizing: "border-box",
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+        
+        <IconButton
+          onClick={onToggleNav}
+          disableRipple
+          sx={{
+            background: "none",
+            border: "none",
+            padding: 0,
+            color: "#232715",
+            "&:hover": { background: "transparent" },
+          }}
+        >
           {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
-        </button>
-        <Box className="app-title">UTORAwards</Box>
+        </IconButton>
+
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: 600,
+            color: "#232715",
+            userSelect: "none",
+          }}
+        >
+          UTORAwards
+        </Typography>
+
       </Box>
-      
-      <Profile/>
-    </header>   
-  </>
+
+      <Profile />
+    </Box>
+  );
 }
 
 export default Header;
