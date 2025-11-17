@@ -16,11 +16,19 @@ function Dashboard() {
         async function fetchData() {
           try {
             const { data: transactionData } = await api.get("/users/me/transactions", {
-                headers: {
-                  Authorization: `Bearer ${cookies.token}`,
-                },
                 params: {limit: 3}
             });
+
+            const { data: eventData } = await api.get("/users/me/events", {
+                params: {limit: 3}
+            });
+            
+            const { data: promotionData } = await api.get("/users/me/promotions", {
+                params: {limit: 3}
+            });
+            
+            setPromotions(promotionData.results);
+            setEvents(eventData.results);
             setTransactions(transactionData.results);
           } catch (error) {
             console.error("Error fetching data:", error);
@@ -47,7 +55,7 @@ function Dashboard() {
         e.preventDefault();
         navigate("/events");
     };
-    console.log(transactions);
+    console.log(events);
     return <div>
         <div className="user-header">
             <p className="welcome-message">Welcome back, {user.name}!</p>
@@ -61,7 +69,7 @@ function Dashboard() {
                 <div className="transaction-list">
                     {transactions.length > 0 ? (
                                 transactions.map(t => (
-                                    <div key={t.id} className="transaction-card">
+                                    <div className="transaction-card">
                                         <div className="transaction-left">
                                             <div className="tag-container">
                                                 <p>{t.type}</p>
@@ -85,9 +93,24 @@ function Dashboard() {
             <div>
                 <p>Promotions For You</p>
                 <div className="promotion-list">
-                    <div className="promotion-card">[promotion 1 goes here]</div>
-                    <div className="promotion-card">[promotion 2 goes here]</div>
-                    <div className="promotion-card">[promotion 3 goes here]</div>
+                    {promotions.length > 0 ? (
+                                    promotions.map(p => (
+                                        <div className="promotion-card">
+                                            <div className="promotion-left">
+                                                <div className="tag-container">
+                                                    <p>{p.name}</p>
+                                                    <p>{p.description}</p>
+                                                </div>
+                                                <p>Remark: {p.startTime}</p>
+                                            </div>
+                                            <div className="promotion-right">
+                                                <p>{p.points} points</p>
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p>No promotions found.</p>
+                                )}
                 </div>
                 <a href="promotions" onClick={viewPromotions}>(View all promotions)</a>
             </div>
@@ -96,9 +119,24 @@ function Dashboard() {
             <div>
                 <p>Upcoming Events</p>
                 <div className="event-list">
-                    <div className="event-card">[promotion 1 goes here]</div>
-                    <div className="event-card">[promotion 2 goes here]</div>
-                    <div className="event-card">[promotion 3 goes here]</div>
+                          {events.length > 0 ? (
+                                events.map(e => (
+                                    <div className="event-card">
+                                        <div className="event-left">
+                                            <div className="tag-container">
+                                                <p>{e.name}</p>
+                                                <p>{e.description}</p>
+                                            </div>
+                                            <p>Remark: {e.startTime}</p>
+                                        </div>
+                                        <div className="event-right">
+                                            <p>{e.points} points</p>
+                                        </div>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>No events found.</p>
+                            )}
                 </div>
                 <a href="events" onClick={viewEvents}>(View all events)</a>
             </div>
