@@ -13,6 +13,7 @@ function FormCard({ children }) {
                 alignItems: "center",
                 justifyContent: "center",
                 p: 2,
+                borderRadius: 3
             }}
         >
             {isSmall ? (
