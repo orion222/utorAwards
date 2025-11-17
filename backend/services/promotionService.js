@@ -301,6 +301,50 @@ class PromotionService {
       },
     });
   }
+
+
+  static async retrievePromotions(userId, name, type, page, limit ) {
+    const filters = {};
+    
+    if (name && typeof name !== "string") {
+      throw new BadRequestError("invalid event name");
+    } else if (name) {
+      filters.name = name;
+    }
+
+    if (type && typeof type !== "string") {
+      throw new BadRequestError("invalid type");
+    } else if (type) {
+      filters.type = type;
+    }
+    
+    const take = limit;
+    const skip = (page - 1) * take;
+    const select = {
+      name: true,
+      description: true,
+      rate: true,
+      type: true,
+      startTime: true,
+      endTime: true,
+    }
+
+    const {count, promotions} = await prisma.$transaction(async (tx) => {
+      filters.users = {some: {id: userId}}
+
+      const count = await tx.promotion.count({ where: filters });
+      const promotions = await tx.promotion.findMany({
+        where: filters,
+        take,
+        skip,
+        select,
+      })
+    
+      return {count, promotions};
+    });
+
+    return {count, results: promotions}
+  }
 }
 
 module.exports = { PromotionService };

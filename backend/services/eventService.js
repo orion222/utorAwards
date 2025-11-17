@@ -675,16 +675,13 @@ class EventService {
     }
 
     const {count, events} = await prisma.$transaction(async (tx) => {
-      const rsvps = await tx.rsvp.findMany({
-       where: {userId}
-      });
-
-      const eventIds = rsvps.map(item => item.eventId);
-      filters.id = {in: eventIds};
+      filters.rsvps =  {some: {userId}}
 
       const count = await tx.event.count({ where: filters });
       const events = await tx.event.findMany({
         where: filters,
+        skip,
+        take,
         select,
       })
     
