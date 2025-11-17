@@ -23,10 +23,10 @@ function Dashboard() {
                 params: {limit: 3}
             });
             
-            const { data: promotionData } = await api.get("/users/me/promotions", {
+            const { data: promotionData } = await api.get("/promotions", {
                 params: {limit: 3}
             });
-            
+            console.log(promotionData);
             setPromotions(promotionData.results);
             setEvents(eventData.results);
             setTransactions(transactionData.results);
@@ -55,7 +55,7 @@ function Dashboard() {
         e.preventDefault();
         navigate("/events");
     };
-    console.log(events);
+    // console.log(promotions);
     return <div>
         <div className="user-header">
             <p className="welcome-message">Welcome back, {user.name}!</p>
