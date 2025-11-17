@@ -6,6 +6,7 @@ const {
   updateSpecificUser,
   createRedemption,
   retrieveTransactions,
+  retrieveEvents,
   updateMyUserInfo,
   getMyUserInfo,
   updateMyPassword,
@@ -72,6 +73,8 @@ userRouter.post("/me/transactions", verifyToken, createRedemption);
 userRouter.delete("/me/transactions", verifyToken, deleteRedemption);
 
 userRouter.get("/me/transactions", verifyToken, retrieveTransactions);
+
+userRouter.get("/me/events", verifyToken, retrieveEvents);
 
 userRouter.post("/:userId/transactions", verifyToken, createTransfer);
 

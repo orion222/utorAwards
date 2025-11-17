@@ -634,10 +634,64 @@ class EventService {
     });
   }
 
-  static async retrieveEvents(userId, name, location, started, ended, showFull, pageNum, limitNum) {
-    const filter = {};
+  static async retrieveEvents(userId, name, location, started, ended, page, limit ) {
+    const filters = {};
+    
+    if (name && typeof name !== "string") {
+      throw new BadRequestError("invalid event name");
+    } else if (name) {
+      filters.name = name;
+    }
 
+    if (location && typeof location !== "string") {
+      throw new BadRequestError("invalid location");
+    } else if (location) {
+      filters.location = location;
+    }
 
+    if (started !== undefined && typeof started !== "boolean") {
+      throw new BadRequestError("invalid started value");
+    } else if (started === true || started === false) {
+      filters.started = started;
+    }
+
+    if (ended !== undefined && typeof ended !== "boolean") {
+      throw new BadRequestError("invalid ended value");
+    } else if (ended === true || ended === false) {
+      filters.ended = ended;
+    }
+    
+    const take = limit;
+    const skip = (page - 1) * take;
+    const select = {
+      name: true,
+      description: true,
+      location: true,
+      points: true,
+      startTime: true,
+      endTime: true,
+      numGuests: true,
+      capacity: true,
+    }
+
+    const {count, events} = await prisma.$transaction(async (tx) => {
+      const rsvps = await tx.rsvp.findMany({
+       where: {userId}
+      });
+
+      const eventIds = rsvps.map(item => item.eventId);
+      filters.id = {in: eventIds};
+
+      const count = await tx.event.count({ where: filters });
+      const events = await tx.event.findMany({
+        where: filters,
+        select,
+      })
+    
+      return {count, events};
+    });
+
+    return {count, results: events}
   }
 }
 
