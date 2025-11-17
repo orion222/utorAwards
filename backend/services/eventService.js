@@ -683,6 +683,7 @@ class EventService {
         skip,
         take,
         select,
+        orderBy: { startTime: "asc" }
       })
     
       return {count, events};
