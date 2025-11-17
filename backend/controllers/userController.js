@@ -307,25 +307,6 @@ async function retrieveEvents(req, res) {
   }
 }
 
-async function retrievePromotions(req, res) {
-  if (!validRetrieveBody(req))
-    return res.status(400).json({ error: "Bad Request" });
-
-  const { name, type, page, limit } = req.query;
-
-  const pageNum = page ? parseInt(page, 10) : 1;
-  const limitNum = limit ? parseInt(limit, 10) : 10;
-
-  const { id } = req.user;
-
-  try {
-    const promotionData = await PromotionService.retrievePromotions(id, name, type, pageNum, limitNum);
-    res.status(200).json({ count: promotionData.count, results: promotionData.results });
-  } catch (error) {
-    return res.status(error.statusCode || 500).json({ error: error.message });
-  }
-}
-
 async function createTransfer(req, res) {
   const { type, amount, remark } = req.body;
   const { id: senderId } = req.user;
@@ -462,7 +443,6 @@ module.exports = {
   createTransfer,
   retrieveTransactions,
   retrieveEvents,
-  retrievePromotions,
   updateMyUserInfo,
   getMyUserInfo,
   updateMyPassword,
