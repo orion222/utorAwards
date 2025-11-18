@@ -2,7 +2,11 @@ import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
-import './style.css'
+import { Container, Typography, Box, FormControl, InputLabel, OutlinedInput, FormHelperText, IconButton, Button, Alert, Link } from "@mui/material";
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import WalletIcon from '@mui/icons-material/Wallet';
+import WavingHandIcon from '@mui/icons-material/WavingHand';
+import theme from '../../theme.js';
 
 function Dashboard() {
     const { user } = useUser();
@@ -56,92 +60,116 @@ function Dashboard() {
         navigate("/events");
     };
     // console.log(promotions);
-    return <div>
-        <div className="user-header">
-            <p className="welcome-message">Welcome back, {user.name}!</p>
-            <p className="point-summary">Here's your point summary</p>
-            <p className="points">{user.points} points</p>
-            <button type="submit" className="view-wallet-button" onClick={viewWallet}>View My Wallet</button>
-        </div>
-        <div className="transactions-container">
-            <div>
-                <p>Recent Transactions</p>
-                <div className="transaction-list">
+    return <Box sx={{bgcolor: theme.palette.background.default}}>
+        <Box sx={{padding: "16px"}}>
+            <Typography sx={{fontSize: 14}}>
+                    <WavingHandIcon sx={{fontSize: 14, paddingRight: "8px"}}/>
+                    Welcome back, {user.name}!
+            </Typography>
+            <Typography sx={{fontSize: 20}}>
+                Here's your point summary
+            </Typography>
+            <Typography sx={{fontSize: 40, fontWeight: 'bold'}}>
+                {user.points} points
+            </Typography>
+            {/* <button type="submit" className="view-wallet-button" onClick={viewWallet}>View My Wallet</button> */}
+            <Button variant="contained" onClick={viewWallet} sx={{fontSize: 12, padding: "8px"}}>
+                <WalletIcon sx={{fontSize: 12, paddingRight: "8px"}}/>
+                View My Wallet
+                <ArrowForwardIcon sx={{fontSize: 12, paddingLeft: "8px"}}/>
+            </Button>
+        </Box>
+        <Box sx={{padding: "16px"}}>
+            <Box>
+                <Typography sx={{fontSize: 24}}>
+                    Recent Transactions
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: "16px" }}>
                     {transactions.length > 0 ? (
                                 transactions.map(t => (
-                                    <div className="transaction-card">
-                                        <div className="transaction-left">
-                                            <div className="tag-container">
-                                                <p>{t.type}</p>
-                                                <p>{t.processed ? "Processed" : "Unproccessed"}</p>
-                                            </div>
-                                            <p>Remark: {t.remark}</p>
-                                        </div>
-                                        <div className="transaction-right">
-                                            <p>{t.amount ? (t.amount) : (t.earned)}</p>
-                                        </div>
-                                    </div>
+                                    <Box>
+                                        <Box>
+                                            <Box>
+                                                <Typography>{t.type}</Typography>
+                                                <Typography>{t.processed ? "Processed" : "Unproccessed"}</Typography>
+                                            </Box>
+                                            <Typography>Remark: {t.remark}</Typography>
+                                        </Box>
+                                        <Box>
+                                            <Typography>{t.amount ? (t.amount) : (t.earned)}</Typography>
+                                        </Box>
+                                    </Box>
                                 ))
                             ) : (
-                                <p>No transactions found.</p>
+                                <Typography>No transactions found.</Typography>
                             )}
-                </div>
-                <a href="/transactions" onClick={viewTransactions}>(View all transactions)</a>
-            </div>
-        </div>
-        <div className="promotions-container">
-            <div>
-                <p>Promotions For You</p>
-                <div className="promotion-list">
+                </Box>
+                <Link href="/transactions" onClick={viewTransactions} underline='none' sx={{color: theme.palette.text.disabled}}>
+                    (View all transactions)
+                </Link>
+            </Box>
+        </Box>
+        <Box sx={{padding: "16px"}}>
+            <Box>
+                <Typography sx={{fontSize: 24}}>
+                    Promotions For You
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: "16px" }}>
                     {promotions.length > 0 ? (
                                     promotions.map(p => (
-                                        <div className="promotion-card">
-                                            <div className="promotion-left">
-                                                <div className="tag-container">
-                                                    <p>{p.name}</p>
-                                                    <p>{p.description}</p>
-                                                </div>
-                                                <p>Remark: {p.startTime}</p>
-                                            </div>
-                                            <div className="promotion-right">
-                                                <p>{p.points} points</p>
-                                            </div>
-                                        </div>
+                                        <Box className="promotion-card">
+                                            <Box className="promotion-left">
+                                                <Box className="tag-container">
+                                                    <Typography>{p.name}</Typography>
+                                                    <Typography>{p.description}</Typography>
+                                                </Box>
+                                                <Typography>Remark: {p.startTime}</Typography>
+                                            </Box>
+                                            <Box className="promotion-right">
+                                                <Typography>{p.points} points</Typography>
+                                            </Box>
+                                        </Box>
                                     ))
                                 ) : (
-                                    <p>No promotions found.</p>
+                                    <Typography>No promotions found.</Typography>
                                 )}
-                </div>
-                <a href="promotions" onClick={viewPromotions}>(View all promotions)</a>
-            </div>
-        </div>
-        <div className="events-container">
-            <div>
-                <p>Upcoming Events</p>
-                <div className="event-list">
+                </Box>
+                <Link href="promotions" onClick={viewPromotions} underline='none' sx={{color: theme.palette.text.disabled, fontSize: 15}}>
+                    (View all promotions)
+                </Link>
+            </Box>
+        </Box>
+        <Box sx={{padding: "16px"}}>
+            <Box>
+                <Typography sx={{fontSize: 24}}>
+                    Upcoming Events
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'row', gap: "16px" }}>
                           {events.length > 0 ? (
                                 events.map(e => (
-                                    <div className="event-card">
-                                        <div className="event-left">
-                                            <div className="tag-container">
-                                                <p>{e.name}</p>
-                                                <p>{e.description}</p>
-                                            </div>
-                                            <p>Remark: {e.startTime}</p>
-                                        </div>
-                                        <div className="event-right">
-                                            <p>{e.points} points</p>
-                                        </div>
-                                    </div>
+                                    <Box className="event-card">
+                                        <Box className="event-left">
+                                            <Box className="tag-container">
+                                                <Typography>{e.name}</Typography>
+                                                <Typography>{e.description}</Typography>
+                                            </Box>
+                                            <Typography>Remark: {e.startTime}</Typography>
+                                        </Box>
+                                        <Box className="event-right">
+                                            <Typography>{e.points} points</Typography>
+                                        </Box>
+                                    </Box>
                                 ))
                             ) : (
-                                <p>No events found.</p>
+                                <Typography>No events found.</Typography>
                             )}
-                </div>
-                <a href="events" onClick={viewEvents}>(View all events)</a>
-            </div>
-        </div>
-    </div>;
+                </Box>
+                <Link href="events" onClick={viewEvents} underline='none' sx={{color: theme.palette.text.disabled}}>
+                    (View all events)
+                </Link>
+            </Box>
+        </Box>
+    </Box>;
 }
 
 export default Dashboard;
