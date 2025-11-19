@@ -3,7 +3,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function TransactionItemCard({ transaction }) {
     const theme = useTheme();
-    const isSmall = useMediaQuery("(max-width: 660px)");
+    const isSmall = useMediaQuery("(max-width: 670px)");
     const { type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
@@ -13,6 +13,19 @@ function TransactionItemCard({ transaction }) {
         "transfer": "#BBA3E5",
     }
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", });
+
+    function truncateStr(str) {
+        let truncated = remark;
+        if (isSmall && str.length > 20) {
+            truncated = str.substring(0 , 20) + "...";
+        }
+        else if (!isSmall && str.length > 100) {
+            truncated = str.substring(0 , 100) + "...";
+        }
+        return truncated;
+    }
+
+    const truncatedRemark = truncateStr(remark);
 
     if (isSmall) {
         return (
@@ -46,9 +59,7 @@ function TransactionItemCard({ transaction }) {
                                     ({amount > 0 ? `+${amount}` : amount} pts)
                                 </Typography>
                             </Typography>
-                            <Typography fontWeight={500} sx={{ opacity: 0.9 }}>
-                                {remark}
-                            </Typography>
+                            <Typography fontWeight={500}>{truncatedRemark}</Typography>
                             <Typography variant="body2" color="text.secondary">
                                 {dateString}
                             </Typography>
@@ -147,7 +158,7 @@ function TransactionItemCard({ transaction }) {
                                 />                                
                             )}
                         </Stack>
-                        <Typography fontWeight={600}>{remark}</Typography>
+                        <Typography fontWeight={600}>{truncatedRemark}</Typography>
                         <Typography variant="body2" color="text.secondary">
                             {user && `Created by ${user.utorid}`}
                             {targetUser && user && " | "}
