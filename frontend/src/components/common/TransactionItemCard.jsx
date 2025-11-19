@@ -1,6 +1,9 @@
-import { Card, CardContent, Stack, Chip, Box, Typography } from "@mui/material";
+import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function TransactionItemCard({ transaction }) {
+    const theme = useTheme();
+    const isSmall = useMediaQuery("(max-width: 660px)");
     const { type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
@@ -10,6 +13,76 @@ function TransactionItemCard({ transaction }) {
         "transfer": "#BBA3E5",
     }
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", });
+
+    if (isSmall) {
+        return (
+            <Box 
+                sx={{ 
+                    m: 2,
+                    width: "100%",
+                    maxWidth: "unset",
+                    flex: 1,
+                }}
+            >
+                <Accordion
+                    sx={{
+                        width: "100%",
+                        borderLeft: `4px solid ${typeToColour[type]}`,
+                        borderRadius: 3,
+                    }}    
+                >
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 0.25 }}>
+                            <Typography 
+                                fontWeight={700} 
+                                sx={{ fontSize: "1rem", display: "flex", alignItems: "center", gap: 1 }}
+                            >
+                                {type.toUpperCase()}
+                                <Typography 
+                                    component="span" 
+                                    fontWeight={600} 
+                                    color={amount > 0 ? "primary" : "error"}
+                                >
+                                    ({amount > 0 ? `+${amount}` : amount} pts)
+                                </Typography>
+                            </Typography>
+                            <Typography fontWeight={500} sx={{ opacity: 0.9 }}>
+                                {remark}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
+                                {dateString}
+                            </Typography>
+                        </Box>
+                    </AccordionSummary>
+
+                    <AccordionDetails sx={{ mt: -1 }}>
+                        {spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent}</Typography>}
+                        <Typography variant="body2" color="text.secondary">
+                            {user && `Created by ${user.utorid}`}
+                            {targetUser && user && " | "}
+                            {targetUser && amount > 0 && `Sent by ${targetUser.utorid}`} 
+                            {targetUser && amount < 0 && `Sent to ${targetUser.utorid}`}  
+                        </Typography>
+                        <Stack direction="row" spacing={1} mt={2}>
+                            <Chip 
+                                label={processed ? "PROCESSED" : "UNPROCESSED"}
+                                color={processed ? "primary" : ""}
+                                variant={processed ? "" : "outlined"}
+                                size="small"
+                            />
+                            {suspicious && (
+                                <Chip 
+                                    label="SUSPICIOUS" 
+                                    color="error" 
+                                    size="small" 
+                                />                                
+                            )}
+                        </Stack>
+                    </AccordionDetails>
+                </Accordion>
+            </Box>
+        );
+    }
 
     return (
         <Card 
@@ -92,13 +165,10 @@ function TransactionItemCard({ transaction }) {
                             textAlign: "right",
                         }}
                     >
-                        {amount > 0 ? (
-                            <Typography variant="h4" color="primary" fontWeight="bold">+{amount} pts</Typography>
-                        ) : (
-                            <Typography variant="h4" color="error" fontWeight="bold">{amount} pts</Typography>
-                        )}
-                        
-                        <Typography variant="body2" color="text.secondary">Spent: ${spent}</Typography>
+                        <Typography variant="h4" color={amount > 0 ? "primary" : "error"} fontWeight="bold">
+                            {amount > 0 ? `+${amount}` : amount} pts
+                        </Typography>
+                        {spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent}</Typography>}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>
