@@ -1,8 +1,8 @@
 import { Box, IconButton, Typography } from '@mui/material';
-import {PanelLeftClose, PanelLeftOpen, PanelTopClose, PanelTopOpen } from 'lucide-react';
+import {PanelLeftClose, PanelLeftOpen} from 'lucide-react';
 import Profile from '../Profile';
 
-function Header({ isNavOpen, onToggleNav, isMobileWidth }) {
+function Header({ isNavOpen, onToggleNav }) {
 
   return (
     <Box
@@ -33,8 +33,7 @@ function Header({ isNavOpen, onToggleNav, isMobileWidth }) {
             "&:hover": { background: "transparent" },
           }}
         > 
-          {isMobileWidth && (isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />)}
-          {!isMobileWidth && (isNavOpen ? <PanelTopClose /> : <PanelTopOpen />)}
+          {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
         </IconButton>
 
         <Typography
