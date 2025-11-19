@@ -1,24 +1,23 @@
-import './style.css';
-import { useState } from 'react';
 import { Box, IconButton, Typography } from '@mui/material';
-import {PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import {PanelLeftClose, PanelLeftOpen, PanelTopClose, PanelTopOpen } from 'lucide-react';
 import Profile from '../Profile';
 
-function Header({ isNavOpen, onToggleNav }) {
+function Header({ isNavOpen, onToggleNav, isMobileWidth }) {
 
   return (
     <Box
       component="header"
-      py={1}
-      px={2}
-      justifyContent="space-between"
-      alignItems="center"
-      display="flex"
-      flexDirection="row"
       sx={{
         backgroundColor: "#E8EBDF",
         color: "#232715",
         boxSizing: "border-box",
+        py: 1,
+        px: 2,
+        height: '10vh',
+        justifyContent: "space-between",
+        alignItems: "center",
+        display: "flex",
+        flexDirection: "row"
       }}
     >
       <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
@@ -33,8 +32,9 @@ function Header({ isNavOpen, onToggleNav }) {
             color: "#232715",
             "&:hover": { background: "transparent" },
           }}
-        >
-          {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+        > 
+          {isMobileWidth && (isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />)}
+          {!isMobileWidth && (isNavOpen ? <PanelTopClose /> : <PanelTopOpen />)}
         </IconButton>
 
         <Typography
