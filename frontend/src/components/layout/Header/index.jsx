@@ -13,7 +13,7 @@ function Header({ isNavOpen, onToggleNav, isMobileWidth }) {
         boxSizing: "border-box",
         py: 1,
         px: 2,
-        height: '10vh',
+        height: 'max-content',
         justifyContent: "space-between",
         alignItems: "center",
         display: "flex",
