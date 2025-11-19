@@ -22,7 +22,7 @@ export default function Navbar({ isOpen, isMobileWidth }) {
       {isMobileWidth && (<Box 
         component="aside"
         sx={{
-          width: isOpen ? 1/6 : 60,
+          width: 'max-content',
           padding: 1,
           pr: 2,
           backgroundColor: "#E8EBDF",
