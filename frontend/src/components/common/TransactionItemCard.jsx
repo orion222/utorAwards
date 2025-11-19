@@ -1,7 +1,15 @@
 import { Card, CardContent, Stack, Chip, Box, Typography } from "@mui/material";
 
 function TransactionItemCard({ transaction }) {
-    const test = "red";
+    const { type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt } = transaction;
+    const typeToColour = {
+        "purchase": "#7CD93A",
+        "redemption": "#F59B66",
+        "adjustment": "#F2B84B",
+        "event": "#7DA4F2",
+        "transfer": "#BBA3E5",
+    }
+    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", });
 
     return (
         <Card 
@@ -24,19 +32,19 @@ function TransactionItemCard({ transaction }) {
                     top: 0,
                     bottom: 0,
                     width: "4px",
-                    bgcolor: test,
+                    bgcolor: typeToColour[type],
                     borderTopLeftRadius: 12,
                     borderBottomLeftRadius: 12,
                 }}
             />
 
             {/* Main content */}
-            <CardContent sx={{ px: 3, py: 2 }}>
+            <CardContent sx={{ px: 4, py: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Box sx={{ flex: 1, pr: 2 }}>
                         <Stack direction="row" spacing={1} mb={2}>
                             <Chip 
-                                label="PURCHASE" 
+                                label={type.toUpperCase()}
                                 variant="outlined" 
                                 size="medium" 
                                 sx={{
@@ -45,27 +53,33 @@ function TransactionItemCard({ transaction }) {
                                 }} 
                             />
                             <Chip 
-                                label="PROCESSED" 
-                                color="primary" 
+                                label={processed ? "PROCESSED" : "UNPROCESSED"}
+                                color={processed ? "primary" : ""}
+                                variant={processed ? "" : "outlined"}
                                 size="medium" 
                                 sx={{
                                     fontWeight: 600,
                                     fontSize: "0.9rem",
                                 }} 
                             />
-                            <Chip 
-                                label="SUSPICIOUS" 
-                                color="error" 
-                                size="medium" 
-                                sx={{
-                                    fontWeight: 600,
-                                    fontSize: "0.9rem",
-                                }} 
-                            />
+                            {suspicious && (
+                                <Chip 
+                                    label="SUSPICIOUS" 
+                                    color="error" 
+                                    size="medium" 
+                                    sx={{
+                                        fontWeight: 600,
+                                        fontSize: "0.9rem",
+                                    }} 
+                                />                                
+                            )}
                         </Stack>
-                        <Typography fontWeight={600}>More details</Typography>
+                        <Typography fontWeight={600}>{remark}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                            eirjforiejfeorifjre
+                            {user && `Created by ${user.utorid}`}
+                            {targetUser && user && " | "}
+                            {targetUser && amount > 0 && `Sent by ${targetUser.utorid}`} 
+                            {targetUser && amount < 0 && `Sent to ${targetUser.utorid}`}  
                         </Typography>
                     </Box>
 
@@ -78,9 +92,14 @@ function TransactionItemCard({ transaction }) {
                             textAlign: "right",
                         }}
                     >
-                        <Typography variant="h4">+100 pts</Typography>
-                        <Typography variant="body2" color="text.secondary">Spent: $100</Typography>
-                        <Typography variant="body2" color="text.secondary">Jan 20, 2025</Typography>
+                        {amount > 0 ? (
+                            <Typography variant="h4" color="primary" fontWeight="bold">+{amount} pts</Typography>
+                        ) : (
+                            <Typography variant="h4" color="error" fontWeight="bold">{amount} pts</Typography>
+                        )}
+                        
+                        <Typography variant="body2" color="text.secondary">Spent: ${spent}</Typography>
+                        <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>
             </CardContent>
