@@ -39,7 +39,7 @@ export default function Navbar({ isOpen, isMobileWidth, setIsNavOpen}) {
 
   return (
     <>
-      {isMobileWidth && (<Box 
+      {!isMobileWidth && (<Box 
         component="aside"
         sx={{
           width: 'max-content',
@@ -55,7 +55,7 @@ export default function Navbar({ isOpen, isMobileWidth, setIsNavOpen}) {
         {navContent()}
       </Box>)}
 
-      {!isMobileWidth && isOpen && (
+      {isMobileWidth && isOpen && (
         <Drawer variant="temporary" anchor="left" open={isOpen} onClose={() => setIsNavOpen(false)} ModalProps={{keepMounted: true}}
           slotProps={{
             paper: {

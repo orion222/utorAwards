@@ -5,7 +5,7 @@ import Navbar from "../Navbar";
 import {Box, useMediaQuery} from "@mui/material";
 
 function AppLayout() {
-  const isMobileWidth = useMediaQuery('(min-width:800px)');
+  const isMobileWidth = useMediaQuery('(max-width:800px)');
   const [isNavOpen, setIsNavOpen] = useState(true);
   return (
     <Box
