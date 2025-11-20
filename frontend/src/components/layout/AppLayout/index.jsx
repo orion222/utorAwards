@@ -29,7 +29,7 @@ function AppLayout() {
       <Header isNavOpen={isNavOpen} onToggleNav={() => setIsNavOpen(!isNavOpen)} />
       <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
         <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} selectedItem={selectedItem} setSelectedItem={setSelectedItem} navItems={navItems} />
-        <Box mt={8} py={4} px={8} width="100%">
+        <Box mt={8} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 8} width="100%">
           <Outlet />
         </Box>
       </Box>
