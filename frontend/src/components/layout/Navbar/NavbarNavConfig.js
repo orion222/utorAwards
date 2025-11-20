@@ -1,84 +1,24 @@
 import { ShoppingCart, Gift, ArrowLeftRight, UserPlus, Home as HomeIcon, Wallet as WalletIcon, Compass, History, Mail, Tag, Users } from 'lucide-react';
+
 const NAV_ITEMS = {
-  home: {
-    id: "home",
-    label: "Home",
-    icon: HomeIcon,
-    group: "dashboard",
-  },
+  home: { id: "home", label: "Home", icon: HomeIcon, path: "/" },
+  wallet: { id: "wallet", label: "Wallet", icon: WalletIcon, children: [ { id: "my-qr", label: "My QR Code", path: "/test"  }, ] },
+  pastTransactions: { id: "pastTransactions", label: "Past Transactions", icon: History, path: "/test" },
 
-  wallet: {
-    id: "wallet",
-    label: "Wallet",
-    icon: WalletIcon,
-    group: "wallet",
-  },
+  create: { id: "create", label: "Create Transaction", icon: ShoppingCart, path: "/" },
+  redeem: { id: "redeem", label: "Process Redemption", icon: Gift, path: "/" },
+  transfer: { id: "transfer", label: "Transfer Points", icon: ArrowLeftRight, path: "/" },
 
-  pastTransactions: {
-    id: "pastTransactions",
-    label: "Past Transactions",
-    icon: History,
-    group: "wallet",
-  },
+  exploreEvents: { id: "exploreEvents", label: "Explore", icon: Compass, path: "/" },
+  eventInvitations: { id: "eventInvitations", label: "Event Invitations", icon: Mail, path: "/" },
 
-  create: {
-    id: "create",
-    label: "Create Transaction",
-    icon: ShoppingCart,
-    group: "transactions",
-  },
+  promotions: { id: "promotions", label: "Promotions", icon: Tag, path: "/" },
 
-  redeem: {
-    id: "redeem",
-    label: "Process Redemption",
-    icon: Gift,
-    group: "transactions",
-  },
-
-  transfer: {
-    id: "transfer",
-    label: "Transfer Points",
-    icon: ArrowLeftRight,
-    group: "transactions",
-  },
-
-  exploreEvents: {
-    id: "exploreEvents",
-    label: "Explore",
-    icon: Compass,
-    group: "events",
-  },
-
-  eventInvitations: {
-    id: "eventInvitations",
-    label: "Event Invitations",
-    icon: Mail,
-    group: "events",
-  },
-
-  promotions: {
-    id: "promotions",
-    label: "Promotions",
-    icon: Tag,
-    group: "operations",
-  },
-
-  createUser: {
-    id: "createUser",
-    label: "Create User",
-    icon: UserPlus,
-    group: "users",
-  },
-
-  manageUsers: {
-    id: "manageUsers",
-    label: "Manage Users",
-    icon: Users,
-    group: "users",
-  },
+  createUser: { id: "createUser", label: "Create User", icon: UserPlus, path: "/" },
+  manageUsers: { id: "manageUsers", label: "Manage Users", icon: Users, path: "/" },
 };
 
-const ROLE_NAV = {
+const BASE = {
   regular: [
     "home",
     "wallet",
@@ -87,65 +27,59 @@ const ROLE_NAV = {
     "eventInvitations",
   ],
 
-  cashier: [
-    "home",
-    "wallet",
-    "pastTransactions",
+  cashierExtras: [
     "create",
     "redeem",
     "transfer",
-    "exploreEvents",
-    "eventInvitations",
     "createUser",
   ],
 
-  organizer: [
-    "home",
-    "wallet",
-    "pastTransactions",
-    "create",
-    "redeem",
-    "transfer",
-    "exploreEvents",
-    "eventInvitations",
-    "createUser",
+  managerExtras: [
+  ],
+
+  organizerExtras: [
+    
+  ],
+
+  superuserExtras: [
+    // something ONLY superusers should see
+  ],
+};
+
+const ROLE_MAP = {
+  regular: [...BASE.regular],
+
+  cashier: [
+    ...BASE.regular,
+    ...BASE.cashierExtras,
   ],
 
   manager: [
-    "home",
-    "wallet",
-    "pastTransactions",
-    "create",
-    "redeem",
-    "transfer",
-    "exploreEvents",
-    "eventInvitations",
-    "promotions",
-    "createUser",
-    "manageUsers",
+    ...BASE.regular,
+    ...BASE.cashierExtras,
+    ...BASE.managerExtras,
   ],
 
-  superuser: "ALL",
+  organizer: role => [
+    ...(ROLE_MAP[role] || BASE.regular),
+    ...BASE.organizerExtras,
+  ],
+
+  superuser: [
+    ...Object.keys(NAV_ITEMS), // all items
+    ...BASE.superuserExtras,
+  ],
 };
 
-const NAV_ORDER = [
-  "dashboard",
-  "wallet",
-  "transactions",
-  "events",
-  "operations",
-  "users",
-];
+export function getNavForRole(role, isOrganizer) {
+  if (role === "superuser") {
+    return ROLE_MAP.superuser.map(id => NAV_ITEMS[id]);
+  }
 
-export function getNavForRole(role) {
-  const allowed = ROLE_NAV[role];
+  if (isOrganizer) {
+    const fullList = ROLE_MAP.organizer(role);
+    return fullList.map(id => NAV_ITEMS[id]);
+  }
 
-  // superuser gets everything
-  const ids = allowed === "ALL" ? Object.keys(NAV_ITEMS) : allowed;
-
-  const items = ids.map(id => NAV_ITEMS[id]);
-
-  return items.sort((a, b) => {
-    return NAV_ORDER.indexOf(a.group) - NAV_ORDER.indexOf(b.group);
-  });
+  return ROLE_MAP[role].map(id => NAV_ITEMS[id]);
 }

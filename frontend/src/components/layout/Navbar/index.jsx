@@ -1,77 +1,160 @@
-import { useMemo, useState } from "react";
-import { useUser } from "../../../context/UserContext";
-import { getNavForRole } from "./NavbarNavConfig";
-import { Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Drawer } from "@mui/material";
+import { useState } from "react";
+import {
+  Box,
+  Drawer,
+  MenuList,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  Tooltip
+} from "@mui/material";
+import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import { Link, useNavigate } from "react-router-dom";
 
-export default function Navbar({ isOpen, isMobileWidth, setIsNavOpen}) {
-  const [selectedItem, setSelectedItem] = useState(null);
-  const { user } = useUser();
-  // const userRole = user ? user.role : null;
-  const userRole = "superuser"; //Rrmove this when login is implemented
+export default function Navbar({ isOpen, isMobileWidth, selectedItem, setSelectedItem, navItems }) {
+  const [expandedItems, setExpandedItems] = useState({});
+  const navigate = useNavigate();
 
-  const navItems = useMemo(() => {
-    return getNavForRole(userRole);
-  }, [userRole]);
+  const toggleExpand = (id) => {
+    setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
-  // if (!user) {
-  //   return null; // maybe a placeholder for unauthenticated users?
-  // }
+  const sidebarWidth = isOpen ? 240 : 64;
 
-  function navContent() {
-    return (
-      <List disablePadding component="nav">
-        {navItems.map((item, index) => (
-          <>
-            <ListItem key={item.id} disablePadding>
-              <ListItemButton selected={selectedItem === item.id} onClick={() => setSelectedItem(item.id)} sx={{ justifyContent: isOpen ? 'flex-start' : 'center' }}>
-                <ListItemIcon sx={{ minWidth: 0, mr: isOpen ? 3 : 'auto', justifyContent: 'center' }}>
+  const sidebar = (
+    <Box
+      component="aside"
+      sx={{
+        width: sidebarWidth,
+        backgroundColor: "#E8EBDF",
+        padding: 1,
+        transition: "width 0.3s",
+        mt: 8,
+        overflowY: "auto",
+        overflowX: "hidden",
+      }}
+    >
+      <MenuList sx={{ p: 0 }}>
+        {navItems.map((item) => (
+          <Box key={item.id}>
+            <Tooltip title={isOpen ? "" : item.label} placement="right">
+              <MenuItem
+                selected={!item.children && selectedItem === item.id}
+                onClick={() => {
+                  if (item.children) {
+                    if (isOpen) {
+                      toggleExpand(item.id);
+                    } else {
+                      setSelectedItem(item.children[0].id);
+                      navigate(item.children[0].path);
+                    }
+                  } else {
+                    setSelectedItem(item.id);
+                    navigate(item.path);
+                  }
+                }}
+                sx={{
+                  minHeight: 48,
+                  px: 0,
+                  mx: 1,
+                  borderRadius: 2,
+                  mb: 0.5,
+                  justifyContent: isOpen ? "flex-start" : "center",
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: 0,
+                    mr: isOpen ? 2 : 0,
+                    justifyContent: "center",
+                  }}
+                >
                   <item.icon />
                 </ListItemIcon>
-                {isOpen ? <ListItemText primary={item.label} /> : null}
-              </ListItemButton>
-            </ListItem>
-            {index < navItems.length - 1 && <Divider />}
-          </>
+
+                <ListItemText
+                  primary={item.label}
+                  sx={{
+                    opacity: isOpen ? 1 : 0,
+                    transition: "opacity 0.3s",
+                    whiteSpace: "nowrap",
+                    "& .MuiTypography-root": {
+                      fontSize: "0.8rem"
+                    }
+                  }}
+                />
+
+                {item.children && isOpen && (
+                  expandedItems[item.id] ? <ExpandLess /> : <ExpandMore />
+                )}
+              </MenuItem>
+            </Tooltip>
+
+            {item.children && (
+              <Collapse in={expandedItems[item.id] && isOpen} timeout="auto">
+                <MenuList sx={{ pl: 4, p: 0 }}>
+                  {item.children.map((child) => (
+                    <MenuItem
+                      key={child.id}
+                      component={Link}
+                      to={child.path}
+                      selected={selectedItem === child.id}
+                      onClick={() => setSelectedItem(child.id)}
+                      sx={{
+                        borderRadius: 2,
+                        mx: 1,
+                        mb: 0.5,
+                        minHeight: 40,
+                      }}
+                    >
+                      <ListItemText
+                        primary={child.label}
+                        sx={{
+                          opacity: isOpen ? 1 : 0,
+                          transition: "opacity 0.3s",
+                          whiteSpace: "nowrap",
+                          "& .MuiTypography-root": {
+                            fontSize: "0.8rem"
+                          },
+                        }}
+                      />
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </Collapse>
+            )}
+          </Box>
         ))}
-      </List>
-    );
-  }
+      </MenuList>
+    </Box>
+  );
 
   return (
     <>
-      {!isMobileWidth && (<Box 
-        component="aside"
-        sx={{
-          width: 'max-content',
-          padding: 1,
-          pr: 2,
-          backgroundColor: "#E8EBDF",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          overflowY: "auto",
-        }}
-      >
-        {navContent()}
-      </Box>)}
+      {!isMobileWidth && sidebar}
 
-      {isMobileWidth && isOpen && (
-        <Drawer variant="temporary" anchor="left" open={isOpen} onClose={() => setIsNavOpen(false)} ModalProps={{keepMounted: true}}
+      {isMobileWidth && (
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={isOpen}
+          onClose={() => setIsNavOpen(false)}
+          ModalProps={{ keepMounted: true }}
           slotProps={{
             paper: {
               sx: {
-                width: "max-content",
-                backgroundColor: "#E8EBDF", // drawer background
+                width: 240,
+                backgroundColor: "#E8EBDF",
                 padding: 1,
-                pr: 2,
                 overflowY: "auto",
-              }
-            }
-          }}>
-          {navContent()}
+              },
+            },
+          }}
+        >
+          {sidebar}
         </Drawer>
       )}
     </>
-    
   );
 }
