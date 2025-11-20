@@ -15,10 +15,8 @@ function FormCard({ children }) {
       }}
     >
       {isSmall ? (
-        // Full screen on mobile
         <Box sx={{ width: "100%", p: 4 }}>{children}</Box>
       ) : (
-        // Card on tablet + desktop
         <Card sx={{ width: 420, p: 4 }}>
           <CardContent>{children}</CardContent>
         </Card>

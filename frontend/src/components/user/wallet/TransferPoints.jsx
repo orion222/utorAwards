@@ -1,60 +1,44 @@
-// ...existing code...
 import { useState } from "react";
-import {
-  Stack,
-  Box,
-  TextField,
-  Button,
-  TextareaAutosize,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { transferSchema as schema } from "./constants.js";
+import { Stack, Box, TextField, Button, TextareaAutosize } from "@mui/material";
 import FormCard from "../../common/FormCard.jsx";
 import api from "../../../api/api";
-
+import useToast from "../../common/hooks/useToast.jsx";
+import HandshakeTwoToneIcon from "@mui/icons-material/HandshakeTwoTone";
 export default function TransferPoints() {
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success",
+  const { showToast, ToastComponent } = useToast();
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      userid: "",
+      amount: "",
+      remarks: "",
+    },
   });
 
-  const showToast = (message, severity = "success") => {
-    setToast({ open: true, message, severity });
-  };
-
-  const closeToast = (_, reason) => {
-    if (reason === "clickaway") return;
-    setToast((t) => ({ ...t, open: false }));
-  };
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-
-    const userId = Number(formData.get("userid")); // numeric recipient id
-    const amount = Number(formData.get("amount"));
-    const remark = formData.get("remarks") || "";
-
-    if (!Number.isInteger(userId) || userId <= 0) {
-      showToast("Invalid recipient user ID", "error");
-      return;
-    }
-    if (!Number.isInteger(amount) || amount <= 0) {
-      showToast("Amount must be a positive integer", "error");
-      return;
-    }
+  const onSubmit = async (data) => {
+    const { userid, amount, remarks } = data;
 
     const payload = {
       type: "transfer",
-      amount,
-      remark,
+      amount: Number(amount),
+      remark: remarks || "",
     };
 
     try {
-      const response = await api.post(`/users/${userId}/transactions`, payload);
+      const response = await api.post(`/users/${userid}/transactions`, payload);
       showToast("Transfer successful", "success");
-      // Optionally clear amount/remarks fields here by resetting the form if desired.
+      reset();
     } catch (error) {
+      console.log(error);
       const msg =
         error.response?.data?.error ||
         error.response?.data?.message ||
@@ -67,57 +51,75 @@ export default function TransferPoints() {
     <FormCard
       children={
         <>
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={2}>
-              <Box component="h2">Send Points</Box>
-              <TextField
+              <Box
+                component="h2"
+                sx={{ display: "flex", alignItems: "center", gap: 1 }}
+              >
+                Send Points <HandshakeTwoToneIcon />
+              </Box>
+
+              <Controller
                 name="userid"
-                label="Recipient User ID"
-                variant="outlined"
-                type="number"
-                required
-                inputProps={{ min: 1 }}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Recipient User ID"
+                    variant="outlined"
+                    error={!!errors.userid}
+                    helperText={errors.userid?.message}
+                  />
+                )}
               />
-              <TextField
+
+              <Controller
                 name="amount"
-                label="Amount"
-                type="number"
-                variant="outlined"
-                required
-                inputProps={{ min: 1 }}
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Amount"
+                    variant="outlined"
+                    error={!!errors.amount}
+                    helperText={errors.amount?.message}
+                  />
+                )}
               />
-              <TextareaAutosize
+
+              <Controller
                 name="remarks"
-                minRows={3}
-                placeholder="Remarks (optional)"
-                style={{
-                  padding: 12,
-                  fontFamily: "inherit",
-                  borderRadius: 4,
-                  border: "1px solid #ccc",
-                }}
+                control={control}
+                render={({ field }) => (
+                  <TextareaAutosize
+                    {...field}
+                    minRows={3}
+                    placeholder="Remarks (optional)"
+                    style={{
+                      padding: 12,
+                      fontFamily: "inherit",
+                      fontSize: "1rem",
+                      borderRadius: 4,
+                      border: errors.remarks
+                        ? "1px solid #d32f2f"
+                        : "1px solid #ccc",
+                    }}
+                  />
+                )}
               />
-              <Button type="submit" variant="contained" sx={{ mt: 2 }}>
-                Transfer
+
+              <Button
+                type="submit"
+                variant="contained"
+                sx={{ mt: 2 }}
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Transferring..." : "Transfer"}
               </Button>
             </Stack>
           </form>
-          <Snackbar
-            open={toast.open}
-            autoHideDuration={2500}
-            onClose={closeToast}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            sx={{ mt: 8 }}
-          >
-            <Alert
-              onClose={closeToast}
-              severity={toast.severity}
-              variant="filled"
-              sx={{ width: "100%" }}
-            >
-              {toast.message}
-            </Alert>
-          </Snackbar>
+          {ToastComponent}
         </>
       }
     />
