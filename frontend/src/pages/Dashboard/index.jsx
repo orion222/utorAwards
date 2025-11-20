@@ -7,6 +7,11 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import WalletIcon from '@mui/icons-material/Wallet';
 import WavingHandIcon from '@mui/icons-material/WavingHand';
 import theme from '../../theme.js';
+import EventCard from "../../components/common/EventCard";
+import { TheatersOutlined } from "@mui/icons-material";
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LocationPinIcon from '@mui/icons-material/LocationPin';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 
 function Dashboard() {
     const { user } = useUser();
@@ -59,6 +64,15 @@ function Dashboard() {
         e.preventDefault();
         navigate("/events");
     };
+
+    const formatDate = (isoDate) => {
+        const formattedDate = new Intl.DateTimeFormat('en-US', {
+            month: 'short', // "Nov"
+            day: '2-digit', // "25"
+            year: 'numeric' // "2025"
+          }).format(new Date(isoDate));
+          return formattedDate;
+    }
     // console.log(promotions);
     return <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
@@ -144,25 +158,52 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: "16px" }}>
-                          {events.length > 0 ? (
-                                events.map(e => (
-                                    <Box className="event-card">
-                                        <Box className="event-left">
-                                            <Box className="tag-container">
-                                                <Typography>{e.name}</Typography>
-                                                <Typography>{e.description}</Typography>
+                <Box sx={{display: "flex", flexDirection: "row", gap: "16px"}}>
+                        {events.length > 0 ? (
+                            events.map(e => (
+                                <EventCard>
+                                    <Box> {/* left side */}
+                                        <Box>
+                                            <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{e.name}</Typography>
+                                            <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                                                <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                                                <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
+                                                    {formatDate(e.startTime)} - {formatDate(e.endTime)}
+                                                </Typography>
                                             </Box>
-                                            <Typography>Remark: {e.startTime}</Typography>
+                                            <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                                                <LocationPinIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                                                <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>  
+                                                    {e.location}
+                                                </Typography>
+                                            </Box>
+                                            <Typography sx={{fontSize: 11}}>
+                                                {e.description}
+                                            </Typography>
                                         </Box>
-                                        <Box className="event-right">
-                                            <Typography>{e.points} points</Typography>
+                                        <Button variant="contained" sx={{fontSize: 12,
+                                            padding: "8px", 
+                                            backgroundColor: theme.palette.secondary.main,
+                                            borderRadius: "8px" }}>      
+                                            View Details
+                                        </Button>
+                                    </Box>
+                                    <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> {/* right side */}
+                                        <Typography sx={{fontSize: 20, fontWeight: "bold"}}>
+                                            {e.points} pts
+                                        </Typography>
+                                        <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                                            <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                                            <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
+                                                {e.numGuests}/{e.capacity}
+                                            </Typography>
                                         </Box>
                                     </Box>
-                                ))
-                            ) : (
-                                <Typography>No events found.</Typography>
-                            )}
+                                </EventCard>
+                            ))
+                        ) : (
+                            <Typography>No events found.</Typography>
+                        )}        
                 </Box>
                 <Link href="events" onClick={viewEvents} underline='none' sx={{color: theme.palette.text.disabled}}>
                     (View all events)
