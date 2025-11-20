@@ -13,6 +13,7 @@ function AppLayout() {
   const [selectedItem, setSelectedItem] = useState("home");
 
   const { user } = useUser();
+  console.log("user in app layout:", user);
 
   // app layout reads user from stored state and does not rerender like child elements like dashboard
   const navItems = useMemo(() => {
@@ -26,15 +27,15 @@ function AppLayout() {
         display: "flex", flexDirection: "column", height: "100vh"
       }}
     >
-      <Header isNavOpen={isNavOpen} onToggleNav={() => setIsNavOpen(!isNavOpen)} />
+      <Header hasNav={Boolean(user)} isNavOpen={isNavOpen} onToggleNav={() => setIsNavOpen(!isNavOpen)} />
       <>
-      {user && (
+      {!user && (
         <Box py={4} px={8}>
           <Outlet />
         </Box>
       )}
 
-      {!user && (
+      {user && (
         <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
           <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} selectedItem={selectedItem} setSelectedItem={setSelectedItem} navItems={navItems} />
           <Box py={4} px={8}>

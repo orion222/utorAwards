@@ -2,7 +2,7 @@ import { Box, IconButton, Typography, AppBar, Toolbar } from '@mui/material';
 import {PanelLeftClose, PanelLeftOpen} from 'lucide-react';
 import Profile from '../Profile';
 
-function Header({ isNavOpen, onToggleNav }) {
+function Header({ hasNav, isNavOpen, onToggleNav }) {
 
   return (
     <AppBar
@@ -23,21 +23,22 @@ function Header({ isNavOpen, onToggleNav }) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <IconButton
-            onClick={onToggleNav}
-            disableRipple
-            sx={{
-              background: "none",
-              border: "none",
-              padding: 0,
-              mr: 1,
-              color: "#232715",
-              "&:hover": { background: "transparent" },
-            }}
-          >
-            {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
-          </IconButton>
-
+          {hasNav && (
+            <IconButton
+              onClick={onToggleNav}
+              disableRipple
+              sx={{
+                background: "none",
+                border: "none",
+                padding: 0,
+                mr: 1,
+                color: "#232715",
+                "&:hover": { background: "transparent" },
+              }}
+            >
+              {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+            </IconButton>
+          )}
           <Typography
             variant="h6"
             sx={{
