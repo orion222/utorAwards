@@ -1,7 +1,7 @@
 import { ShoppingCart, Gift, ArrowLeftRight, UserPlus, Home as HomeIcon, Wallet as WalletIcon, Compass, History, Mail, Tag, Users } from 'lucide-react';
 
 const NAV_ITEMS = {
-  home: { id: "home", label: "Home", icon: HomeIcon, path: "/" },
+  home: { id: "home", label: "Home", icon: HomeIcon, path: "/dashboard" },
   wallet: { id: "wallet", label: "Wallet", icon: WalletIcon, children: [ { id: "my-qr", label: "My QR Code", path: "/test"  }, ] },
   pastTransactions: { id: "pastTransactions", label: "Past Transactions", icon: History, path: "/test" },
 
