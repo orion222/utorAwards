@@ -2,7 +2,7 @@ import { ShoppingCart, Gift, ArrowLeftRight, UserPlus, Home as HomeIcon, Wallet 
 
 const NAV_ITEMS = {
   home: { label: "Home", icon: HomeIcon, path: "/dashboard" },
-  wallet: { id: "wallet", label: "Wallet", icon: WalletIcon, children: [ { id: "my-qr", label: "My QR Code", path: "/wallet"  }, ] },
+  wallet: { id: "My Wallet", label: "Wallet", icon: WalletIcon, path: "/wallet" },
   pastTransactions: { label: "Past Transactions", icon: History, path: "/pastTransactions" },
 
   create: { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
@@ -22,6 +22,7 @@ const BASE = {
   regular: [
     "home",
     "wallet",
+    "transfer",
     "pastTransactions",
     "exploreEvents",
     "eventInvitations",
