@@ -14,6 +14,7 @@ function EventCard({ children }) {
                backgroundColor: theme.palette.background.paper,
                display: "flex",
                flexDirection: "row",
+               justifyContent: "space-between",
                p: "16px",
                borderRadius: "8px",
                gap: "16px",

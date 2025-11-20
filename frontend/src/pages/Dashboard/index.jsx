@@ -94,7 +94,7 @@ function Dashboard() {
             </Button>
         </Box>
         <Box sx={{padding: "16px"}}>
-            <Box>
+            <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
                 <Typography sx={{fontSize: 24}}>
                     Recent Transactions
                 </Typography>
@@ -124,7 +124,7 @@ function Dashboard() {
             </Box>
         </Box>
         <Box sx={{padding: "16px"}}>
-            <Box>
+            <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
                 <Typography sx={{fontSize: 24}}>
                     Promotions For You
                 </Typography>
@@ -154,52 +154,57 @@ function Dashboard() {
             </Box>
         </Box>
         <Box sx={{padding: "16px"}}>
-            <Box>
+            <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
                 <Box sx={{display: "flex", flexDirection: "row", gap: "16px"}}>
                         {events.length > 0 ? (
                             events.map(e => (
-                                <EventCard>
-                                    <Box> {/* left side */}
-                                        <Box>
-                                            <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{e.name}</Typography>
-                                            <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                                                <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                                                <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
-                                                    {formatDate(e.startTime)} - {formatDate(e.endTime)}
+                                <Box>
+                                    <EventCard>
+                                        <Box sx={{display: "flex", flexDirection: "column", width: "auto", justifyContent: "space-between"}}> {/* left side */}
+                                            <Box sx={{display: "flex", flexDirection: "column", gap: "4px"}}>
+                                                <Typography sx={{fontSize: 20, fontWeight:"bold"}}>
+                                                    {e.name}
+                                                </Typography>
+                                                <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                                                    <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                                                    <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
+                                                        {formatDate(e.startTime)} - {formatDate(e.endTime)}
+                                                    </Typography>
+                                                </Box>
+                                                <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                                                    <LocationPinIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                                                    <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>  
+                                                        {e.location}
+                                                    </Typography>
+                                                </Box>
+                                                <Typography sx={{fontSize: 11, width: "260px", height: "auto"}}>
+                                                    {e.description}
                                                 </Typography>
                                             </Box>
+                                            <Button variant="contained" sx={{fontSize: 12,
+                                                padding: "8px", 
+                                                backgroundColor: theme.palette.secondary.main,
+                                                borderRadius: "8px",
+                                                width: "fit-content"}}>      
+                                                View Details
+                                            </Button>
+                                        </Box>
+                                        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> {/* right side */}
+                                            <Typography sx={{fontSize: 20, fontWeight: "bold"}}>
+                                                {e.points} pts
+                                            </Typography>
                                             <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                                                <LocationPinIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                                                <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>  
-                                                    {e.location}
+                                                <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                                                <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
+                                                    {e.numGuests}/{e.capacity}
                                                 </Typography>
                                             </Box>
-                                            <Typography sx={{fontSize: 11}}>
-                                                {e.description}
-                                            </Typography>
                                         </Box>
-                                        <Button variant="contained" sx={{fontSize: 12,
-                                            padding: "8px", 
-                                            backgroundColor: theme.palette.secondary.main,
-                                            borderRadius: "8px" }}>      
-                                            View Details
-                                        </Button>
-                                    </Box>
-                                    <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> {/* right side */}
-                                        <Typography sx={{fontSize: 20, fontWeight: "bold"}}>
-                                            {e.points} pts
-                                        </Typography>
-                                        <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                                            <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                                            <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
-                                                {e.numGuests}/{e.capacity}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                </EventCard>
+                                    </EventCard>
+                                </Box>
                             ))
                         ) : (
                             <Typography>No events found.</Typography>
