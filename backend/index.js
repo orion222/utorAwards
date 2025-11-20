@@ -18,6 +18,7 @@ const port = (() => {
   return num;
 })();
 
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -34,8 +35,6 @@ app.use(
 app.use(express.json());
 
 // ADD YOUR WORK HERE
-require("dotenv").config();
-
 const userRouter = require("./routes/userRoutes");
 const transactionRouter = require("./routes/transactionRoutes");
 const eventRouter = require("./routes/eventRoutes");
