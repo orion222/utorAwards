@@ -1,10 +1,10 @@
-import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails } from "@mui/material";
+import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider } from "@mui/material";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function TransactionItemCard({ transaction }) {
-    const theme = useTheme();
     const isSmall = useMediaQuery("(max-width: 670px)");
-    const { type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt } = transaction;
+    const { type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
         "redemption": "#F59B66",
@@ -12,7 +12,7 @@ function TransactionItemCard({ transaction }) {
         "event": "#7DA4F2",
         "transfer": "#BBA3E5",
     }
-    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric", });
+    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
     function truncateStr(str) {
         let truncated = remark;
@@ -31,7 +31,7 @@ function TransactionItemCard({ transaction }) {
         return (
             <Box 
                 sx={{ 
-                    m: 2,
+                    mb: 2,
                     width: "100%",
                     maxWidth: "unset",
                     flex: 1,
@@ -45,40 +45,39 @@ function TransactionItemCard({ transaction }) {
                     }}    
                 >
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                        <Box sx={{ flex: 1, display: "flex", flexDirection: "column", gap: 0.25 }}>
-                            <Typography 
-                                fontWeight={700} 
-                                sx={{ fontSize: "1rem", display: "flex", alignItems: "center", gap: 1 }}
-                            >
-                                {type.toUpperCase()}
-                                <Typography 
-                                    component="span" 
-                                    fontWeight={600} 
-                                    color={amount > 0 ? "primary" : "error"}
-                                >
-                                    ({amount > 0 ? `+${amount}` : amount} pts)
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', pr: 2 }}>
+                            <Box sx={{ display: 'flex', alignItems: 'start', gap: 0.5, flexDirection: "column" }}>
+                                <Chip
+                                    label={type.toUpperCase()}
+                                    size="small"
+                                    variant="outlined"
+                                />
+                                <Typography variant="body3" color="text.secondary">
+                                    {dateString} 
                                 </Typography>
-                            </Typography>
-                            <Typography fontWeight={500}>{truncatedRemark}</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {dateString}
+                                {spent !== 0 && <Typography variant="body3" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
+                            </Box>
+
+                            <Typography variant="h6" color="primary" sx={{ fontWeight: 600 }}>
+                                {amount > 0 ? `+${amount}` : amount} pts
                             </Typography>
                         </Box>
                     </AccordionSummary>
 
                     <AccordionDetails sx={{ mt: -1 }}>
-                        {spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent}</Typography>}
                         <Typography variant="body2" color="text.secondary">
-                            {user && `Created by ${user.utorid}`}
-                            {targetUser && user && " | "}
-                            {targetUser && amount > 0 && `Sent by ${targetUser.utorid}`} 
-                            {targetUser && amount < 0 && `Sent to ${targetUser.utorid}`}  
+                            {remark} 
                         </Typography>
-                        <Stack direction="row" spacing={1} mt={2}>
+                        <Typography variant="body2" color="text.secondary">
+                            {targetUser && amount > 0 && `From: ${targetUser.utorid}`} 
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {targetUser && amount < 0 && `To: ${targetUser.utorid}`}  
+                        </Typography>
+                        <Stack direction="row" spacing={1} my={2}>
                             <Chip 
-                                label={processed ? "PROCESSED" : "UNPROCESSED"}
-                                color={processed ? "primary" : ""}
-                                variant={processed ? "" : "outlined"}
+                                label={processed ? "PROCESSED" : "PENDING"}
+                                color={processed ? "primary" : "warning"}
                                 size="small"
                             />
                             {suspicious && (
@@ -89,6 +88,22 @@ function TransactionItemCard({ transaction }) {
                                 />                                
                             )}
                         </Stack>
+                        {promotionIds.length !== 0 && (
+                            <>
+                                <Divider />
+                                <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <LocalOfferIcon sx={{ fontSize: 18 }} />
+                                {promotionIds.map((promotion) => (
+                                    <Typography 
+                                    key={promotion}
+                                    sx={{ fontSize: "0.85rem", mr: 1 }}  // small spacing
+                                    >
+                                    {promotion}
+                                    </Typography>
+                                ))}
+                                </Box>                       
+                            </>
+                        )}
                     </AccordionDetails>
                 </Accordion>
             </Box>
@@ -124,7 +139,7 @@ function TransactionItemCard({ transaction }) {
 
             {/* Main content */}
             <CardContent sx={{ px: 4, py: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center" }}>
+                <Box mb={2} sx={{ display: "flex", alignItems: "center" }}>
                     <Box sx={{ flex: 1, pr: 2 }}>
                         <Stack direction="row" spacing={1} mb={2}>
                             <Chip 
@@ -137,9 +152,8 @@ function TransactionItemCard({ transaction }) {
                                 }} 
                             />
                             <Chip 
-                                label={processed ? "PROCESSED" : "UNPROCESSED"}
-                                color={processed ? "primary" : ""}
-                                variant={processed ? "" : "outlined"}
+                                label={processed ? "PROCESSED" : "PENDING"}
+                                color={processed ? "primary" : "warning"}
                                 size="medium" 
                                 sx={{
                                     fontWeight: 600,
@@ -158,12 +172,12 @@ function TransactionItemCard({ transaction }) {
                                 />                                
                             )}
                         </Stack>
-                        <Typography fontWeight={600}>{truncatedRemark}</Typography>
+                        <Typography variant="h7">{remark}</Typography>
                         <Typography variant="body2" color="text.secondary">
-                            {user && `Created by ${user.utorid}`}
-                            {targetUser && user && " | "}
-                            {targetUser && amount > 0 && `Sent by ${targetUser.utorid}`} 
-                            {targetUser && amount < 0 && `Sent to ${targetUser.utorid}`}  
+                            {targetUser && amount > 0 && `From: ${targetUser.utorid}`} 
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {targetUser && amount < 0 && `To: ${targetUser.utorid}`}  
                         </Typography>
                     </Box>
 
@@ -179,10 +193,26 @@ function TransactionItemCard({ transaction }) {
                         <Typography variant="h4" color={amount > 0 ? "primary" : "error"} fontWeight="bold">
                             {amount > 0 ? `+${amount}` : amount} pts
                         </Typography>
-                        {spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent}</Typography>}
+                        {spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>
+                {promotionIds.length !== 0 && (
+                    <>
+                        <Divider />
+                        <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <LocalOfferIcon sx={{ fontSize: 18 }} />
+                        {promotionIds.map((promotion) => (
+                            <Typography 
+                            key={promotion}
+                            sx={{ fontSize: "0.85rem", mr: 1 }}  // small spacing
+                            >
+                            {promotion}
+                            </Typography>
+                        ))}
+                        </Box>                       
+                    </>
+                )}
             </CardContent>
         </Card>
     )
