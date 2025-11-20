@@ -30,7 +30,7 @@ function AppLayout() {
       <Header hasNav={Boolean(user)} isNavOpen={isNavOpen} onToggleNav={() => setIsNavOpen(!isNavOpen)} />
       <>
       {!user && (
-        <Box py={4} px={8}>
+        <Box mt={8} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 8} width="100%">
           <Outlet />
         </Box>
       )}
