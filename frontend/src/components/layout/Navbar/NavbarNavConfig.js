@@ -1,21 +1,21 @@
 import { ShoppingCart, Gift, ArrowLeftRight, UserPlus, Home as HomeIcon, Wallet as WalletIcon, Compass, History, Mail, Tag, Users } from 'lucide-react';
 
 const NAV_ITEMS = {
-  home: { id: "home", label: "Home", icon: HomeIcon, path: "/dashboard" },
-  wallet: { id: "wallet", label: "Wallet", icon: WalletIcon, children: [ { id: "my-qr", label: "My QR Code", path: "/test"  }, ] },
-  pastTransactions: { id: "pastTransactions", label: "Past Transactions", icon: History, path: "/test" },
+  home: { label: "Home", icon: HomeIcon, path: "/dashboard" },
+  wallet: { id: "wallet", label: "Wallet", icon: WalletIcon, children: [ { id: "my-qr", label: "My QR Code", path: "/wallet"  }, ] },
+  pastTransactions: { label: "Past Transactions", icon: History, path: "/pastTransactions" },
 
-  create: { id: "create", label: "Create Transaction", icon: ShoppingCart, path: "/" },
-  redeem: { id: "redeem", label: "Process Redemption", icon: Gift, path: "/" },
-  transfer: { id: "transfer", label: "Transfer Points", icon: ArrowLeftRight, path: "/" },
+  create: { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
+  redeem: { label: "Process Redemption", icon: Gift, path: "/redeem" },
+  transfer: { label: "Transfer Points", icon: ArrowLeftRight, path: "/transfer" },
 
-  exploreEvents: { id: "exploreEvents", label: "Explore", icon: Compass, path: "/" },
-  eventInvitations: { id: "eventInvitations", label: "Event Invitations", icon: Mail, path: "/" },
+  exploreEvents: { label: "Explore", icon: Compass, path: "/events" },
+  eventInvitations: { label: "Event Invitations", icon: Mail, path: "/events/invitations" },
 
-  promotions: { id: "promotions", label: "Promotions", icon: Tag, path: "/" },
+  promotions: { label: "Promotions", icon: Tag, path: "/promotions" },
 
-  createUser: { id: "createUser", label: "Create User", icon: UserPlus, path: "/" },
-  manageUsers: { id: "manageUsers", label: "Manage Users", icon: Users, path: "/" },
+  createUser: { label: "Create User", icon: UserPlus, path: "/createUser" },
+  manageUsers: { label: "Manage Users", icon: Users, path: "/manageUsers" },
 };
 
 const BASE = {

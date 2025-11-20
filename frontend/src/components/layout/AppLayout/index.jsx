@@ -10,10 +10,7 @@ import { getNavForRole } from "../Navbar/NavbarNavConfig";
 function AppLayout() {
   const isMobileWidth = useMediaQuery('(max-width:800px)');
   const [isNavOpen, setIsNavOpen] = useState(true);
-  const [selectedItem, setSelectedItem] = useState("home");
-
   const { user } = useUser();
-  console.log("user in app layout:", user);
 
   // app layout reads user from stored state and does not rerender like child elements like dashboard
   const navItems = useMemo(() => {
@@ -37,7 +34,7 @@ function AppLayout() {
 
       {user && (
         <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
-          <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} selectedItem={selectedItem} setSelectedItem={setSelectedItem} navItems={navItems} />
+          <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} navItems={navItems} />
           <Box mt={8} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 8} width="100%">
             <Outlet />
           </Box>
