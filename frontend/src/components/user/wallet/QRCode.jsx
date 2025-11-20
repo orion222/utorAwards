@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
 import QRCodeGenerator from "qrcode";
+import FormCard from "../../common/FormCard.jsx";
 export default function QRCode() {
   const { user } = useUser();
   const canvasRef = useRef();
@@ -92,64 +93,68 @@ export default function QRCode() {
     }
   };
   return (
-    <Stack direction="column" alignItems="center" spacing={3}>
-      <Typography variant="body1" textAlign="center">
-        Show this to a cashier to earn or spend points
-      </Typography>
-
-      <Box
-        sx={{
-          border: "2px solid #D9DCCF",
-          borderRadius: 2,
-          p: 2,
-          backgroundColor: "#FCFEFB",
-        }}
-      >
-        <canvas ref={canvasRef} />
-      </Box>
-
-      {user && (
-        <Box sx={{ textAlign: "center" }}>
-          <Typography variant="body2" color="text.secondary">
-            User: <strong>{user.name}</strong>
+    <FormCard
+      children={
+        <Stack direction="column" alignItems="center" spacing={3}>
+          <Typography variant="body1" textAlign="center">
+            Show this to a cashier to earn or spend points
           </Typography>
-        </Box>
-      )}
 
-      <Stack direction="row" spacing={2} mt={2}>
-        <Button
-          variant="contained"
-          startIcon={<ContentCopyIcon />}
-          onClick={handleCopyQRData}
-        >
-          Copy QR Data
-        </Button>
-        <Button
-          variant="contained"
-          color="info"
-          startIcon={<DownloadIcon />}
-          onClick={handleDownloadQR}
-        >
-          Download QR Code
-        </Button>
-      </Stack>
+          <Box
+            sx={{
+              border: "2px solid #D9DCCF",
+              borderRadius: 2,
+              p: 2,
+              backgroundColor: "#FCFEFB",
+            }}
+          >
+            <canvas ref={canvasRef} />
+          </Box>
 
-      <Snackbar
-        open={toast.open}
-        autoHideDuration={2000}
-        onClose={closeToast}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        sx={{ position: "absolute", top: "10px" }}
-      >
-        <Alert
-          onClose={closeToast}
-          severity={toast.severity}
-          sx={{ width: "100%" }}
-          variant="filled"
-        >
-          {toast.message}
-        </Alert>
-      </Snackbar>
-    </Stack>
+          {user && (
+            <Box sx={{ textAlign: "center" }}>
+              <Typography variant="body2" color="text.secondary">
+                User: <strong>{user.name}</strong>
+              </Typography>
+            </Box>
+          )}
+
+          <Stack direction="row" spacing={2} mt={2}>
+            <Button
+              variant="contained"
+              startIcon={<ContentCopyIcon />}
+              onClick={handleCopyQRData}
+            >
+              Copy QR Data
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              startIcon={<DownloadIcon />}
+              onClick={handleDownloadQR}
+            >
+              Download QR Code
+            </Button>
+          </Stack>
+
+          <Snackbar
+            open={toast.open}
+            autoHideDuration={2000}
+            onClose={closeToast}
+            anchorOrigin={{ vertical: "top", horizontal: "center" }}
+            sx={{ position: "absolute", top: "10px" }}
+          >
+            <Alert
+              onClose={closeToast}
+              severity={toast.severity}
+              sx={{ width: "100%" }}
+              variant="filled"
+            >
+              {toast.message}
+            </Alert>
+          </Snackbar>
+        </Stack>
+      }
+    />
   );
 }
