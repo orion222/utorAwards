@@ -47,11 +47,17 @@ function TransactionItemCard({ transaction }) {
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', pr: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'start', gap: 0.5, flexDirection: "column" }}>
-                                <Chip
-                                    label={type.toUpperCase()}
-                                    size="small"
-                                    variant="outlined"
-                                />
+                                <Box sx={{ display: 'flex', gap: 0.5, alignItems: "center" }}>
+                                    <Chip
+                                        label={type.toUpperCase()}
+                                        size="small"
+                                        variant="outlined"
+                                    />
+                                    {promotionIds.length !== 0 && (
+                                        <LocalOfferIcon sx={{ fontSize: 18, color: "primary.main" }} />
+                                    )}                                    
+                                </Box>
+
                                 <Typography variant="body3" color="text.secondary">
                                     {dateString} 
                                 </Typography>
@@ -91,16 +97,13 @@ function TransactionItemCard({ transaction }) {
                         {promotionIds.length !== 0 && (
                             <>
                                 <Divider />
-                                <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                                <LocalOfferIcon sx={{ fontSize: 18 }} />
-                                {promotionIds.map((promotion) => (
-                                    <Typography 
-                                    key={promotion}
-                                    sx={{ fontSize: "0.85rem", mr: 1 }}  // small spacing
-                                    >
-                                    {promotion}
+                                <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                                    <LocalOfferIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                                    <Typography sx={{ fontSize: "0.85rem", color: "text.secondary" }}>
+                                        {promotionIds.map((id, idx) => 
+                                            `Promo #${id}${idx !== promotionIds.length - 1 ? ", " : ""}`
+                                        )}
                                     </Typography>
-                                ))}
                                 </Box>                       
                             </>
                         )}
@@ -200,17 +203,14 @@ function TransactionItemCard({ transaction }) {
                 {promotionIds.length !== 0 && (
                     <>
                         <Divider />
-                        <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                        <LocalOfferIcon sx={{ fontSize: 18 }} />
-                        {promotionIds.map((promotion) => (
-                            <Typography 
-                            key={promotion}
-                            sx={{ fontSize: "0.85rem", mr: 1 }}  // small spacing
-                            >
-                            {promotion}
+                        <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
+                            <LocalOfferIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+                            <Typography sx={{ fontSize: "0.85rem", color: "text.secondary" }}>
+                                {promotionIds.map((id, idx) => 
+                                    `Promo #${id}${idx !== promotionIds.length - 1 ? ", " : ""}`
+                                )}
                             </Typography>
-                        ))}
-                        </Box>                       
+                        </Box>                     
                     </>
                 )}
             </CardContent>
