@@ -35,7 +35,7 @@ function TransactionItemCard({ transaction }) {
                     mb: 2,
                     width: "100%",
                     maxWidth: "unset",
-                    flex: 1,
+                    flex: 1
                 }}
             >
                 <Accordion

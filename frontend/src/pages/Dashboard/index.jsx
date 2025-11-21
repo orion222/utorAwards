@@ -37,7 +37,7 @@ function Dashboard() {
             const { data: promotionData } = await api.get("/promotions", {
                 params: {limit: 3}
             });
-            console.log(promotionData);
+
             setPromotions(promotionData.results);
             setEvents(eventData.results);
             setTransactions(transactionData.results);
@@ -46,7 +46,7 @@ function Dashboard() {
           }
         }
         fetchData();
-    }, [cookies.token]);
+    }, []);
    
     const viewWallet = () => {
         navigate("/wallet");
@@ -75,8 +75,9 @@ function Dashboard() {
           }).format(new Date(isoDate));
           return formattedDate;
     }
+
     const isSmall = useMediaQuery("(max-width: 670px)");
-    console.log(promotions);
+
     return <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
             <Typography sx={{fontSize: 14}}>
@@ -89,7 +90,6 @@ function Dashboard() {
             <Typography sx={{fontSize: 40, fontWeight: 'bold'}}>
                 {user.points} points
             </Typography>
-            {/* <button type="submit" className="view-wallet-button" onClick={viewWallet}>View My Wallet</button> */}
             <Button variant="contained" onClick={viewWallet} sx={{fontSize: 12, padding: "8px"}}>
                 <WalletIcon sx={{fontSize: 12, paddingRight: "8px"}}/>
                 View My Wallet
@@ -101,7 +101,7 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Recent Transactions
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: "16px" }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSmall ? "4px" : "8px" }}>
                     {transactions.length > 0 ? (
                                 transactions.map(transaction => (
                                     <TransactionItemCard transaction={transaction}/>
@@ -120,21 +120,9 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Promotions For You
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'row', gap: "16px" }}>
+                <Box sx={{ display: 'flex', flexDirection: isSmall ? "column" : "row", gap: "16px" }}>
                     {promotions.length > 0 ? (
                                     promotions.map(promotion => (
-                                        // <Box className="promotion-card">
-                                        //     <Box className="promotion-left">
-                                        //         <Box className="tag-container">
-                                        //             <Typography>{p.name}</Typography>
-                                        //             <Typography>{p.description}</Typography>
-                                        //         </Box>
-                                        //         <Typography>Remark: {p.startTime}</Typography>
-                                        //     </Box>
-                                        //     <Box className="promotion-right">
-                                        //         <Typography>{p.points} points</Typography>
-                                        //     </Box>
-                                        // </Box>
                                         <PromotionCard promotion={promotion}></PromotionCard>
                                     ))
                                 ) : (
@@ -151,13 +139,12 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
-              
                 <Box sx={{display: "flex", flexDirection: isSmall ? "column" : "row", gap: "16px", width: "auto"}}>
                         {events.length > 0 ? (
                             events.map(event => (
-                                <Box>
+                               
                                     <EventCard event={event}></EventCard>
-                                </Box>
+                                
                             ))
                         ) : (
                             <Typography>No events found.</Typography>
