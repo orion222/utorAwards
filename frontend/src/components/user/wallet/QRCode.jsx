@@ -1,79 +1,62 @@
+import { useMemo } from "react";
 import { useUser } from "../../../context/UserContext";
 import { Stack, Box, Button, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
-import QRCodeGenerator from "qrcode";
 import FormCard from "../../common/FormCard.jsx";
 import useToast from "../../common/hooks/useToast.jsx";
+import useQRCode from "../../common/hooks/useQRcode.jsx";
 export default function QRCode() {
   const { user } = useUser();
-  const canvasRef = useRef();
-  const [qrCodeDataURL, setQrCodeDataURL] = useState("");
   const { showToast, ToastComponent } = useToast();
 
-  const qrData = {
-    userId: user?.id,
-    name: user?.name,
-    utorid: user?.utorid,
-    email: user?.email,
-    verified: user?.verified,
-    role: user?.role,
-    timestamp: new Date().toISOString(),
-  };
+  const qrData = useMemo(
+    () => ({
+      userId: user?.id,
+      name: user?.name,
+      utorid: user?.utorid,
+      email: user?.email,
+      verified: user?.verified,
+      role: user?.role,
+      timestamp: new Date().toISOString(),
+    }),
+    [
+      user?.id,
+      user?.name,
+      user?.utorid,
+      user?.email,
+      user?.verified,
+      user?.role,
+    ],
+  );
 
-  useEffect(() => {
-    if (user && canvasRef.current) {
-      generateQRCode();
-    }
-  }, [user]);
+  const {
+    canvasRef,
+    qrCodeDataURL,
+    isGenerating,
+    QRerror,
+    downloadQRCode,
+    copyQRData,
+  } = useQRCode(qrData);
 
-  const generateQRCode = async () => {
-    try {
-      const jsonString = JSON.stringify(qrData);
-
-      await QRCodeGenerator.toCanvas(canvasRef.current, jsonString, {
-        width: 256,
-        margin: 2,
-        color: {
-          dark: "#232715",
-          light: "#FCFEFB",
-        },
-      });
-
-      const dataURL = await QRCodeGenerator.toDataURL(jsonString, {
-        width: 256,
-        margin: 2,
-        color: {
-          dark: "#232715",
-          light: "#FCFEFB",
-        },
-      });
-      setQrCodeDataURL(dataURL);
-    } catch (error) {
-      console.error("Error generating QR code:", error);
-      showToast("Failed to generate QR code", "error");
-    }
-  };
+  if (QRerror) {
+    showToast("Failed to generate QR code", "error");
+  }
 
   const handleDownloadQR = () => {
-    if (qrCodeDataURL) {
-      const link = document.createElement("a");
-      link.download = `user-${user.id}-qrcode.png`;
-      link.href = qrCodeDataURL;
-      link.click();
-      showToast("QR code downloaded successfully!", "info");
+    const success = downloadQRCode(`user-${user?.id}-qrcode.png`);
+    if (success) {
+      showToast("QR code downloaded successfully!", "success");
     } else {
       showToast("QR code not ready for download", "warning");
     }
   };
 
   const handleCopyQRData = async () => {
-    try {
-      const jsonString = JSON.stringify(qrData, null, 2);
-      await navigator.clipboard.writeText(jsonString);
+    const success = await copyQRData();
+    if (success) {
       showToast("QR data copied to clipboard!", "success");
-    } catch (error) {
+    } else {
       showToast("Failed to copy QR data", "error");
     }
   };
@@ -108,6 +91,7 @@ export default function QRCode() {
             variant="contained"
             startIcon={<ContentCopyIcon />}
             onClick={handleCopyQRData}
+            disabled={isGenerating || !qrCodeDataURL}
           >
             Copy QR Data
           </Button>
@@ -116,8 +100,9 @@ export default function QRCode() {
             color="info"
             startIcon={<DownloadIcon />}
             onClick={handleDownloadQR}
+            disabled={isGenerating || !qrCodeDataURL}
           >
-            Download QR Code
+            {isGenerating ? "Generating..." : "Download QR Code"}
           </Button>
         </Stack>
 

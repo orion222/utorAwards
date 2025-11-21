@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { redeemSchema as schema } from "./constants.js";
@@ -8,19 +8,28 @@ import {
   TextField,
   Button,
   TextareaAutosize,
-  Snackbar,
-  Alert,
+  Chip,
 } from "@mui/material";
 import FormCard from "../../common/FormCard.jsx";
 import api from "../../../api/api";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
+import useToast from "../../common/hooks/useToast.jsx";
+import useQRCode from "../../common/hooks/useQRcode.jsx";
+import VerifiedIcon from "@mui/icons-material/Verified";
+import PendingIcon from "@mui/icons-material/Pending";
 
 export default function RedeemPoints() {
-  const [toast, setToast] = useState({
-    open: false,
-    message: "",
-    severity: "success",
-  });
+  const { showToast, ToastComponent } = useToast();
+  const [redemptionData, setRedemptionData] = useState(null);
+  const [status, setStatus] = useState(false);
+  const {
+    canvasRef,
+    qrCodeDataURL,
+    isGenerating,
+    QRerror: error,
+    downloadQRCode,
+    copyQRData,
+  } = useQRCode(redemptionData);
 
   const {
     control,
@@ -30,40 +39,33 @@ export default function RedeemPoints() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      userid: "",
-      amount: "",
+      points: "",
       remarks: "",
     },
   });
 
-  const showToast = (message, severity = "success") => {
-    setToast({ open: true, message, severity });
-  };
-
-  const closeToast = (_, reason) => {
-    if (reason === "clickaway") return;
-    setToast((t) => ({ ...t, open: false }));
-  };
-
   const onSubmit = async (data) => {
-    const { userid, amount, remarks } = data;
+    const { points, remarks } = data;
 
     const payload = {
-      type: "transfer",
-      amount: Number(amount),
+      type: "redemption",
+      amount: Number(points),
       remark: remarks || "",
     };
 
     try {
-      const response = await api.post(`/users/${userid}/transactions`, payload);
-      showToast("Redemption successful", "success");
-      reset();
+      const response = await api.post(`/users/me/transactions`, payload);
+      showToast("Redemption transaction created", "success");
+      setRedemptionData(response.data);
+      setStatus(response.data.processedBy !== null);
+      console.log(response.data);
+      showToast("Created redemption!", "success");
     } catch (error) {
       console.log(error);
       const msg =
         error.response?.data?.error ||
         error.response?.data?.message ||
-        "Transfer failed";
+        "Redemption failed";
       showToast(msg, "error");
     }
   };
@@ -82,14 +84,14 @@ export default function RedeemPoints() {
               </Box>
 
               <Controller
-                name="userid"
+                name="points"
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
                     label="Points to redeem"
                     variant="outlined"
-                    error={!!errors.userid}
+                    error={!!errors.points}
                     helperText={errors.points?.message}
                   />
                 )}
@@ -120,28 +122,56 @@ export default function RedeemPoints() {
                 type="submit"
                 variant="contained"
                 sx={{ mt: 2 }}
-                disabled={isSubmitting}
+                disabled={isSubmitting || isGenerating}
               >
-                {isSubmitting ? "Transferring..." : "Transfer"}
+                {isSubmitting || isGenerating
+                  ? "Generating..."
+                  : "Generate QR Code"}
               </Button>
+              {redemptionData && (
+                <Stack spacing={2} mt={4} alignItems="center">
+                  <Box
+                    sx={{
+                      border: "2px solid #D9DCCF",
+                      borderRadius: 2,
+                      p: 2,
+                      backgroundColor: "#FCFEFB",
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <canvas ref={canvasRef} />
+                  </Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      alignItems: "center",
+                    }}
+                  >
+                    {status ? (
+                      <Chip
+                        icon={<VerifiedIcon />}
+                        label="PROCESSED"
+                        color="success"
+                        sx={{ color: "white" }}
+                      />
+                    ) : (
+                      <Chip
+                        icon={<PendingIcon />}
+                        label="PENDING"
+                        color="info"
+                        sx={{ color: "white" }}
+                      />
+                    )}
+                    Created at{" "}
+                    {new Date(redemptionData.createdAt).toLocaleString("")}
+                  </Box>
+                </Stack>
+              )}
             </Stack>
           </form>
-          <Snackbar
-            open={toast.open}
-            autoHideDuration={2500}
-            onClose={closeToast}
-            anchorOrigin={{ vertical: "top", horizontal: "center" }}
-            sx={{ mt: 8 }}
-          >
-            <Alert
-              onClose={closeToast}
-              severity={toast.severity}
-              variant="filled"
-              sx={{ width: "100%" }}
-            >
-              {toast.message}
-            </Alert>
-          </Snackbar>
+          {ToastComponent}
         </>
       }
     />
