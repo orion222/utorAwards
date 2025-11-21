@@ -19,6 +19,11 @@ function AppLayout() {
       navigate("/login");
   }, [cookies.token]);
 
+  useEffect(() => {
+    if (isMobileWidth)
+      setIsNavOpen(false);
+  }, [isMobileWidth]);
+
   // app layout reads user from stored state and does not rerender like child elements like dashboard
   const navItems = useMemo(() => {
     if (!user) return [];
