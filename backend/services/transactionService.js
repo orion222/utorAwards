@@ -199,11 +199,8 @@ class TransactionService {
       spent: 0,
       amount,
       targetUser: { connect: { id: creatorId } },
+      remark: remark ?? ""
     };
-
-    if (remark) {
-      dataFields.remark = remark;
-    }
 
     const newTransaction = await prisma.transaction.create({
       data: dataFields,

@@ -1,10 +1,14 @@
 import { useState } from "react";
-import { IconButton, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
-import { CircleUserRound, User, Settings, LogOut, Bell } from "lucide-react";
+import { Menu, MenuItem, ListItemIcon, ListItemText, Avatar } from "@mui/material";
+import { User, Settings, LogOut, Bell } from "lucide-react";
+import { useUser } from "../../../context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
+  const { user, logout } = useUser();
+  const navigate = useNavigate();
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -31,15 +35,13 @@ export default function Profile() {
   };
 
   const handleLogout = () => {
-    // e.g. logout();
+    logout();
     handleClose();
   };
 
   return (
     <>
-      <IconButton onClick={handleOpen}>
-        <CircleUserRound />
-      </IconButton>
+      <Avatar src={user?.avatarURL} alt="Profile photo" sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen} />
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
