@@ -30,6 +30,7 @@ export default function Navbar({ isOpen, isMobileWidth, navItems }) {
       sx={{
         width: sidebarWidth,
         backgroundColor: "#E8EBDF",
+        borderRight: "1px solid #ccc",
         padding: 1,
         transition: "width 0.3s",
         mt: 8,
