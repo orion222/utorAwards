@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
-import { Container, Typography, Box, FormControl, InputLabel, OutlinedInput, FormHelperText, IconButton, Button, Alert, Link } from "@mui/material";
+import { Container, Typography, Box, useMediaQuery, FormControl, InputLabel, OutlinedInput, FormHelperText, IconButton, Button, Alert, Link } from "@mui/material";
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import WalletIcon from '@mui/icons-material/Wallet';
 import WavingHandIcon from '@mui/icons-material/WavingHand';
 import theme from '../../theme.js';
 import EventCard from "../../components/common/EventCard";
+import PromotionCard from "../../components/common/PromotionCard";
+import TransactionItemCard from "../../components/common/TransactionItemCard.jsx";
 import { TheatersOutlined } from "@mui/icons-material";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
@@ -73,7 +75,8 @@ function Dashboard() {
           }).format(new Date(isoDate));
           return formattedDate;
     }
-    // console.log(promotions);
+    const isSmall = useMediaQuery("(max-width: 670px)");
+    console.log(promotions);
     return <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
             <Typography sx={{fontSize: 14}}>
@@ -100,19 +103,8 @@ function Dashboard() {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: "16px" }}>
                     {transactions.length > 0 ? (
-                                transactions.map(t => (
-                                    <Box>
-                                        <Box>
-                                            <Box>
-                                                <Typography>{t.type}</Typography>
-                                                <Typography>{t.processed ? "Processed" : "Unproccessed"}</Typography>
-                                            </Box>
-                                            <Typography>Remark: {t.remark}</Typography>
-                                        </Box>
-                                        <Box>
-                                            <Typography>{t.amount ? (t.amount) : (t.earned)}</Typography>
-                                        </Box>
-                                    </Box>
+                                transactions.map(transaction => (
+                                    <TransactionItemCard transaction={transaction}/>
                                 ))
                             ) : (
                                 <Typography>No transactions found.</Typography>
@@ -130,19 +122,20 @@ function Dashboard() {
                 </Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'row', gap: "16px" }}>
                     {promotions.length > 0 ? (
-                                    promotions.map(p => (
-                                        <Box className="promotion-card">
-                                            <Box className="promotion-left">
-                                                <Box className="tag-container">
-                                                    <Typography>{p.name}</Typography>
-                                                    <Typography>{p.description}</Typography>
-                                                </Box>
-                                                <Typography>Remark: {p.startTime}</Typography>
-                                            </Box>
-                                            <Box className="promotion-right">
-                                                <Typography>{p.points} points</Typography>
-                                            </Box>
-                                        </Box>
+                                    promotions.map(promotion => (
+                                        // <Box className="promotion-card">
+                                        //     <Box className="promotion-left">
+                                        //         <Box className="tag-container">
+                                        //             <Typography>{p.name}</Typography>
+                                        //             <Typography>{p.description}</Typography>
+                                        //         </Box>
+                                        //         <Typography>Remark: {p.startTime}</Typography>
+                                        //     </Box>
+                                        //     <Box className="promotion-right">
+                                        //         <Typography>{p.points} points</Typography>
+                                        //     </Box>
+                                        // </Box>
+                                        <PromotionCard promotion={promotion}></PromotionCard>
                                     ))
                                 ) : (
                                     <Typography>No promotions found.</Typography>
@@ -158,58 +151,19 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
-                <Box sx={{display: "flex", flexDirection: "row", gap: "16px"}}>
+              
+                <Box sx={{display: "flex", flexDirection: isSmall ? "column" : "row", gap: "16px", width: "auto"}}>
                         {events.length > 0 ? (
-                            events.map(e => (
+                            events.map(event => (
                                 <Box>
-                                    <EventCard>
-                                        <Box sx={{display: "flex", flexDirection: "column", width: "auto", justifyContent: "space-between"}}> {/* left side */}
-                                            <Box sx={{display: "flex", flexDirection: "column", gap: "4px"}}>
-                                                <Typography sx={{fontSize: 20, fontWeight:"bold"}}>
-                                                    {e.name}
-                                                </Typography>
-                                                <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                                                    <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                                                    <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
-                                                        {formatDate(e.startTime)} - {formatDate(e.endTime)}
-                                                    </Typography>
-                                                </Box>
-                                                <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                                                    <LocationPinIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                                                    <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>  
-                                                        {e.location}
-                                                    </Typography>
-                                                </Box>
-                                                <Typography sx={{fontSize: 11, width: "260px", height: "auto"}}>
-                                                    {e.description}
-                                                </Typography>
-                                            </Box>
-                                            <Button variant="contained" sx={{fontSize: 12,
-                                                padding: "8px", 
-                                                backgroundColor: theme.palette.secondary.main,
-                                                borderRadius: "8px",
-                                                width: "fit-content"}}>      
-                                                View Details
-                                            </Button>
-                                        </Box>
-                                        <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> {/* right side */}
-                                            <Typography sx={{fontSize: 20, fontWeight: "bold"}}>
-                                                {e.points} pts
-                                            </Typography>
-                                            <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                                                <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                                                <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
-                                                    {e.numGuests}/{e.capacity}
-                                                </Typography>
-                                            </Box>
-                                        </Box>
-                                    </EventCard>
+                                    <EventCard event={event}></EventCard>
                                 </Box>
                             ))
                         ) : (
                             <Typography>No events found.</Typography>
                         )}        
                 </Box>
+               
                 <Link href="events" onClick={viewEvents} underline='none' sx={{color: theme.palette.text.disabled}}>
                     (View all events)
                 </Link>
