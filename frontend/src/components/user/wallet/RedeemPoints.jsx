@@ -70,6 +70,13 @@ export default function RedeemPoints() {
     }
   };
 
+  function convertToMDY(dateString) {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    });
+  }
   return (
     <FormCard
       children={
@@ -164,8 +171,7 @@ export default function RedeemPoints() {
                         sx={{ color: "white" }}
                       />
                     )}
-                    Created at{" "}
-                    {new Date(redemptionData.createdAt).toLocaleString("")}
+                    Created at {convertToMDY(redemptionData.createdAt)}
                   </Box>
                 </Stack>
               )}

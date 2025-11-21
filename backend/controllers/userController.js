@@ -224,6 +224,7 @@ async function createRedemption(req, res) {
       amount: newTransaction.amount,
       remark: newTransaction.remark,
       createdBy: newTransaction.user.utorid,
+      createdAt: newTransaction.createdAt,
     };
     res.status(201).json(response);
   } catch (error) {

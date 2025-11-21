@@ -199,7 +199,7 @@ class TransactionService {
       spent: 0,
       amount,
       targetUser: { connect: { id: creatorId } },
-      remark: remark ?? ""
+      remark: remark ?? "",
     };
 
     const newTransaction = await prisma.transaction.create({
@@ -212,6 +212,7 @@ class TransactionService {
         processedByUser: { select: { utorid: true } },
         amount: true,
         remark: true,
+        createdAt: true,
       },
     });
 
@@ -234,7 +235,7 @@ class TransactionService {
 
       if (!sender || !recipient)
         throw new BadRequestError(
-          `Bad Request: User with given userId ${senderId ? !sender : recipientId} does not exist`,
+          `Bad Request: User with given userId ${senderId ? recipientId : senderId} does not exist`,
         );
 
       if (sender.points < amount)
