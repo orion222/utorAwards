@@ -12,6 +12,7 @@ function Header({ isNavOpen, onToggleNav }) {
         backgroundColor: "#E8EBDF",
         color: "#232715",
         boxSizing: "border-box",
+        borderBottom: "1px solid #ccc",
         zIndex: (theme) => theme.zIndex.drawer + 1,
       }}
     >
@@ -37,7 +38,6 @@ function Header({ isNavOpen, onToggleNav }) {
           >
             {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
           </IconButton>
-
           <Typography
             variant="h6"
             sx={{
