@@ -36,6 +36,7 @@ export default function Navbar({ isOpen, isMobileWidth, navItems }) {
         mt: 8,
         overflowY: "auto",
         overflowX: "hidden",
+        flexShrink: 0,
       }}
     >
       <MenuList sx={{ p: 0 }}>
