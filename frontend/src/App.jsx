@@ -1,11 +1,14 @@
 import "./App.css";
+import { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 
 import ProtectedClearanceRoute from "./components/routes/ProtectedClearanceRoute";
 import AppLayout from "./components/layout/AppLayout";
-import Dashboard from "./pages/Dashboard";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+// import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
@@ -22,8 +25,8 @@ function App() {
           <Route index element={<ProtectedAuthRoute />} />
           <Route path="login" element={<Login />} />
           <Route path="components" element={<ComponentLibrary />}></Route>
-          <Route path="forgot-password" element={ <ForgotPassword /> } />
-          <Route path="reset-password" element={ <ResetPassword /> } />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
 
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
@@ -74,4 +77,4 @@ function App() {
   );
 }
 
-export default App
+export default App;

@@ -1,8 +1,8 @@
-import { Outlet } from "react-router-dom";
-import { useState, useMemo } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect, Suspense } from "react";
 import Header from "../Header";
 import Navbar from "../Navbar";
-import { Box, useMediaQuery } from "@mui/material";
+import { Box, useMediaQuery, CircularProgress } from "@mui/material";
 import { useUser } from "../../../context/UserContext";
 import { getNavForRole } from "../Navbar/NavbarNavConfig";
 
@@ -10,15 +10,31 @@ import { getNavForRole } from "../Navbar/NavbarNavConfig";
 function AppLayout() {
   const isMobileWidth = useMediaQuery('(max-width:800px)');
   const [isNavOpen, setIsNavOpen] = useState(true);
-  const [selectedItem, setSelectedItem] = useState("home");
+  const navigate = useNavigate();
 
-  const { user } = useUser();
+  const { user, cookies } = useUser();
+
+  useEffect(() => {
+    if (!cookies.token) 
+      navigate("/login");
+  }, [cookies.token]);
+
+  useEffect(() => {
+    if (isMobileWidth)
+      setIsNavOpen(false);
+  }, [isMobileWidth]);
 
   // app layout reads user from stored state and does not rerender like child elements like dashboard
   const navItems = useMemo(() => {
     if (!user) return [];
     return getNavForRole(user.role, user.isOrganizer);
   }, [user]);
+
+  const loading = (
+    <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+      <CircularProgress />
+    </Box>
+  );
 
   return (
     <Box
@@ -27,12 +43,14 @@ function AppLayout() {
       }}
     >
       <Header isNavOpen={isNavOpen} onToggleNav={() => setIsNavOpen(!isNavOpen)} />
-      <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
-        <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} selectedItem={selectedItem} setSelectedItem={setSelectedItem} navItems={navItems} />
-        <Box mt={8} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 8} width="100%">
-          <Outlet />
+        <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
+          <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} navItems={navItems} />
+          <Box mt={8} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 6} width="100%" height="100%">
+            <Suspense fallback={loading}>
+              <Outlet />
+            </Suspense>
+          </Box>
         </Box>
-      </Box>
     </Box>
   );
 }

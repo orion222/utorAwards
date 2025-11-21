@@ -199,11 +199,8 @@ class TransactionService {
       spent: 0,
       amount,
       targetUser: { connect: { id: creatorId } },
+      remark: remark ?? ""
     };
-
-    if (remark) {
-      dataFields.remark = remark;
-    }
 
     const newTransaction = await prisma.transaction.create({
       data: dataFields,
@@ -261,8 +258,8 @@ class TransactionService {
           remark,
         },
         include: {
-          user: { select: { utorid: true } },
-          targetUser: { select: { utorid: true } },
+          user: true,
+          targetUser: true,
         },
       });
 
@@ -277,8 +274,8 @@ class TransactionService {
           remark,
         },
         include: {
-          user: { select: { utorid: true } },
-          targetUser: { select: { utorid: true } },
+          user: true,
+          targetUser: true,
         },
       });
 
@@ -549,10 +546,10 @@ class TransactionService {
     const skip = (page - 1) * take;
 
     const include = {
-      targetUser: { select: { utorid: true } },
-      user: { select: { utorid: true } },
+      targetUser: true,
+      user: true,
       promotions: { select: { id: true } },
-      processedByUser: { select: { utorid: true } },
+      processedByUser: true,
     };
 
     const [count, queryResults] = await prisma.$transaction([
