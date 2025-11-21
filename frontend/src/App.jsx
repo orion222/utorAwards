@@ -1,11 +1,14 @@
 import "./App.css";
+import { lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme";
 
 import ProtectedClearanceRoute from "./components/routes/ProtectedClearanceRoute";
 import AppLayout from "./components/layout/AppLayout";
-import Dashboard from "./pages/Dashboard";
+
+const Dashboard = lazy(() => import("./pages/Dashboard"))
+// import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
@@ -13,6 +16,8 @@ import ComponentLibrary from "./components/routes/ComponentLibrary";
 import Wallet from "./components/user/wallet";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import PastTransactions from "./pages/transactions/PastTransactions";
+
 
 function App() {
   return (
@@ -29,6 +34,7 @@ function App() {
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
               <Route path="dashboard" element={<Dashboard />} />
+              <Route path="past-transactions" element={<PastTransactions />} />
             </Route>
 
             {/* ROUTES FOR CASHIERS */}

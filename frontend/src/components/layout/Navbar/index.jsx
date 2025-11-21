@@ -12,7 +12,7 @@ import {
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
-export default function Navbar({ isOpen, isMobileWidth, navItems }) {
+export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }) {
   const [expandedItems, setExpandedItems] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
