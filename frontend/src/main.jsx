@@ -4,9 +4,15 @@ import "./styles/theme.css";
 import "./styles/utils.css";
 import "./index.css";
 import App from "./App.jsx";
+import { CookiesProvider } from "react-cookie";
+import { UserProvider } from "./context/UserContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <App />
+    <CookiesProvider>
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </CookiesProvider>
   </StrictMode>,
 );

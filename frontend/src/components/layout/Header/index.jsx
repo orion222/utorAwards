@@ -1,29 +1,59 @@
-import './style.css';
-import { useState } from 'react';
-import Box from "@mui/material/Box";
-import {PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Box, IconButton, Typography, AppBar, Toolbar } from '@mui/material';
+import {PanelLeftClose, PanelLeftOpen} from 'lucide-react';
 import Profile from '../Profile';
 
 function Header({ isNavOpen, onToggleNav }) {
-  // const [isNavOpen, setIsNavOpen] = useState(true);
 
+  return (
+    <AppBar
+      position="fixed"
+      elevation={0}
+      sx={{
+        backgroundColor: "#E8EBDF",
+        color: "#232715",
+        boxSizing: "border-box",
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+      }}
+    >
+      <Toolbar
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <IconButton
+            onClick={onToggleNav}
+            disableRipple
+            sx={{
+              background: "none",
+              border: "none",
+              padding: 0,
+              mr: 1,
+              color: "#232715",
+              "&:hover": { background: "transparent" },
+            }}
+          >
+            {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
+          </IconButton>
 
-  // const toggleNav = () => {
-  //   setIsNavOpen(!isNavOpen);
-  // }
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 600,
+              color: "#232715",
+              userSelect: "none",
+            }}
+          >
+            UTORAwards
+          </Typography>
+        </Box>
 
-  return <>
-    <header>
-      <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", height: "5vh" }} className="left-container">
-        <button className="toggle-button" onClick={onToggleNav}>
-          {isNavOpen ? <PanelLeftClose /> : <PanelLeftOpen />}
-        </button>
-        <Box className="app-title">UTORAwards</Box>
-      </Box>
-      
-      <Profile/>
-    </header>   
-  </>
+        <Profile />
+      </Toolbar>
+    </AppBar>
+  );
 }
 
 export default Header;

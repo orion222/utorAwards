@@ -37,7 +37,8 @@ export const UserProvider = ({ children }) => {
           return;
         }
 
-        setUser({ id: decoded.id, role: decoded.role });
+        const res = await api.get("/users/me");
+        setUser(res.data);
       } catch (error) {
         console.warn("Invalid Token");
         logout();
@@ -47,7 +48,7 @@ export const UserProvider = ({ children }) => {
     };
 
     checkUserLoggedIn();
-  }, [cookies.token]);
+  }, []);
 
   const login = (tokenValue, user) => {
     setCookie("token", tokenValue, {
@@ -74,7 +75,6 @@ export const UserProvider = ({ children }) => {
         ) {
           logout();
         }
-        console.log("test");
         return Promise.reject(error);
       },
     );
