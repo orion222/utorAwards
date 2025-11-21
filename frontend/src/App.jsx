@@ -7,7 +7,7 @@ import theme from "./theme";
 import ProtectedClearanceRoute from "./components/routes/ProtectedClearanceRoute";
 import AppLayout from "./components/layout/AppLayout";
 
-const Dashboard = lazy(() => import("./pages/Dashboard"))
+const Dashboard = lazy(() => import("./pages/Dashboard"));
 // import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
@@ -16,8 +16,6 @@ import ComponentLibrary from "./components/routes/ComponentLibrary";
 import Wallet from "./components/user/wallet";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
-import PastTransactions from "./pages/transactions/PastTransactions";
-
 
 function App() {
   return (
@@ -27,14 +25,13 @@ function App() {
           <Route index element={<ProtectedAuthRoute />} />
           <Route path="login" element={<Login />} />
           <Route path="components" element={<ComponentLibrary />}></Route>
-          <Route path="forgot-password" element={ <ForgotPassword /> } />
-          <Route path="reset-password" element={ <ResetPassword /> } />
+          <Route path="forgot-password" element={<ForgotPassword />} />
+          <Route path="reset-password" element={<ResetPassword />} />
 
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
               <Route path="dashboard" element={<Dashboard />} />
-              <Route path="past-transactions" element={<PastTransactions />} />
             </Route>
 
             {/* ROUTES FOR CASHIERS */}
@@ -80,4 +77,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
