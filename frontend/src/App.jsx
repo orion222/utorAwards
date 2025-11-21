@@ -9,6 +9,9 @@ import AppLayout from "./components/layout/AppLayout";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 // import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions"
+import Events from "./pages/Events"
+import Promotions from "./pages/Promotions"
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
