@@ -241,8 +241,6 @@ async function retrieveTransactions(req, res) {
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
 
-  console.log(JSON.stringify(req.query));
-
   let promotionIdNum, relatedIdNum, amountNum;
 
   if (promotionId) {

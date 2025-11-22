@@ -5,59 +5,49 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
 import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import api from "../../api/api.js";
 
-function FilterableList({ apiEndpoint, filterConfig, itemsPerPage = 10, children}) {
+function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, children}) {
     const [searchInput, setSearchInput] = useState("");
     const [showFilters, setShowFilters] = useState(false);
     const [tempFilters, setTempFilters] = useState({});
     const [appliedFilters, setAppliedFilters] = useState({});
 
-    // const [data, setData] = useState([]);
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
 
-    const [showLeftArrow, setShowLeftArrow] = useState(false);
-    const [showRightArrow, setShowRightArrow] = useState(false);
+    const totalPages = Math.ceil(totalCount / limit);
 
-    const totalPages = Math.ceil(totalCount / itemsPerPage);
-
-    const scrollRef = useRef(null);
     const isMobileWidth = useMediaQuery('(max-width:800px)');
 
+    const fetchData = async () => {
+        const params = new URLSearchParams({ ...appliedFilters, page, limit });
+        console.log(`${apiEndpoint}?${params}`);
+        try {
+            const { data } = await api.get(`${apiEndpoint}?${params}`);
+            console.log(data)
+            return data;
+        } catch (error) {
+            console.error(error);
+        }
+        return null;
+    }
     const { isLoading, error, data } = useQuery({
-        queryKey: [],
-        queryFn: () => fetchData(appliedFilters, page),
+        queryKey: [queryKey, appliedFilters, page],
+        queryFn: fetchData,
+        retry: 1,
     });
 
-    const fetchData = async (appliedFilters, page) => {
-
-    }
-
-    const checkScroll = () => {
-        if (scrollRef.current) {
-            setShowLeftArrow(scrollRef.current.scrollLeft > 0);
-            setShowRightArrow(scrollRef.current.scrollLeft < scrollRef.current.scrollWidth - scrollRef.current.clientWidth - 1);
-        }
-    };
-
-    useEffect(() => {
-        checkScroll();
-        window.addEventListener("resize", checkScroll);
-        return () => {
-            window.removeEventListener("resize", checkScroll);
-        }
-    }, [filterConfig, showFilters]);
-
-    const scroll = (direction) => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollBy({ left: direction * 300, behaviour: "smooth" });
-        }
-    };
-
     const applyFilters = () => {
-        const newFilters = {...tempFilters};
+        const newFilters = Object.fromEntries(
+            Object.entries(tempFilters).map(([key, value]) => [
+                key,
+                typeof value === "string" ? value.toLowerCase() : value
+            ])
+        );
+
         if (searchInput.trim()) {
-            newFilters.name = searchInput;
+            newFilters.search = searchInput;
         }
         setAppliedFilters(newFilters);
         setPage(1);
@@ -82,7 +72,7 @@ function FilterableList({ apiEndpoint, filterConfig, itemsPerPage = 10, children
         setAppliedFilters(newApplied);
         setPage(1);
 
-        if (key === "name") {
+        if (key === "search") {
             setSearchInput("");
         }
         else {
@@ -95,7 +85,14 @@ function FilterableList({ apiEndpoint, filterConfig, itemsPerPage = 10, children
     return (
         <Box>
             {/* actual search bar + btn */}
-            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+            <Box
+                sx={{
+                    display: 'flex',
+                    gap: 1,
+                    mb: 2,
+                    flexWrap: 'nowrap',
+                }}
+            >
                 <TextField 
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
@@ -110,7 +107,9 @@ function FilterableList({ apiEndpoint, filterConfig, itemsPerPage = 10, children
                             )                            
                         }
                     }}
-                    fullWidth={isMobileWidth}
+                    sx={{
+                        width: isMobileWidth ? "100%" : "50%",
+                    }}
                 />
 
                 <Button
@@ -124,119 +123,81 @@ function FilterableList({ apiEndpoint, filterConfig, itemsPerPage = 10, children
             </Box>
 
             {/* filter options */}
-            <Collapse in={showFilters}>
-                <Box sx={{ mb: 2, display: "flex", gap: 1, alignItems: isMobileWidth ? "stretch" : "center", flexDirection: isMobileWidth ? "column" : "row", minWidth: 0 }}>
-                    <Box sx={{ position: "relative" }}>
-                        {showLeftArrow && (
-                            <IconButton
-                                onClick={() => scroll(-1)}
-                                size="small"
-                                sx={{
-                                    position: "absolute",
-                                    left: 0,
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    zIndex: 2,
-                                    bgcolor: "white",
-                                    boxShadow: 2,
-                                    "&:hover": { bgcolor: "grey.100" }
-                                }}
-                            >
-                                <ChevronLeftIcon />
-                            </IconButton>
-                        )}
-
+            <Collapse in={showFilters} sx={{ maxWidth: "100%", minWidth: 0,  }}>
+                <Box sx={{ mb: 1.5 }}>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            gap: 1,
+                            alignItems: isMobileWidth ? "stretch" : "center",
+                            flexDirection: isMobileWidth ? "column" : "row",
+                            minWidth: 0,
+                            width: "100%",
+                        }}
+                    >
                         <Box
-                            ref={scrollRef}
-                            onScroll={checkScroll}
                             sx={{
                                 display: "flex",
+                                flexWrap: "wrap",
                                 gap: 1,
+                                width: "100%",
                                 alignItems: "center",
-                                overflowX: "auto",
-                                maxWidth: "100%",
-                                scrollbarWidth: "none",
-                                "&::-webkit-scrollbar": { display: "none" },
-                                pt: 1,
-                                pl: showLeftArrow ? 5 : 0,
-                                pr: showRightArrow ? 5 : 0,
-                                transition: "padding 0.2s",
-                                flexShrink: 1,
-                                minWidth: 0,
-                                maxWidth: "100%",
                             }}
                         >
-                            {Object.entries(filterConfig).map(([key, config]) => config.type === "select" ? (
-                                <FormControl
-                                    key={key}
-                                    size="small"
-                                    sx={{ minWidth: 175, flexShrink: 0 }}
-                                >
-                                    <InputLabel>{config.label}</InputLabel>
-                                    <Select
-                                    value={tempFilters[key] || ""}
-                                    onChange={e => updateTempFilter(key, e.target.value)}
-                                    label={config.label}
-                                    >
-                                    <MenuItem value="">All</MenuItem>
-                                    {config.options.map(option => (
-                                        <MenuItem key={option} value={option}>
-                                        {option}
-                                        </MenuItem>
-                                    ))}
-                                    </Select>
-                                </FormControl>
-                                ) : (
-                                <TextField
-                                    key={key}
-                                    label={config.label}
-                                    value={tempFilters[key] || ""}
-                                    onChange={e => updateTempFilter(key, e.target.value)}
-                                    onKeyDown={e => e.key === "Enter" && applyFilters()}
-                                    size="small"
-                                    sx={{ minWidth: 150, flexShrink: 0 }}
-                                />
-                                )
-                            )}
-                            </Box>
+                            {Object.entries(filterConfig).map(([key, config]) => {
+                                const dependsValue = config.dependsOn ? tempFilters[config.dependsOn] : null;
+                                const isDisabled = config.dependsOn && !dependsValue;
 
-                        {showRightArrow && (
-                            <IconButton
-                                onClick={() => scroll(1)}
+                                if (config.type === "text") {
+                                    return (
+                                        <TextField
+                                            key={key}
+                                            label={config.label}
+                                            value={tempFilters[key] || ""}
+                                            onChange={e => updateTempFilter(key, e.target.value)}
+                                            size="small"
+                                            disabled={isDisabled} // depends on another field
+                                        />
+                                    );
+                                }
+
+                                if (config.type === "select") {
+                                    return (
+                                        <FormControl key={key} size="small" sx={{ width: 130 }}>
+                                            <InputLabel>{config.label}</InputLabel>
+                                            <Select
+                                                value={tempFilters[key] || ""}
+                                                onChange={e => updateTempFilter(key, e.target.value)}
+                                                label={config.label}
+                                                disabled={isDisabled} // depends on another field
+                                            >
+                                                <MenuItem value="">All</MenuItem>
+                                                {config.options.map(opt => (
+                                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                                ))}
+                                            </Select>
+                                        </FormControl>
+                                    );
+                                }
+                            })}
+
+                            <Button
+                                variant="contained"
+                                onClick={applyFilters}
                                 size="small"
                                 sx={{
-                                    position: "absolute",
-                                    right: 0,
-                                    top: "50%",
-                                    transform: "translateY(-50%)",
-                                    zIndex: 2,
-                                    bgcolor: "white",
-                                    boxShadow: 2,
-                                    "&:hover": { bgcolor: "grey.100" }
+                                    flex: "0 0 auto",
+                                    minWidth: 120,
+                                    height: 37
                                 }}
                             >
-                                <ChevronRightIcon />
-                            </IconButton>
-                        )}
+                                Apply
+                            </Button>
+                        </Box>
                     </Box>
-                    
-                    <Box sx={{ pt: 1 }}>
-                        <Button
-                            variant="contained"
-                            onClick={applyFilters}
-                            size="small"
-                            sx={{
-                                height: 40,
-                            }}
-                            fullWidth={true}
-                        >
-                            Apply Filters
-                        </Button>                        
-                    </Box>
-
                 </Box>
             </Collapse>
-            
+
             {/* Small chips for filters */}
             <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
                 {Object.entries(appliedFilters).map(([key, value]) => (
@@ -250,7 +211,7 @@ function FilterableList({ apiEndpoint, filterConfig, itemsPerPage = 10, children
             </Box>
             
             {/* actual list content */}
-            {children({ data, isLoading, totalCount })}
+            {children({ data, isLoading })}
             
             {totalPages > 1 && (
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
