@@ -241,6 +241,20 @@ async function retrieveTransactions(req, res) {
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
 
+  console.log(JSON.stringify(req.query));
+
+  let promotionIdNum, relatedIdNum, amountNum;
+
+  if (promotionId) {
+    promotionIdNum = parseInt(promotionId, 10);
+  }
+  if (relatedId) {
+    relatedIdNum = parseInt(relatedId, 10);
+  }
+  if (amount) {
+    amountNum = parseInt(amount, 10);
+  }
+
   const { name } = req.user;
 
   try {
@@ -248,10 +262,10 @@ async function retrieveTransactions(req, res) {
       name,
       null,
       null,
-      promotionId,
+      promotionIdNum,
       type,
-      relatedId,
-      amount,
+      relatedIdNum,
+      amountNum,
       operator,
       pageNum,
       limitNum,
