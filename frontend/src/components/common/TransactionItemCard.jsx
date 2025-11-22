@@ -124,7 +124,6 @@ function TransactionItemCard({ transaction }) {
                 width: "100%",
                 maxWidth: "unset",
                 flex: 1,
-                m: 2,
                 borderRadius: 3,
                 position: "relative",
                 overflow: "visible",

@@ -67,15 +67,6 @@ function Dashboard() {
         navigate("/events");
     };
 
-    const formatDate = (isoDate) => {
-        const formattedDate = new Intl.DateTimeFormat('en-US', {
-            month: 'short', // "Nov"
-            day: '2-digit', // "25"
-            year: 'numeric' // "2025"
-          }).format(new Date(isoDate));
-          return formattedDate;
-    }
-
     const isSmall = useMediaQuery("(max-width: 670px)");
 
     return <Box sx={{bgcolor: theme.palette.background.default}}>
@@ -104,7 +95,7 @@ function Dashboard() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSmall ? "4px" : "8px" }}>
                     {transactions.length > 0 ? (
                                 transactions.map(transaction => (
-                                    <TransactionItemCard transaction={transaction}/>
+                                    <TransactionItemCard transaction={transaction}></TransactionItemCard>
                                 ))
                             ) : (
                                 <Typography>No transactions found.</Typography>

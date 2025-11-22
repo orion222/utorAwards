@@ -4,10 +4,13 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { TheatersOutlined } from "@mui/icons-material";
+import { useState } from "react";
 
 function EventCard({ event }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
     const { name, description, location, startTime, endTime, capacity, numGuests, points} = event;
+    const [viewDetails, setViewDetails] = useState(false);
+
     const typeToColour = {
         "purchase": "#7CD93A",
         "redemption": "#F59B66",
@@ -83,23 +86,11 @@ function EventCard({ event }) {
                                 padding: "8px", 
                                 backgroundColor: theme.palette.secondary.main,
                                 borderRadius: "8px",
-                                width: "fit-content"}}>      
+                                width: "fit-content"}}
+                                onClick={() => setViewDetails(true)}>      
                                 View Details
                         </Button>
                     </Box>
-                   
-                
-                {/* <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> 
-                    <Typography sx={{fontSize: 20, fontWeight: "bold"}}>
-                        {points} pts
-                    </Typography>
-                    <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                        <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                        <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
-                            {numGuests}/{capacity}
-                        </Typography>
-                    </Box>
-                </Box>  */}
             </Box>
         
         )
@@ -141,7 +132,8 @@ function EventCard({ event }) {
                         padding: "8px", 
                         backgroundColor: theme.palette.secondary.main,
                         borderRadius: "8px",
-                        width: "fit-content"}}>      
+                        width: "fit-content"}}
+                        onClick={() => setViewDetails(true)}>      
                         View Details
                     </Button>
                 </Box>
