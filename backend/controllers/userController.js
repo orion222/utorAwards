@@ -307,6 +307,26 @@ async function retrieveEvents(req, res) {
   }
 }
 
+async function retrieveEvents(req, res) {
+  if (!validRetrieveBody(req))
+    return res.status(400).json({ error: "Bad Request" });
+
+  const { name, location, started, ended, page, limit } =
+    req.query;
+
+  const pageNum = page ? parseInt(page, 10) : 1;
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  const { id } = req.user;
+
+  try {
+    const eventData = await EventService.retrieveEvents(id, name, location, started, ended, pageNum, limitNum);
+    res.status(200).json({ count: eventData.count, results: eventData.results });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+}
+
 async function createTransfer(req, res) {
   const { type, amount, remark } = req.body;
   const { id: senderId } = req.user;

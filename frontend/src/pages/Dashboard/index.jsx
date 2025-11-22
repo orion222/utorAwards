@@ -37,7 +37,6 @@ function Dashboard() {
             const { data: promotionData } = await api.get("/promotions", {
                 params: {limit: 3}
             });
-
             setPromotions(promotionData.results);
             setEvents(eventData.results);
             setTransactions(transactionData.results);
@@ -69,7 +68,7 @@ function Dashboard() {
 
     const isSmall = useMediaQuery("(max-width: 670px)");
 
-    return <Box sx={{bgcolor: theme.palette.background.default}}>
+    return (<Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
             <Typography sx={{fontSize: 14}}>
                     <WavingHandIcon sx={{fontSize: 14, paddingRight: "8px"}}/>
@@ -147,7 +146,8 @@ function Dashboard() {
                 </Link>
             </Box>
         </Box>
-    </Box>;
+    </Box>)
 }
+
 
 export default Dashboard;
