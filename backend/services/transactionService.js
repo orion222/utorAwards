@@ -582,6 +582,43 @@ class TransactionService {
     return { count, queryResults };
   }
 
+  static async retrieveUserTransactions(userId, type, relatedId, promotionId, amount, operator, page = 1, limit = 10) {
+    const whereFields = {};
+
+    if (!userId) throw new BadRequestError("Must include user id");
+    whereFields.userId = userId;
+
+    if ((!type && relatedId) || (amount && !operator) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
+
+    if (type) whereFields.type = type;
+    if (relatedId) whereFields.relatedId = relatedId;
+    if (promotionId) whereFields.promotions = { some: { id: promotionId } };
+    if (amount && operator) whereFields.amount = { [operator]: amount };
+
+    const [count, results] = await prisma.$transaction([
+        prisma.transaction.count({ where: whereFields }),
+        prisma.transaction.findMany({
+          where: whereFields,
+          select: {
+            id: true,
+            type: true,
+            spent: true,
+            amount: true,
+            promotions: {
+              select: {
+                id: true,
+              }
+            },
+            remark: true,
+          },
+          take: limit,
+          skip: (page - 1) * limit,
+        })
+    ]);
+
+    return [count, results];
+  }
+
   static async updatePoints(transaction) {
     const targetUser = await prisma.user.findUnique({
       where: {
