@@ -1,34 +1,39 @@
 function validRetrieveBody(req) {
-  const { promotionId, type, relatedId, amount, operator, page, limit } =
-    req.query;
+    const { promotionId, type, relatedId, amount, operator, page, limit } =
+        req.query;
 
-  // createdBy is utorid
-  if (promotionId && typeof promotionId !== "number") {
-    return false;
-  }
+    // Validate promotionId if provided
+    if (promotionId && !Number.isInteger(Number(promotionId))) {
+        return false;
+    }
 
-  if ((relatedId && !type) || (amount && !operator) || (!amount && operator))
-    return false;
+    // Check dependencies: relatedId requires type, amount requires operator, and vice versa
+    if ((relatedId && !type) || (amount && !operator) || (!amount && operator)) {
+        return false;
+    }
 
-  const relatedIdNum = relatedId ? Number(relatedId) : null;
-  const amountNum = amount ? Number(amount) : null;
+    const relatedIdNum = relatedId ? Number(relatedId) : null;
+    const amountNum = amount ? Number(amount) : null;
 
-  if (
-    (relatedId && !Number.isInteger(relatedIdNum)) ||
-    (type && typeof type !== "string") ||
-    (amount && !Number.isInteger(amountNum)) ||
-    (operator && operator !== "gte" && operator !== "lte")
-  ) {
-    return false;
-  }
+    // Validate individual fields
+    if (
+        (relatedId && !Number.isInteger(relatedIdNum)) ||
+        (type && typeof type !== "string") ||
+        (amount && !Number.isInteger(amountNum)) ||
+        (operator && !["gte", "lte"].includes(operator))
+    ) {
+        return false;
+    }
 
-  if (
-    (page && !Number.isInteger(Number(page))) ||
-    (limit && !Number.isInteger(Number(limit)))
-  )
-    return false;
+    // Validate pagination
+    if (
+        (page && !Number.isInteger(Number(page))) ||
+        (limit && !Number.isInteger(Number(limit)))
+    ) {
+        return false;
+    }
 
-  return true;
+    return true;
 }
 
 module.exports = { validRetrieveBody };
