@@ -17,6 +17,7 @@ import useToast from "../../common/hooks/useToast.jsx";
 import useQRCode from "../../common/hooks/useQRcode.jsx";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PendingIcon from "@mui/icons-material/Pending";
+import convertToMDY from "../../common/helpers/convertToMDY.js";
 
 export default function RedeemPoints() {
   const { showToast, ToastComponent } = useToast();
@@ -43,25 +44,15 @@ export default function RedeemPoints() {
       remarks: "",
     },
   });
-
+  const hasGeneratedQR = Boolean(redemptionData);
   const onSubmit = async (data) => {
-    const { points, remarks } = data;
-
-    const payload = {
-      type: "redemption",
-      amount: Number(points),
-      remark: remarks || "",
-    };
-
     try {
-      const response = await api.post(`/users/me/transactions`, payload);
-      showToast("Redemption transaction created", "success");
-      setRedemptionData(response.data);
-      setStatus(response.data.processedBy !== null);
-      console.log(response.data);
-      showToast("Created redemption!", "success");
+      if (hasGeneratedQR) {
+        await submitCancelRedemption(redemptionData?.id);
+      } else {
+        await submitCreateRedemption(data);
+      }
     } catch (error) {
-      console.log(error);
       const msg =
         error.response?.data?.error ||
         error.response?.data?.message ||
@@ -70,13 +61,30 @@ export default function RedeemPoints() {
     }
   };
 
-  function convertToMDY(dateString) {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
+  const submitCreateRedemption = async (data) => {
+    const { points, remarks } = data;
+    const payload = {
+      type: "redemption",
+      amount: Number(points),
+      remark: remarks || "",
+    };
+    const response = await api.post(`/users/me/transactions`, payload);
+    setRedemptionData(response.data);
+    setStatus(response.data.processedBy !== null);
+    showToast("Created redemption!", "success");
+  };
+  const submitCancelRedemption = async (id) => {
+    const payload = {
+      id,
+    };
+    const response = await api.delete(`/users/me/transactions`, {
+      data: payload,
     });
-  }
+    showToast("Redemption cancelled!", "info");
+    setRedemptionData(null);
+    setStatus(null);
+  };
+
   return (
     <FormCard
       children={
@@ -124,17 +132,28 @@ export default function RedeemPoints() {
                   />
                 )}
               />
-
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{ mt: 2 }}
-                disabled={isSubmitting || isGenerating}
-              >
-                {isSubmitting || isGenerating
-                  ? "Generating..."
-                  : "Generate QR Code"}
-              </Button>
+              {hasGeneratedQR ? (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  disabled={isSubmitting || isGenerating}
+                  color="error"
+                >
+                  {isSubmitting ? "Cancelling..." : "Cancel Redemption"}
+                </Button>
+              ) : (
+                <Button
+                  type="submit"
+                  variant="contained"
+                  sx={{ mt: 2 }}
+                  disabled={isSubmitting || isGenerating}
+                >
+                  {isSubmitting || isGenerating
+                    ? "Generating..."
+                    : "Generate QR Code"}
+                </Button>
+              )}
               {redemptionData && (
                 <Stack spacing={2} mt={4} alignItems="center">
                   <Box

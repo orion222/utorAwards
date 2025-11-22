@@ -219,6 +219,21 @@ class TransactionService {
     return newTransaction;
   }
 
+  static async deleteRedemption(id) {
+    const newTransaction = await prisma.transaction.update({
+      data: {
+        deletedAt: new Date(),
+      },
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+      },
+    });
+    return newTransaction;
+  }
+
   static async createTransfer(senderId, recipientId, amount, remark) {
     const transferTransactions = await prisma.$transaction(async (tx) => {
       const sender = await tx.user.findUnique({

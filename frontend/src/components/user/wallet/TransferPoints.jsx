@@ -26,7 +26,6 @@ export default function TransferPoints() {
 
   const onSubmit = async (data) => {
     const { userid, amount, remarks } = data;
-
     const payload = {
       type: "transfer",
       amount: Number(amount),
@@ -38,7 +37,6 @@ export default function TransferPoints() {
       showToast("Transfer successful", "success");
       reset();
     } catch (error) {
-      console.log(error);
       const msg =
         error.response?.data?.error ||
         error.response?.data?.message ||
