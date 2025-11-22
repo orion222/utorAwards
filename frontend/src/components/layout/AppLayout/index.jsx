@@ -45,7 +45,7 @@ function AppLayout() {
       <Header isNavOpen={isNavOpen} onToggleNav={() => setIsNavOpen(!isNavOpen)} />
         <Box sx={{ display: "flex", flexDirection: "row", height: "100%" }}>
           <Navbar isOpen={isNavOpen} isMobileWidth={isMobileWidth} setIsNavOpen={setIsNavOpen} navItems={navItems} />
-          <Box mt={8} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 6} width="100%" height="100%">
+          <Box mt={8} ml={!isMobileWidth && (isNavOpen ? "248px" : "72px")} py={isMobileWidth ? 1 : 4} px={isMobileWidth ? 2 : 6} width="100%" height="100%" sx={{ transition: "margin-left 0.3s",}}>
             <Suspense fallback={loading}>
               <Outlet />
             </Suspense>
