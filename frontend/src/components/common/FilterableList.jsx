@@ -26,11 +26,11 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
         try {
             const { data } = await api.get(`${apiEndpoint}?${params}`);
             console.log(data)
-            return data;
+            return data.results;
         } catch (error) {
             console.error(error);
+            return [];
         }
-        return null;
     }
     const { isLoading, error, data } = useQuery({
         queryKey: [queryKey, appliedFilters, page],
@@ -148,6 +148,11 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
                                 const dependsValue = config.dependsOn ? tempFilters[config.dependsOn] : null;
                                 const isDisabled = config.dependsOn && !dependsValue;
 
+                                // If the field is disabled AND it has a value, clear it
+                                if (isDisabled && tempFilters[key]) {
+                                    updateTempFilter(key, "");
+                                }
+
                                 if (config.type === "text") {
                                     return (
                                         <TextField
@@ -156,7 +161,22 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
                                             value={tempFilters[key] || ""}
                                             onChange={e => updateTempFilter(key, e.target.value)}
                                             size="small"
-                                            disabled={isDisabled} // depends on another field
+                                            disabled={isDisabled}
+                                        />
+                                    );
+                                }
+
+                                if (config.type === "number") {
+                                    return (
+                                        <TextField
+                                            key={key}
+                                            type="number"
+                                            label={config.label}
+                                            value={tempFilters[key] || ""}
+                                            onChange={e => updateTempFilter(key, e.target.value)}
+                                            size="small"
+                                            disabled={isDisabled}
+                                            inputProps={{ min: config.min ?? undefined, max: config.max ?? undefined }}
                                         />
                                     );
                                 }
@@ -169,16 +189,20 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
                                                 value={tempFilters[key] || ""}
                                                 onChange={e => updateTempFilter(key, e.target.value)}
                                                 label={config.label}
-                                                disabled={isDisabled} // depends on another field
+                                                disabled={isDisabled}
                                             >
                                                 <MenuItem value="">All</MenuItem>
                                                 {config.options.map(opt => (
-                                                    <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                                    <MenuItem key={opt} value={opt}>
+                                                        {opt}
+                                                    </MenuItem>
                                                 ))}
                                             </Select>
                                         </FormControl>
                                     );
                                 }
+
+                                return null;
                             })}
 
                             <Button
