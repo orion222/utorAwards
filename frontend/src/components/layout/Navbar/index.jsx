@@ -16,7 +16,6 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
   const [expandedItems, setExpandedItems] = useState({});
   const navigate = useNavigate();
   const location = useLocation();
-  console.log(location.pathname);
 
   const toggleExpand = (id) => {
     setExpandedItems((prev) => ({ ...prev, [id]: !prev[id] }));
