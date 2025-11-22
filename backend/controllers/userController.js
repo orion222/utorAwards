@@ -224,6 +224,7 @@ async function createRedemption(req, res) {
       amount: newTransaction.amount,
       remark: newTransaction.remark,
       createdBy: newTransaction.user.utorid,
+      createdAt: newTransaction.createdAt,
     };
     res.status(201).json(response);
   } catch (error) {
@@ -241,23 +242,44 @@ async function retrieveTransactions(req, res) {
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
 
-  const { name } = req.user;
+  console.log(JSON.stringify(req.query));
+
+  let promotionIdNum, relatedIdNum, amountNum;
+
+  if (promotionId) {
+    promotionIdNum = parseInt(promotionId, 10);
+  }
+  if (relatedId) {
+    relatedIdNum = parseInt(relatedId, 10);
+  }
+  if (amount) {
+    amountNum = parseInt(amount, 10);
+  }
+
+  const { id } = req.user;
 
   try {
-    const transactionData = await TransactionService.retrieveTransactions(
-      name,
-      null,
-      null,
-      promotionId,
+    const [count, results] = await TransactionService.retrieveUserTransactions(
+      id,
       type,
-      relatedId,
-      amount,
+      relatedIdNum,
+      promotionIdNum,
+      amountNum,
       operator,
       pageNum,
       limitNum,
     );
-    const results = mapByTransactionType(transactionData.queryResults);
-    res.status(200).json({ count: transactionData.count, results: results });
+
+    const formattedResults = results.map((transaction) => {
+      const transactionResObj = {
+        ...transaction,
+        promotionIds: transaction.promotions.map(promo => promo.id),
+      }
+      delete transactionResObj.promotions;
+      return transactionResObj;
+    });
+
+    res.status(200).json({ count, results: formattedResults });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
@@ -299,6 +321,23 @@ async function createTransfer(req, res) {
       remark: senderTransaction.remark,
       createdBy: senderTransaction.user.utorid,
     };
+
+    res.status(201).json(response);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+}
+
+async function deleteRedemption(req, res) {
+  const { id } = req.body;
+
+  console.log(req.body, id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  try {
+    const response = await TransactionService.deleteRedemption(id);
 
     res.status(201).json(response);
   } catch (error) {
@@ -384,4 +423,5 @@ module.exports = {
   updateMyUserInfo,
   getMyUserInfo,
   updateMyPassword,
+  deleteRedemption,
 };
