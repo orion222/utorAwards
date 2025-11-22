@@ -1,8 +1,6 @@
 import { Box, Button, Collapse, IconButton, TextField, Pagination, Chip, FormControl, InputLabel, Select, MenuItem, useMediaQuery } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 import FilterListIcon from "@mui/icons-material/FilterList"
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft"
-import ChevronRightIcon from "@mui/icons-material/ChevronRight"
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../api/api.js";
@@ -25,7 +23,7 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
         console.log(`${apiEndpoint}?${params}`);
         try {
             const { data } = await api.get(`${apiEndpoint}?${params}`);
-            console.log(data)
+            setTotalCount(data.count);
             return data.results;
         } catch (error) {
             console.error(error);
@@ -81,6 +79,19 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
             setTempFilters(newTemp);
         }
     }
+
+    useEffect(() => {
+      Object.entries(filterConfig).forEach(([key, config]) => {
+        if (config.dependsOn) {
+          const parentValue = tempFilters[config.dependsOn];
+          const childValue = tempFilters[key];
+
+          if (!parentValue && childValue) {
+            updateTempFilter(key, "");
+          }
+        }
+      });
+    }, [tempFilters]);
 
     return (
         <Box>
@@ -144,66 +155,64 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
                                 alignItems: "center",
                             }}
                         >
-                            {Object.entries(filterConfig).map(([key, config]) => {
-                                const dependsValue = config.dependsOn ? tempFilters[config.dependsOn] : null;
-                                const isDisabled = config.dependsOn && !dependsValue;
+                          {Object.entries(filterConfig).map(([key, config]) => {
+                            const dependsValue = config.dependsOn ? tempFilters[config.dependsOn] : null;
+                            const isDisabled = config.dependsOn && !dependsValue;
 
-                                // If the field is disabled AND it has a value, clear it
-                                if (isDisabled && tempFilters[key]) {
-                                    updateTempFilter(key, "");
-                                }
+                            if (config.type === "text") {
+                              return (
+                                <TextField
+                                  key={key}
+                                  label={config.label}
+                                  value={tempFilters[key] || ""}
+                                  onChange={e => updateTempFilter(key, e.target.value)}
+                                  size="small"
+                                  disabled={isDisabled}
+                                />
+                              );
+                            }
 
-                                if (config.type === "text") {
-                                    return (
-                                        <TextField
-                                            key={key}
-                                            label={config.label}
-                                            value={tempFilters[key] || ""}
-                                            onChange={e => updateTempFilter(key, e.target.value)}
-                                            size="small"
-                                            disabled={isDisabled}
-                                        />
-                                    );
-                                }
+                            if (config.type === "number") {
+                              return (
+                                <TextField
+                                  key={key}
+                                  type="number"
+                                  label={config.label}
+                                  value={tempFilters[key] || ""}
+                                  onChange={e => updateTempFilter(key, e.target.value)}
+                                  size="small"
+                                  disabled={isDisabled}
+                                  slotProps={{
+                                    htmlInput: {
+                                      min: config.min ?? undefined,
+                                      max: config.max ?? undefined
+                                    }
+                                  }}
+                                />
+                              );
+                            }
 
-                                if (config.type === "number") {
-                                    return (
-                                        <TextField
-                                            key={key}
-                                            type="number"
-                                            label={config.label}
-                                            value={tempFilters[key] || ""}
-                                            onChange={e => updateTempFilter(key, e.target.value)}
-                                            size="small"
-                                            disabled={isDisabled}
-                                            inputProps={{ min: config.min ?? undefined, max: config.max ?? undefined }}
-                                        />
-                                    );
-                                }
+                            if (config.type === "select") {
+                              return (
+                                <FormControl key={key} size="small" sx={{ width: 130 }}>
+                                  <InputLabel>{config.label}</InputLabel>
+                                  <Select
+                                    value={tempFilters[key] || ""}
+                                    onChange={e => updateTempFilter(key, e.target.value)}
+                                    label={config.label}
+                                    disabled={isDisabled}
+                                  >
+                                    <MenuItem value="">All</MenuItem>
+                                    {config.options.map(opt => (
+                                      <MenuItem key={opt} value={opt}>{opt}</MenuItem>
+                                    ))}
+                                  </Select>
+                                </FormControl>
+                              );
+                            }
 
-                                if (config.type === "select") {
-                                    return (
-                                        <FormControl key={key} size="small" sx={{ width: 130 }}>
-                                            <InputLabel>{config.label}</InputLabel>
-                                            <Select
-                                                value={tempFilters[key] || ""}
-                                                onChange={e => updateTempFilter(key, e.target.value)}
-                                                label={config.label}
-                                                disabled={isDisabled}
-                                            >
-                                                <MenuItem value="">All</MenuItem>
-                                                {config.options.map(opt => (
-                                                    <MenuItem key={opt} value={opt}>
-                                                        {opt}
-                                                    </MenuItem>
-                                                ))}
-                                            </Select>
-                                        </FormControl>
-                                    );
-                                }
-
-                                return null;
-                            })}
+                            return null;
+                          })}
 
                             <Button
                                 variant="contained"

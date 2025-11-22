@@ -11,7 +11,10 @@ function PastTransactions() {
     },
     relatedId: {
       type: "number",
-      label: "Related ID"
+      label: "Related ID",
+      dependsOn: "type",
+      min: 0,
+      max: 99999,
     },
     promotionId: {
       type: "number",
@@ -43,9 +46,17 @@ function PastTransactions() {
               </Box>
             ) : (
               <>
-                {data.map((transaction) => (
-                  <TransactionItemCard transaction={transaction} key={transaction.id} />
-                ))}
+                {data.length === 0 ? (
+                  <Box>
+                    <Typography variant="body2" color="textSecondary">No results found</Typography>
+                  </Box>
+                ) : (
+                  <>
+                    {data.map((transaction) => (
+                      <TransactionItemCard transaction={transaction} key={transaction.id} />
+                    ))}
+                  </>
+                )}
               </>
             )
           }}
