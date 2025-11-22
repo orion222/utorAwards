@@ -572,12 +572,14 @@ class TransactionService {
     if (!userId) throw new BadRequestError("Must include user id");
     whereFields.userId = userId;
 
-    if ((!type && relatedId) || (amount && !operator) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
+    if ((!type && relatedId) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
 
     if (type) whereFields.type = type;
     if (relatedId) whereFields.relatedId = relatedId;
     if (promotionId) whereFields.promotions = { some: { id: promotionId } };
+
     if (amount && operator) whereFields.amount = { [operator]: amount };
+    else if (amount && !operator) whereFields.amount = amount;
 
     const [count, results] = await prisma.$transaction([
         prisma.transaction.count({ where: whereFields }),
