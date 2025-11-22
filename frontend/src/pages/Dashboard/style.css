@@ -1,0 +1,64 @@
+.user-header {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 16px;
+}
+
+.welcome-message {
+    font-size: 14px;
+    margin: 0px;
+}
+
+.point-summary {
+    font-size: 20px;
+    margin: 0px;
+}
+
+.points {
+    font-size: 40px;
+    font-weight: bold;
+    margin: 0px;
+}
+
+.transactions-container {
+    padding: 16px;
+}
+
+.events-container {
+    padding: 16px;
+}
+
+.promotions-container {
+    padding: 16px;
+}
+
+.transaction-list {
+    display: flex;
+    flex-direction: column
+}
+
+.promotion-list {
+    display: flex;
+    flex-direction: row
+}
+
+.event-list {
+    display: flex;
+    flex-direction: row
+}
+
+.view-wallet-button {
+    width: 150px;
+    height: 30px
+}
+
+.transaction-card {
+    display: flex;
+    flex-direction: row;
+}
+
+.tag-container {
+    display: flex;
+    flex-direction: row;
+}

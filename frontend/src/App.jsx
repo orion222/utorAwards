@@ -9,6 +9,9 @@ import AppLayout from "./components/layout/AppLayout";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 // import Dashboard from "./pages/Dashboard";
+import Transactions from "./pages/Transactions"
+import Events from "./pages/Events"
+import Promotions from "./pages/Promotions"
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
@@ -31,7 +34,10 @@ function App() {
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
-              <Route path="dashboard" element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="transactions" element={<Transactions />} />
+                <Route path="events" element={<Events />} />
+                <Route path="promotions" element={<Promotions />} />
             </Route>
 
             {/* ROUTES FOR CASHIERS */}
