@@ -224,6 +224,7 @@ async function createRedemption(req, res) {
       amount: newTransaction.amount,
       remark: newTransaction.remark,
       createdBy: newTransaction.user.utorid,
+      createdAt: newTransaction.createdAt,
     };
     res.status(201).json(response);
   } catch (error) {
@@ -320,6 +321,23 @@ async function createTransfer(req, res) {
   }
 }
 
+async function deleteRedemption(req, res) {
+  const { id } = req.body;
+
+  console.log(req.body, id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  try {
+    const response = await TransactionService.deleteRedemption(id);
+
+    res.status(201).json(response);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+}
+
 async function updateMyUserInfo(req, res) {
   const { name, email, birthday } = req.body;
   const { id } = req.user;
@@ -398,4 +416,5 @@ module.exports = {
   updateMyUserInfo,
   getMyUserInfo,
   updateMyPassword,
+  deleteRedemption,
 };
