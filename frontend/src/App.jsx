@@ -19,6 +19,7 @@ import ComponentLibrary from "./components/routes/ComponentLibrary";
 import Wallet from "./components/user/wallet";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import CreatePurchase from "./pages/CreatePurchase";
 
 function App() {
   return (
@@ -48,7 +49,7 @@ function App() {
                 />
               }
             >
-              <Route path="" element={<div>test</div>} />
+              <Route path="create" element={<CreatePurchase />} />
             </Route>
 
             {/* temp route for wallet */}
