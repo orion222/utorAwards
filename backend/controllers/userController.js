@@ -253,23 +253,30 @@ async function retrieveTransactions(req, res) {
     amountNum = parseInt(amount, 10);
   }
 
-  const { name } = req.user;
+  const { id } = req.user;
 
   try {
-    const transactionData = await TransactionService.retrieveTransactions(
-      name,
-      null,
-      null,
-      promotionIdNum,
+    const [count, results] = await TransactionService.retrieveUserTransactions(
+      id,
       type,
       relatedIdNum,
+      promotionIdNum,
       amountNum,
       operator,
       pageNum,
       limitNum,
     );
-    const results = mapByTransactionType(transactionData.queryResults);
-    res.status(200).json({ count: transactionData.count, results: results });
+
+    const formattedResults = results.map((transaction) => {
+      const transactionResObj = {
+        ...transaction,
+        promotionIds: transaction.promotions.map(promo => promo.id),
+      }
+      delete transactionResObj.promotions;
+      return transactionResObj;
+    });
+
+    res.status(200).json({ count, results: formattedResults });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
