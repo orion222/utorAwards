@@ -22,6 +22,7 @@ import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
 import PastTransactions from "./pages/transactions/PastTransactions";
 import CreatePurchase from "./pages/CreatePurchase";
+import ProcessRedemption from "./pages/ProcessRedemption";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
               }
             >
               <Route path="create" element={<CreatePurchase />} />
+              <Route path="redeem" element={<ProcessRedemption />} />
             </Route>
 
             {/*ROUTES FOR ORGANIZERS*/}

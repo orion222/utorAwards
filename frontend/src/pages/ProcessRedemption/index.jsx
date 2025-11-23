@@ -1,0 +1,180 @@
+import { useState, useEffect } from "react";
+import { useTheme } from "@mui/material/styles";
+import { Container } from "@mui/system";
+import { useForm, Controller, useWatch } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { purchaseSchema as schema } from "./constant.js";
+import { Stack, TextField, Button, Typography } from "@mui/material";
+import FormCard from "../../components/common/FormCard.jsx";
+import api from "../../api/api";
+import useToast from "../../components/common/hooks/useToast.jsx";
+import LabeledField from "../../components/common/LabeledField.jsx";
+import RedemptionCard from "../../components/common/RedemptionCard.jsx";
+import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
+import { useUser } from "../../context/UserContext";
+
+export default function ProcessRedemption() {
+    const { showToast, ToastComponent } = useToast();
+    const [transactionData, setTransactionData] = useState(null);
+    const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+    const [processing, setProcessing] = useState(false);
+    const { user } = useUser();
+
+    const onSearch = async (data) => {
+        const { transactionId } = data;
+        
+        try {
+            const response = await api.get(`/transactions/${transactionId}`);
+            const details = response.data;
+            if (details.type !== "redemption") {
+                showToast("The provided Transaction ID does not correspond to a redemption.", "error");
+                return;
+            }
+            setTransactionData(details);
+            localStorage.removeItem("redemptionForm");
+            reset(defaultValues);
+        }
+        catch (error) {
+            const message = error.response?.data?.error || error.response?.data?.message || "Transaction search failed";
+            showToast(message, "error");
+        }
+    };
+
+    const handleProcessClick = async () => {
+        setShowConfirmDialog(true);
+    }
+    
+    const handleConfirmClick = async () => {
+        if (!transactionData) return;
+        setProcessing(true);
+        setShowConfirmDialog(false);
+        try {
+            await api.patch(`/transactions/${transactionData.id}/processed`, {processed: true}); 
+            setTransactionData(prev => ({ ...prev, processed: true, processedBy: user.utorid }));
+            showToast("Redemption processed successfully", "success");
+        }
+        catch (error) {
+            const message = error.response?.data?.error || error.response?.data?.message || "Redemption processing failed";
+            showToast(message, "error");
+        }
+        finally {
+            setProcessing(false);
+        }
+    };
+
+    const defaultValues = {
+        transactionId: "",
+    };
+
+    const savedValues = (() => {
+        try {
+            const items = localStorage.getItem("redemptionForm");
+            return items ? JSON.parse(items) : defaultValues;
+        }
+        catch {
+            return defaultValues;
+        }
+    })();
+
+    const { control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
+        resolver: yupResolver(schema),
+        mode: "onChange",
+        reValidateMode: "onChange",
+        defaultValues: {...savedValues}
+    });
+
+    const formValues = useWatch({ control });
+
+    useEffect(() => {
+        try {
+            localStorage.setItem("redemptionForm", JSON.stringify(formValues || {}));
+        } catch (err) {
+            console.error("Failed to persist redemptionForm to localStorage:", err); //debugging
+        }
+    }, [formValues]);
+
+    return (
+        <Container
+            sx={{
+                overflowY: "auto",
+            }}
+        >
+            <Typography variant="h5" pb={1}>Process Redemption</Typography>
+            <Typography variant="body2" color="text.secondary">Enter Transaction ID to process redemption requests</Typography>
+
+            <FormCard width="100%" contentPadding={1}>
+                <form onSubmit={handleSubmit(onSearch)}>
+                    <Stack spacing={2}>
+                        <Typography variant="h6" sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                            Search for a redemption to process:
+                        </Typography>
+
+                        {/* Transaction ID */}
+                        <LabeledField label="Transaction ID" required
+                        >
+                            <Controller
+                                name="transactionId"
+                                control={control}
+                                render={({ field }) => (
+                                    <TextField
+                                        {...field}
+                                        label="Ex: 123"
+                                        variant="outlined"
+                                        error={!!errors.transactionId}
+                                        helperText={errors.transactionId?.message}
+                                    />
+                                )}
+                            />
+                        </LabeledField>
+                        
+                        <Typography variant="body5" color="error" sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center", }}>
+                            * Required
+                        </Typography>
+
+                        {/* Submit */}
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            color="success"
+                            disabled={isSubmitting}
+                            sx={{ mt: 2 }}
+                        >
+                            {isSubmitting ? "Processing..." : "Search Redemption"}
+                        </Button>
+                    </Stack>
+                </form>
+
+                {ToastComponent}
+            </FormCard>
+
+            {transactionData &&  (
+                <>
+                    <RedemptionCard
+                        redemption={transactionData}
+                        onProcess={handleProcessClick}
+                        processing={processing}
+                    />
+
+                    <ConfirmDialog
+                        open={showConfirmDialog}
+                        onClose={() => setShowConfirmDialog(false)}
+                        title="Confirm Process Redemption"
+                        description={
+                            <>  
+                                <Stack spacing={2}>
+                                    <Typography variant="body5" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Are you sure you want to process the following redemption?</Typography>
+                                    <Typography variant="body5" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Transaction ID: {transactionData.id}</Typography>
+                                    <Typography variant="body5" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>This action cannot be undone.</Typography>
+                                </Stack>
+                            </>
+                        }
+                        confirmLabel="Confirm"
+                        cancelLabel="Cancel"
+                        onConfirm={handleConfirmClick}
+                        loading={processing}
+                    />
+                </>
+            )}
+        </Container>            
+    );
+}
