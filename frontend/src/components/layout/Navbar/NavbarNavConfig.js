@@ -12,83 +12,42 @@ import {
   Users,
 } from "lucide-react";
 
-const NAV_ITEMS = {
-  home: { label: "Home", icon: HomeIcon, path: "/dashboard" },
-  wallet: {
-    id: "My Wallet",
-    label: "Wallet",
-    icon: WalletIcon,
-    path: "/Wallet",
-  },
-  pastTransactions: {
-    label: "Past Transactions",
-    icon: History,
-    path: "/past-transactions",
-  },
+const REGULAR_ITEMS = [
+  { label: "Home", icon: HomeIcon, path: "/dashboard" },
+  { label: "Wallet", icon: WalletIcon, path: "/wallet" },
+  { label: "Past Transactions", icon: History, path: "/past-transactions" },
+  { label: "Explore Events", icon: Compass, path: "/events" },
+  { label: "Event Invitations", icon: Mail, path: "/events/invitations" },
+];
 
-  create: { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
-  redeem: { label: "Process Redemption", icon: Gift, path: "/redeem" },
+const CASHIER_EXTRA = [
+  { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
+  { label: "Process Redemption", icon: Gift, path: "/redeem" },
+  { label: "Create User", icon: UserPlus, path: "/createUser" },
+];
 
-  exploreEvents: { label: "Explore", icon: Compass, path: "/events" },
-  eventInvitations: {
-    label: "Event Invitations",
-    icon: Mail,
-    path: "/events/invitations",
-  },
+const MANAGER_EXTRA = [
+  { label: "Promotions", icon: Tag, path: "/promotions" },
+];
 
-  promotions: { label: "Promotions", icon: Tag, path: "/promotions" },
+const SUPERUSER_EXTRA = [
+  { label: "Manage Users", icon: Users, path: "/manageUsers" },
+];
 
-  createUser: { label: "Create User", icon: UserPlus, path: "/createUser" },
-  manageUsers: { label: "Manage Users", icon: Users, path: "/manageUsers" },
-};
+export function getNavForRole(role) {
+  const items = [...REGULAR_ITEMS];
 
-const BASE = {
-  regular: [
-    "home",
-    "wallet",
-    "pastTransactions",
-    "exploreEvents",
-    "eventInvitations",
-  ],
+  if (role === "cashier" || role === "manager" || role === "superuser") {
+    items.push(...CASHIER_EXTRA);
+  }
 
-  cashierExtras: ["create", "redeem", "createUser"],
+  if (role === "manager" || role === "superuser") {
+    items.push(...MANAGER_EXTRA);
+  }
 
-  managerExtras: [],
-
-  organizerExtras: [],
-
-  superuserExtras: [
-    // something ONLY superusers should see
-  ],
-};
-
-const ROLE_MAP = {
-  regular: [...BASE.regular],
-
-  cashier: [...BASE.regular, ...BASE.cashierExtras],
-
-  manager: [...BASE.regular, ...BASE.cashierExtras, ...BASE.managerExtras],
-
-  organizer: (role) => [
-    ...(ROLE_MAP[role] || BASE.regular),
-    ...BASE.organizerExtras,
-  ],
-
-  superuser: [
-    ...Object.keys(NAV_ITEMS), // all items
-    ...BASE.superuserExtras,
-  ],
-};
-
-export function getNavForRole(role, isOrganizer) {
   if (role === "superuser") {
-    return ROLE_MAP.superuser.map((id) => NAV_ITEMS[id]);
+    items.push(...SUPERUSER_EXTRA);
   }
 
-  if (isOrganizer) {
-    const fullList = ROLE_MAP.organizer(role);
-    return fullList.map((id) => NAV_ITEMS[id]);
-  }
-
-  return ROLE_MAP[role].map((id) => NAV_ITEMS[id]);
+  return items;
 }
