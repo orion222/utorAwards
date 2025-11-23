@@ -66,56 +66,58 @@ function ResetPassword() {
     };
 
     return (
-        <FormCard>
-            <Typography variant="h5" fontWeight={600} mb={1}>
-                Reset your password
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mb={3}>
-                Enter a new password for your account.
-            </Typography>
+        <Box height="100vh">
+            <FormCard>
+                <Typography variant="h5" fontWeight={600} mb={1}>
+                    Reset your password
+                </Typography>
+                <Typography variant="body2" color="text.secondary" mb={3}>
+                    Enter a new password for your account.
+                </Typography>
 
-            {error && (
-                <Alert severity="error" sx={{ mb: 2 }}>
-                    {error}
-                </Alert>
-            )}
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
 
-            {success && (
-                <Alert severity="success" sx={{ mb: 2 }}>
-                    {success}
-                </Alert>
-            )}
+                {success && (
+                    <Alert severity="success" sx={{ mb: 2 }}>
+                        {success}
+                    </Alert>
+                )}
 
-            <Box component="form" onSubmit={handleResetPassword}>
-                <PasswordField value={password} onChange={(e) => {setPassword(e.target.value); setPasswordError("");}} error={passwordError} label={"New Password"} id="newPassword" />
-                <PasswordField value={confirmPassword} onChange={(e) => {setConfirmPassword(e.target.value); setConfirmPasswordError("");}} error={confirmPasswordError} label={"Confirm Password"} id="confirmPassword" />
-                    
-                <Button
-                    type="submit"
-                    variant="contained"
-                    fullWidth
-                    size="large"
-                    sx={{ mt: 2 }}
-                >
-                    Reset Password
-                </Button>
-
-                <Box sx={{ textAlign: "center", mt: 2 }}>
-                    <MUILink
-                        component={Link}
-                        to="/login"
-                        underline="hover"
-                        sx={{
-                            color: "text.secondary",
-                            fontSize: "0.85rem",
-                            fontWeight: 500
-                        }}
+                <Box component="form" onSubmit={handleResetPassword}>
+                    <PasswordField value={password} onChange={(e) => {setPassword(e.target.value); setPasswordError("");}} error={passwordError} label={"New Password"} id="newPassword" />
+                    <PasswordField value={confirmPassword} onChange={(e) => {setConfirmPassword(e.target.value); setConfirmPasswordError("");}} error={confirmPasswordError} label={"Confirm Password"} id="confirmPassword" />
+                        
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        sx={{ mt: 2 }}
                     >
-                        Back to login
-                    </MUILink>
+                        Reset Password
+                    </Button>
+
+                    <Box sx={{ textAlign: "center", mt: 2 }}>
+                        <MUILink
+                            component={Link}
+                            to="/login"
+                            underline="hover"
+                            sx={{
+                                color: "text.secondary",
+                                fontSize: "0.85rem",
+                                fontWeight: 500
+                            }}
+                        >
+                            Back to login
+                        </MUILink>
+                    </Box>
                 </Box>
-            </Box>
-        </FormCard>
+            </FormCard>
+        </Box>
     );
 }
 

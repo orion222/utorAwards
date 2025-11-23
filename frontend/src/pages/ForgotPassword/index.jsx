@@ -44,78 +44,81 @@ function ForgotPassword() {
     }
 
     return (
-        <FormCard>
-            <Typography variant="h5" fontWeight={600} mb={1}>
-                Forgot password?
-            </Typography>
-            <Typography variant="body2" color="text.secondary" mb={3}>
-                Enter the email used for your account and we'll send you a link to reset your password.
-            </Typography> 
+        <Box height="100vh">
+            <FormCard>
+                <Typography variant="h5" fontWeight={600} mb={1}>
+                    Forgot password?
+                </Typography>
+                <Typography variant="body2" color="text.secondary" mb={3}>
+                    Enter the email used for your account and we'll send you a link to reset your password.
+                </Typography> 
 
-            {loading && (
-                <Box 
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <CircularProgress />
-                </Box>
-
-            )}
-
-            {sentRequest && !forgotPasswordError && (
-                <Alert severity="info">Check your inbox! If an account exists for this email, we've sent a password reset link.</Alert>
-            )}
-
-            {forgotPasswordError && (
-                <Alert severity="error">{forgotPasswordError}</Alert>
-            )}
-            
-            <Box component="form" onSubmit={handleForgotPassword}>
-                <FormControl fullWidth margin="normal" variant="outlined" error={Boolean(emailError)}>
-                    <InputLabel htmlFor="email">Email</InputLabel>
-                    <OutlinedInput
-                        id="email"
-                        label="Email"       
-                        value={email}
-                        onChange={(e) => {
-                            setEmail(e.target.value);
-                            setEmailError("");
-                        }}
-                    />
-                    {emailError && (
-                        <FormHelperText error>{emailError}</FormHelperText>
-                    )}
-                </FormControl>
-
-                <Button
-                    type="submit"
-                    variant="contained"
-                    fullWidth
-                    size="large"
-                    sx={{ my: 2 }}
-                >
-                    Reset
-                </Button>
-
-                <Box sx={{ textAlign: "center" }}>
-                    <MUILink 
-                        component={Link}
-                        to="/login" 
-                        underline="hover" 
+                {loading && (
+                    <Box 
                         sx={{
-                            color: "text.secondary",
-                            fontSize: "0.85rem",
-                            fontWeight: 500,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                         }}
                     >
-                        Back to login
-                    </MUILink>
+                        <CircularProgress />
+                    </Box>
+
+                )}
+
+                {sentRequest && !forgotPasswordError && (
+                    <Alert severity="info">Check your inbox! If an account exists for this email, we've sent a password reset link.</Alert>
+                )}
+
+                {forgotPasswordError && (
+                    <Alert severity="error">{forgotPasswordError}</Alert>
+                )}
+                
+                <Box component="form" onSubmit={handleForgotPassword}>
+                    <FormControl fullWidth margin="normal" variant="outlined" error={Boolean(emailError)}>
+                        <InputLabel htmlFor="email">Email</InputLabel>
+                        <OutlinedInput
+                            id="email"
+                            label="Email"       
+                            value={email}
+                            onChange={(e) => {
+                                setEmail(e.target.value);
+                                setEmailError("");
+                            }}
+                        />
+                        {emailError && (
+                            <FormHelperText error>{emailError}</FormHelperText>
+                        )}
+                    </FormControl>
+
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        sx={{ my: 2 }}
+                    >
+                        Reset
+                    </Button>
+
+                    <Box sx={{ textAlign: "center" }}>
+                        <MUILink 
+                            component={Link}
+                            to="/login" 
+                            underline="hover" 
+                            sx={{
+                                color: "text.secondary",
+                                fontSize: "0.85rem",
+                                fontWeight: 500,
+                            }}
+                        >
+                            Back to login
+                        </MUILink>
+                    </Box>
                 </Box>
-            </Box>
-        </FormCard>
+            </FormCard>            
+        </Box>
+        
     );  
 }
 

@@ -14,6 +14,7 @@ function FormCard({ width, contentPadding, children }) {
         alignItems: "center",
         justifyContent: "center",
         p: 2,
+        height: "100%",
       }}
     >
       {isSmall ? (
