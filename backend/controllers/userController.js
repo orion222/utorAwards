@@ -238,13 +238,11 @@ async function retrieveTransactions(req, res) {
   if (!validRetrieveBody(req))
     return res.status(400).json({ error: "Bad Request" });
 
-  const { promotionId, type, relatedId, amount, operator, page, limit } =
+  const { promotionId, search, type, relatedId, amount, operator, page, limit } =
     req.query;
 
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
-
-  console.log(JSON.stringify(req.query));
 
   let promotionIdNum, relatedIdNum, amountNum;
 
@@ -264,6 +262,7 @@ async function retrieveTransactions(req, res) {
     const [count, results] = await TransactionService.retrieveUserTransactions(
       id,
       type,
+      search,
       relatedIdNum,
       promotionIdNum,
       amountNum,

@@ -3,7 +3,7 @@ import { ShoppingCart, Gift, ArrowLeftRight, UserPlus, Home as HomeIcon, Wallet 
 const NAV_ITEMS = {
   home: { label: "Home", icon: HomeIcon, path: "/dashboard" },
   wallet: { id: "My Wallet", label: "Wallet", icon: WalletIcon, path: "/wallet" },
-  pastTransactions: { label: "Past Transactions", icon: History, path: "/pastTransactions" },
+  pastTransactions: { label: "Past Transactions", icon: History, path: "/past-transactions" },
 
   create: { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
   redeem: { label: "Process Redemption", icon: Gift, path: "/redeem" },
