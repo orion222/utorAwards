@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 
-function ProtectedAuthRoute() {
+function RootElement() {
   const { user, loading } = useUser();
 
   if (loading) {
@@ -15,4 +15,4 @@ function ProtectedAuthRoute() {
   return <Navigate to="/dashboard" />;
 }
 
-export default ProtectedAuthRoute;
+export default RootElement;

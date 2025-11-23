@@ -13,7 +13,7 @@ import Transactions from "./pages/Transactions";
 import Events from "./pages/Events";
 import Promotions from "./pages/Promotions";
 import Login from "./pages/Login";
-import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
+import ProtectedAuthRoute from "./components/routes/RootElement.jsx";
 import NotFound from "./pages/NotFound";
 import ComponentLibrary from "./components/routes/ComponentLibrary";
 import Wallet from "./pages/Wallet";
@@ -54,9 +54,15 @@ function App() {
               <Route path="create" element={<CreatePurchase />} />
             </Route>
 
-            {/* Need to check if user has any events
-                                                        <Route path="organizer" element={ <ProtectedRoute /> }>
-
+            {/*ROUTES FOR ORGANIZERS*/}
+            <Route
+              element={
+                <ProtectedClearanceRoute
+                  requiredClearance={["organizer"]}
+                />
+              }
+            >
+              ss
             </Route>
 
             {/* ROUTES FOR MANAGERS */}

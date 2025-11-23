@@ -8,6 +8,10 @@ function ProtectedClearanceRoute({ requiredClearance = [] }) {
     return <div>Loading...</div>;
   }
 
+  if (!user) {
+    return <Navigate to="/login" replace={true} />;
+  }
+
   if (requiredClearance.includes("organizer") && !user.isOrganizer) {
     return <Navigate to="/dashboard" />;
   }
