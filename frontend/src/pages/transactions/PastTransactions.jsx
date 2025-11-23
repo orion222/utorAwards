@@ -1,4 +1,4 @@
-import {Box, CircularProgress, Typography} from "@mui/material";
+import {Alert, AlertTitle, Box, CircularProgress, Typography} from "@mui/material";
 import FilterableList from "../../components/common/FilterableList.jsx";
 import TransactionItemCard from "../../components/common/TransactionItemCard.jsx";
 
@@ -39,12 +39,27 @@ function PastTransactions() {
       <Typography variant="h5">Past Transactions</Typography>
       <Box sx={{ my: 2 }}>
         <FilterableList queryKey="past-transactions" apiEndpoint="/users/me/transactions" filterConfig={filterConfig}>
-          {({data, isLoading, totalCount}) => {
-            return isLoading ? (
-              <Box display="flex" justifyContent="center" p={4}>
-                <CircularProgress />
-              </Box>
-            ) : (
+          {({ data, isFetching, error }) => {
+            if (error) {
+              return (
+                <Box display="flex" justifyContent="center" p={4}>
+                  <Alert>
+                    <AlertTitle>Error</AlertTitle>
+                    Something went wrong while fetching your transactions. Try again later.
+                  </Alert>
+                </Box>
+              )
+            }
+
+            if (isFetching) {
+              return (
+                <Box display="flex" justifyContent="center" p={4}>
+                  <CircularProgress />
+                </Box>
+              );
+            }
+
+            return (
               <>
                 {data.length === 0 ? (
                   <Box>

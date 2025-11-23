@@ -596,10 +596,19 @@ class TransactionService {
                 id: true,
               }
             },
-            user: true,
-            targetUser: true,
+            user: {
+              select: {
+                utorid: true
+              }
+            },
+            targetUser: {
+              select: {
+                utorid: true
+              }
+            },
             suspicious: true,
             remark: true,
+            relatedId: true,
           },
           take: limit,
           skip: (page - 1) * limit,

@@ -20,7 +20,7 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
 
     const fetchData = async () => {
         const params = new URLSearchParams({ ...appliedFilters, page, limit });
-        console.log(`${apiEndpoint}?${params}`);
+        
         try {
             const { data } = await api.get(`${apiEndpoint}?${params}`);
             setTotalCount(data.count);
@@ -30,7 +30,8 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
             return [];
         }
     }
-    const { isLoading, error, data } = useQuery({
+
+    const { isFetching, error, data } = useQuery({
         queryKey: [queryKey, appliedFilters, page],
         queryFn: fetchData,
         retry: 1,
@@ -244,7 +245,7 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
             </Box>
             
             {/* actual list content */}
-            {children({ data, isLoading })}
+            {children({ data, isFetching, error })}
             
             {totalPages > 1 && (
                 <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
