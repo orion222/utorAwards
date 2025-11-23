@@ -1,15 +1,22 @@
 import { useMemo } from "react";
-import { useUser } from "../../../context/UserContext";
+import { useUser } from "../../context/UserContext.jsx";
 import { Stack, Box, Button, Typography } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import DownloadIcon from "@mui/icons-material/Download";
-import FormCard from "../../common/FormCard.jsx";
-import useToast from "../../common/hooks/useToast.jsx";
-import useQRCode from "../../common/hooks/useQRcode.jsx";
+import FormCard from "../../components/common/FormCard.jsx";
+import useToast from "../../components/common/hooks/useToast.jsx";
+import useQRCode from "../../components/common/hooks/useQRcode.jsx";
+import useMediaQuery from "../../components/common/hooks/useMediaQuery.js";
+
 export default function QRCode() {
   const { user } = useUser();
   const { showToast, ToastComponent } = useToast();
-
+  const { isMobile, isTablet, isDesktop } = useMediaQuery();
+  const canvasSize = useMemo(() => {
+    if (isMobile) return 160;
+    if (isTablet) return 200;
+    return 240; // desktop
+  }, [isMobile, isTablet, isDesktop]);
   const qrData = useMemo(
     () => ({
       userId: user?.id,
@@ -37,7 +44,7 @@ export default function QRCode() {
     QRerror,
     downloadQRCode,
     copyQRData,
-  } = useQRCode(qrData);
+  } = useQRCode(qrData, { width: canvasSize });
 
   if (QRerror) {
     showToast("Failed to generate QR code", "error");
@@ -75,7 +82,12 @@ export default function QRCode() {
             backgroundColor: "#FCFEFB",
           }}
         >
-          <canvas ref={canvasRef} />
+          <canvas
+            ref={canvasRef}
+            width={canvasSize}
+            height={canvasSize}
+            style={{ width: canvasSize, height: canvasSize }}
+          />
         </Box>
 
         {user && (
