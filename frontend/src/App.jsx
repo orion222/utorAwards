@@ -9,14 +9,14 @@ import AppLayout from "./components/layout/AppLayout";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 // import Dashboard from "./pages/Dashboard";
-import Transactions from "./pages/Transactions"
-import Events from "./pages/Events"
-import Promotions from "./pages/Promotions"
+import Transactions from "./pages/Transactions";
+import Events from "./pages/Events";
+import Promotions from "./pages/Promotions";
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/ProtectedAuthRoute";
 import NotFound from "./pages/NotFound";
 import ComponentLibrary from "./components/routes/ComponentLibrary";
-import Wallet from "./components/user/wallet";
+import Wallet from "./pages/Wallet";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
@@ -36,10 +36,11 @@ function App() {
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="past-transactions" element={<PastTransactions />} />
-                <Route path="events" element={<Events />} />
-                <Route path="promotions" element={<Promotions />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="past-transactions" element={<PastTransactions />} />
+              <Route path="events" element={<Events />} />
+              <Route path="promotions" element={<Promotions />} />
+              <Route path="wallet" element={<Wallet />}></Route>
             </Route>
 
             {/* ROUTES FOR CASHIERS */}
@@ -53,16 +54,8 @@ function App() {
               <Route path="create" element={<CreatePurchase />} />
             </Route>
 
-            {/* temp route for wallet */}
-            <Route path="wallet" element={<Wallet />}></Route>
-
-            <Route
-              element={
-                <ProtectedClearanceRoute
-                  requiredClearance={["organizer"]}
-                />
-              }
-            >
+            {/* Need to check if user has any events
+                                                        <Route path="organizer" element={ <ProtectedRoute /> }>
 
             </Route>
 

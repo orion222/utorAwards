@@ -1,15 +1,13 @@
-import { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { transferSchema as schema } from "./constants.js";
 import { Stack, Box, TextField, Button, TextareaAutosize } from "@mui/material";
-import FormCard from "../../common/FormCard.jsx";
-import api from "../../../api/api";
-import useToast from "../../common/hooks/useToast.jsx";
+import FormCard from "../../components/common/FormCard.jsx";
+import api from "../../api/api.js";
+import useToast from "../../components/common/hooks/useToast.jsx";
 import HandshakeTwoToneIcon from "@mui/icons-material/HandshakeTwoTone";
 export default function TransferPoints() {
   const { showToast, ToastComponent } = useToast();
-
   const {
     control,
     handleSubmit,
@@ -99,6 +97,7 @@ export default function TransferPoints() {
                       fontFamily: "inherit",
                       fontSize: "1rem",
                       borderRadius: 4,
+                      backgroundColor: "inherit",
                       border: errors.remarks
                         ? "1px solid #d32f2f"
                         : "1px solid #ccc",

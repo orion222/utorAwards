@@ -10,14 +10,14 @@ import {
   TextareaAutosize,
   Chip,
 } from "@mui/material";
-import FormCard from "../../common/FormCard.jsx";
-import api from "../../../api/api";
+import FormCard from "../../components/common/FormCard.jsx";
+import api from "../../api/api.js";
 import CardGiftcardIcon from "@mui/icons-material/CardGiftcard";
-import useToast from "../../common/hooks/useToast.jsx";
-import useQRCode from "../../common/hooks/useQRcode.jsx";
+import useToast from "../../components/common/hooks/useToast.jsx";
+import useQRCode from "../../components/common/hooks/useQRcode.jsx";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PendingIcon from "@mui/icons-material/Pending";
-import convertToMDY from "../../common/helpers/convertToMDY.js";
+import convertToMDY from "../../components/common/helpers/convertToMDY.js";
 
 export default function RedeemPoints() {
   const { showToast, ToastComponent } = useToast();
