@@ -37,6 +37,7 @@ export default function Profile() {
   const handleLogout = () => {
     logout();
     handleClose();
+    navigate("/login");
   };
 
   return (
