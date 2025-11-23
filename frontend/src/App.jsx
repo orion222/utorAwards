@@ -21,6 +21,7 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
 import PastTransactions from "./pages/transactions/PastTransactions";
+import CreatePurchase from "./pages/CreatePurchase";
 
 function App() {
   return (
