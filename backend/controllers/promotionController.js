@@ -123,8 +123,8 @@ async function retrievePromotion(req, res) {
   }
 
   if (
-    (page && (isNaN(pageNum) || Number.isInteger(pageNum))) ||
-    (limit && (isNaN(limitNum) || Number.isInteger(limitNum)))
+    (page && (isNaN(pageNum) || !Number.isInteger(pageNum))) ||
+    (limit && (isNaN(limitNum) || !Number.isInteger(limitNum)))
   ) {
     return res
       .status(400)

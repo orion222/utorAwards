@@ -68,6 +68,7 @@ model Transaction {
   id                Int @id @default(autoincrement())
   type              TransactionType
   createdAt         DateTime @default(now())
+  deletedAt         DateTime?
   spent             Float
   amount            Int // amount of points in transaction
   processed         Boolean @default(false)

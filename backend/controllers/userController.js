@@ -1,6 +1,8 @@
 const { RoleType } = require("@prisma/client");
 const { UserService } = require("../services/userService");
+const { EventService } = require("../services/eventService");
 const { TransactionService } = require("../services/transactionService");
+const { PromotionService } = require("../services/promotionService");
 const { isValidYYYYMMDD } = require("../utils/generalHelpers");
 const { mapByTransactionType } = require("../utils/transactionHelpers");
 const { validRetrieveBody } = require("../utils/userHelpers");
@@ -224,6 +226,7 @@ async function createRedemption(req, res) {
       amount: newTransaction.amount,
       remark: newTransaction.remark,
       createdBy: newTransaction.user.utorid,
+      createdAt: newTransaction.createdAt,
     };
     res.status(201).json(response);
   } catch (error) {
@@ -283,6 +286,46 @@ async function retrieveTransactions(req, res) {
   }
 }
 
+async function retrieveEvents(req, res) {
+  if (!validRetrieveBody(req))
+    return res.status(400).json({ error: "Bad Request" });
+
+  const { name, location, started, ended, page, limit } =
+    req.query;
+
+  const pageNum = page ? parseInt(page, 10) : 1;
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  const { id } = req.user;
+
+  try {
+    const eventData = await EventService.retrieveEvents(id, name, location, started, ended, pageNum, limitNum);
+    res.status(200).json({ count: eventData.count, results: eventData.results });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+}
+
+async function retrieveEvents(req, res) {
+  if (!validRetrieveBody(req))
+    return res.status(400).json({ error: "Bad Request" });
+
+  const { name, location, started, ended, page, limit } =
+    req.query;
+
+  const pageNum = page ? parseInt(page, 10) : 1;
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  const { id } = req.user;
+
+  try {
+    const eventData = await EventService.retrieveEvents(id, name, location, started, ended, pageNum, limitNum);
+    res.status(200).json({ count: eventData.count, results: eventData.results });
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+}
+
 async function createTransfer(req, res) {
   const { type, amount, remark } = req.body;
   const { id: senderId } = req.user;
@@ -319,6 +362,23 @@ async function createTransfer(req, res) {
       remark: senderTransaction.remark,
       createdBy: senderTransaction.user.utorid,
     };
+
+    res.status(201).json(response);
+  } catch (error) {
+    return res.status(error.statusCode || 500).json({ error: error.message });
+  }
+}
+
+async function deleteRedemption(req, res) {
+  const { id } = req.body;
+
+  console.log(req.body, id);
+  if (!Number.isInteger(id) || id <= 0) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+
+  try {
+    const response = await TransactionService.deleteRedemption(id);
 
     res.status(201).json(response);
   } catch (error) {
@@ -401,7 +461,9 @@ module.exports = {
   createRedemption,
   createTransfer,
   retrieveTransactions,
+  retrieveEvents,
   updateMyUserInfo,
   getMyUserInfo,
   updateMyPassword,
+  deleteRedemption,
 };

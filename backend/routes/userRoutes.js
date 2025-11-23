@@ -6,10 +6,12 @@ const {
   updateSpecificUser,
   createRedemption,
   retrieveTransactions,
+  retrieveEvents,
   updateMyUserInfo,
   getMyUserInfo,
   updateMyPassword,
   createTransfer,
+  deleteRedemption,
 } = require("../controllers/userController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
 const upload = require("../middleware/upload");
@@ -68,7 +70,11 @@ userRouter.patch("/me/password", verifyToken, updateMyPassword);
 
 userRouter.post("/me/transactions", verifyToken, createRedemption);
 
+userRouter.delete("/me/transactions", verifyToken, deleteRedemption);
+
 userRouter.get("/me/transactions", verifyToken, retrieveTransactions);
+
+userRouter.get("/me/events", verifyToken, retrieveEvents);
 
 userRouter.post("/:userId/transactions", verifyToken, createTransfer);
 

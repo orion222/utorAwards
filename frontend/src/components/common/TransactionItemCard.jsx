@@ -4,7 +4,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 function TransactionItemCard({ transaction }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
-    const { type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
+    const { type, spent, amount, earned, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
         "redemption": "#F59B66",
@@ -12,6 +12,7 @@ function TransactionItemCard({ transaction }) {
         "event": "#7DA4F2",
         "transfer": "#BBA3E5",
     }
+
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
     if (isSmall) {
@@ -21,7 +22,7 @@ function TransactionItemCard({ transaction }) {
                     mb: 2,
                     width: "100%",
                     maxWidth: "unset",
-                    flex: 1,
+                    flex: 1
                 }}
             >
                 <Accordion
@@ -48,11 +49,14 @@ function TransactionItemCard({ transaction }) {
                                 <Typography variant="body3" color="text.secondary">
                                     {dateString} 
                                 </Typography>
-                                {spent !== 0 && <Typography variant="body3" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
+                                {(spent && spent !== 0) && <Typography variant="body3" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
                             </Box>
 
-                            <Typography variant="h6" color="primary" sx={{ fontWeight: 600 }}>
-                                {amount > 0 ? `+${amount}` : amount} pts
+                            <Typography
+                                variant="h6"
+                                color={type === "transfer" ? amount > 0 ? "primary" : "error" : earned > 0 ? "primary" : "error"}
+                                fontWeight="bold">
+                                {type === "transfer" ? amount > 0 ? `+${amount}` : amount : earned > 0 ? `+${earned}` : earned} pts
                             </Typography>
                         </Box>
                     </AccordionSummary>
@@ -180,10 +184,13 @@ function TransactionItemCard({ transaction }) {
                             textAlign: "right",
                         }}
                     >
-                        <Typography variant="h4" color={amount > 0 ? "primary" : "error"} fontWeight="bold">
-                            {amount > 0 ? `+${amount}` : amount} pts
+                        <Typography
+                            variant="h4"
+                            color={type === "transfer" ? amount > 0 ? "primary" : "error" : earned > 0 ? "primary" : "error"}
+                            fontWeight="bold">
+                            {type === "transfer" ? amount > 0 ? `+${amount}` : amount : earned > 0 ? `+${earned}` : earned} pts
                         </Typography>
-                        {spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
+                        {(spent && spent !== 0) && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>
