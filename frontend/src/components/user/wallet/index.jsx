@@ -10,14 +10,8 @@ export default function Wallet() {
   const [tab, setTab] = useState(0);
   const theme = useTheme();
   return (
-    <Container
-      sx={{
-        padding: 3,
-        border: "1px solid black",
-        backgroundColor: theme.palette.background.main,
-      }}
-    >
-      <Typography variant="h3">My Wallet</Typography>
+    <>
+      <Typography variant="h4">My Wallet</Typography>
       <Tabs value={tab} onChange={(e, value) => setTab(value)}>
         <Tab label="MY QR CODE" />
         <Tab label="Transfer points" />
@@ -28,6 +22,6 @@ export default function Wallet() {
         {tab === 1 && <TransferPoints />}
         {tab === 2 && <RedeemPoints />}
       </Box>
-    </Container>
+    </>
   );
 }
