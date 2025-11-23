@@ -56,10 +56,15 @@ function App() {
             {/* temp route for wallet */}
             <Route path="wallet" element={<Wallet />}></Route>
 
-            {/* Need to check if user has any events
-                                                        <Route path="organizer" element={ <ProtectedRoute /> }>
+            <Route
+              element={
+                <ProtectedClearanceRoute
+                  requiredClearance={["organizer"]}
+                />
+              }
+            >
 
-                                                        </Route> */}
+            </Route>
 
             {/* ROUTES FOR MANAGERS */}
             <Route
@@ -68,14 +73,18 @@ function App() {
                   requiredClearance={["manager", "superuser"]}
                 />
               }
-            ></Route>
+            >
+
+            </Route>
 
             {/* ROUTES FOR SUPERUSERS */}
             <Route
               element={
                 <ProtectedClearanceRoute requiredClearance={["superuser"]} />
               }
-            ></Route>
+            >
+
+            </Route>
           </Route>
 
           <Route path="*" element={<NotFound />} />
