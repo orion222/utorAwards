@@ -1,10 +1,11 @@
-import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Button } from "@mui/material";
+import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Button, Modal } from "@mui/material";
 import theme from '../../theme.js';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { TheatersOutlined } from "@mui/icons-material";
 import { useState } from "react";
+import EventModal from "./EventModal.jsx";
 
 function EventCard({ event }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
@@ -136,6 +137,15 @@ function EventCard({ event }) {
                         onClick={() => setViewDetails(true)}>      
                         View Details
                     </Button>
+                    <Modal
+                        open={viewDetails}
+                        onClose={() => setViewDetails(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                            display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <EventModal event={event} onClose={() => setViewDetails(false)}></EventModal>
+                    </Modal>
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> {/* right side */}
                     <Typography sx={{fontSize: 20, fontWeight: "bold"}}>
