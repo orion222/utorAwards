@@ -68,7 +68,8 @@ function Dashboard() {
 
     const isSmall = useMediaQuery("(max-width: 670px)");
 
-    return (<Box sx={{bgcolor: theme.palette.background.default}}>
+    return (
+      <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
             <Typography sx={{fontSize: 14}}>
                     <WavingHandIcon sx={{fontSize: 14, paddingRight: "8px"}}/>
@@ -80,10 +81,10 @@ function Dashboard() {
             <Typography sx={{fontSize: 40, fontWeight: 'bold'}}>
                 {user.points} points
             </Typography>
-            <Button variant="contained" onClick={viewWallet} sx={{fontSize: 12, padding: "8px"}}>
-                <WalletIcon sx={{fontSize: 12, paddingRight: "8px"}}/>
+            <Button variant="contained" onClick={viewWallet} sx={{fontSize: 12, p: 1 }}>
+                <WalletIcon sx={{fontSize: 16, mr: 1 }} />
                 View My Wallet
-                <ArrowForwardIcon sx={{fontSize: 12, paddingLeft: "8px"}}/>
+                <ArrowForwardIcon sx={{fontSize: 16, ml: 1 }}/>
             </Button>
         </Box>
         <Box sx={{padding: "16px"}}>
@@ -91,10 +92,10 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Recent Transactions
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: isSmall ? "4px" : "8px" }}>
+                <Box>
                     {transactions.length > 0 ? (
                                 transactions.map(transaction => (
-                                    <TransactionItemCard transaction={transaction}></TransactionItemCard>
+                                    <TransactionItemCard transaction={transaction} key={transaction.id}></TransactionItemCard>
                                 ))
                             ) : (
                                 <Typography>No transactions found.</Typography>
@@ -110,10 +111,10 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Promotions For You
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: isSmall ? "column" : "row", gap: "16px" }}>
+                <Box sx={{ display: 'flex', flexDirection: isSmall ? "column" : "row", gap: 1 }}>
                     {promotions.length > 0 ? (
                                     promotions.map(promotion => (
-                                        <PromotionCard promotion={promotion}></PromotionCard>
+                                        <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
                                     ))
                                 ) : (
                                     <Typography>No promotions found.</Typography>
@@ -129,12 +130,10 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
-                <Box sx={{display: "flex", flexDirection: isSmall ? "column" : "row", gap: "16px", width: "auto"}}>
+                <Box sx={{display: "flex", flexDirection: isSmall ? "column" : "row", gap: 1, width: "auto"}}>
                         {events.length > 0 ? (
                             events.map(event => (
-                               
-                                    <EventCard event={event}></EventCard>
-                                
+                                    <EventCard event={event} key={event.id}></EventCard>
                             ))
                         ) : (
                             <Typography>No events found.</Typography>
@@ -146,7 +145,8 @@ function Dashboard() {
                 </Link>
             </Box>
         </Box>
-    </Box>)
+      </Box>
+    );
 }
 
 

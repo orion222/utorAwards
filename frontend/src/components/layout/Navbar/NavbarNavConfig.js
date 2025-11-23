@@ -7,7 +7,6 @@ const NAV_ITEMS = {
 
   create: { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
   redeem: { label: "Process Redemption", icon: Gift, path: "/redeem" },
-  transfer: { label: "Transfer Points", icon: ArrowLeftRight, path: "/transfer" },
 
   exploreEvents: { label: "Explore", icon: Compass, path: "/events" },
   eventInvitations: { label: "Event Invitations", icon: Mail, path: "/events/invitations" },
@@ -22,7 +21,6 @@ const BASE = {
   regular: [
     "home",
     "wallet",
-    "transfer",
     "pastTransactions",
     "exploreEvents",
     "eventInvitations",
@@ -31,7 +29,6 @@ const BASE = {
   cashierExtras: [
     "create",
     "redeem",
-    "transfer",
     "createUser",
   ],
 

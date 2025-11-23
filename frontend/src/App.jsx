@@ -36,7 +36,6 @@ function App() {
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
                 <Route path="dashboard" element={<Dashboard />} />
-                <Route path="transactions" element={<Transactions />} />
                 <Route path="past-transactions" element={<PastTransactions />} />
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />

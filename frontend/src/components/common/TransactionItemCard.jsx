@@ -190,7 +190,7 @@ function TransactionItemCard({ transaction }) {
                             fontWeight="bold">
                             {amount > 0 ? `+${amount}` : amount} pts
                         </Typography>
-                        {(spent && spent !== 0) && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
+                        {spent !== null && spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>
