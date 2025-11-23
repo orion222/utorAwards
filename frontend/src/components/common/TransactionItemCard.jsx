@@ -186,9 +186,9 @@ function TransactionItemCard({ transaction }) {
                     >
                         <Typography
                             variant="h4"
-                            color={type === "transfer" ? amount > 0 ? "primary" : "error" : earned > 0 ? "primary" : "error"}
+                            color={amount > 0 ? "primary" : "error"}
                             fontWeight="bold">
-                            {type === "transfer" ? amount > 0 ? `+${amount}` : amount : earned > 0 ? `+${earned}` : earned} pts
+                            {amount > 0 ? `+${amount}` : amount} pts
                         </Typography>
                         {(spent && spent !== 0) && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
