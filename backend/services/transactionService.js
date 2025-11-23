@@ -717,7 +717,7 @@ class TransactionService {
     return activePromo;
   }
 
-  static async retrieveSingleTransaction(transactionId, role) {
+  static async retrieveSingleTransaction(transactionId) {
     const transaction = await prisma.transaction.findUnique({
       where: {
         id: transactionId,
@@ -741,7 +741,7 @@ class TransactionService {
       throw new NotFoundError();
     }
 
-    const query = {
+    return {
       id: transaction.id,
       utorid: transaction.targetUser.utorid,
       type: transaction.type,
@@ -752,9 +752,8 @@ class TransactionService {
       remark: transaction.remark,
       createdBy: transaction.user.utorid,
       relatedId: transaction.relatedId,
+      suspicious: transaction.suspicious
     };
-
-    return role === RoleType.cashier ? query : {...query, suspicious: transaction.suspicious};
   }
 
   static async updateTransactionSuspicion(transactionId, isNowSuspicious) {

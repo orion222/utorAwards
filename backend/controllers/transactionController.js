@@ -182,7 +182,7 @@ async function retrieveSingleTransaction(req, res) {
 
   try {
     const transaction =
-      await TransactionService.retrieveSingleTransaction(transactionId, req.user.role);
+      await TransactionService.retrieveSingleTransaction(transactionId);
     res.status(200).json(transaction);
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
