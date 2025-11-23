@@ -734,6 +734,8 @@ class TransactionService {
         targetUser: true,
         relatedId: true,
         createdAt: true,
+        processed: true,
+        processedByUser: true
       },
     });
 
@@ -741,7 +743,7 @@ class TransactionService {
       throw new NotFoundError();
     }
 
-    return {
+    const query = {
       id: transaction.id,
       utorid: transaction.targetUser.utorid,
       type: transaction.type,
@@ -752,8 +754,13 @@ class TransactionService {
       remark: transaction.remark,
       createdBy: transaction.user.utorid,
       relatedId: transaction.relatedId,
-      suspicious: transaction.suspicious
-    };
+      suspicious: transaction.suspicious,
+      processed: transaction.processed,
+    }
+
+    return transaction.processed ? {
+      ...query, processedBy: transaction.processedByUser?.utorid ?? null
+    } : query;
   }
 
   static async updateTransactionSuspicion(transactionId, isNowSuspicious) {
