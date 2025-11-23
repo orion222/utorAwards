@@ -15,19 +15,6 @@ function TransactionItemCard({ transaction }) {
 
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
-    function truncateStr(str) {
-        let truncated = remark;
-        if (isSmall && str.length > 20) {
-            truncated = str.substring(0 , 20) + "...";
-        }
-        else if (!isSmall && str.length > 100) {
-            truncated = str.substring(0 , 100) + "...";
-        }
-        return truncated;
-    }
-
-    const truncatedRemark = truncateStr(remark);
-
     if (isSmall) {
         return (
             <Box 
@@ -124,6 +111,7 @@ function TransactionItemCard({ transaction }) {
                 width: "100%",
                 maxWidth: "unset",
                 flex: 1,
+                my: 2,
                 borderRadius: 3,
                 position: "relative",
                 overflow: "visible",
@@ -198,9 +186,9 @@ function TransactionItemCard({ transaction }) {
                     >
                         <Typography
                             variant="h4"
-                            color={type === "transfer" ? amount > 0 ? "primary" : "error" : earned > 0 ? "primary" : "error"}
+                            color={amount > 0 ? "primary" : "error"}
                             fontWeight="bold">
-                            {type === "transfer" ? amount > 0 ? `+${amount}` : amount : earned > 0 ? `+${earned}` : earned} pts
+                            {amount > 0 ? `+${amount}` : amount} pts
                         </Typography>
                         {(spent && spent !== 0) && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>

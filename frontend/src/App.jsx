@@ -20,6 +20,7 @@ import Wallet from "./components/user/wallet";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
+import PastTransactions from "./pages/transactions/PastTransactions";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
             <Route element={<ProtectedClearanceRoute />}>
                 <Route path="dashboard" element={<Dashboard />} />
                 <Route path="transactions" element={<Transactions />} />
+                <Route path="past-transactions" element={<PastTransactions />} />
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />
             </Route>

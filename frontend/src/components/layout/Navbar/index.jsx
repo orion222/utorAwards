@@ -29,13 +29,15 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
       sx={{
         width: sidebarWidth,
         backgroundColor: "#E8EBDF",
-        borderRight: "1px solid #ccc",
+        borderRight: isMobileWidth ? 0 : "1px solid #ccc",
         padding: 1,
         transition: "width 0.3s",
         mt: 8,
         overflowY: "auto",
         overflowX: "hidden",
         flexShrink: 0,
+        position: isMobileWidth ? "static" : "fixed",
+        height: "100%",
       }}
     >
       <MenuList sx={{ p: 0 }}>
@@ -48,22 +50,28 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
                   if (item.children) {
                     if (isOpen) {
                       toggleExpand(item.path);
-                    } else {
-                      // setSelectedItem(item.children[0].path);
+                    } 
+                    else {
                       navigate(item.children[0].path);
                     }
-                  } else {
-                    // setSelectedItem(item.path);
+                  } 
+                  else {
                     navigate(item.path);
                   }
                 }}
                 sx={{
                   minHeight: 48,
-                  px: 0,
+                  px: 1,
                   mx: 1,
                   borderRadius: 2,
-                  mb: 0.5,
+                  my: 1,
                   justifyContent: isOpen ? "flex-start" : "center",
+                  "&.Mui-selected": {
+                    backgroundColor: "#CFD4C0",
+                    "&:hover": {
+                      backgroundColor: "#C2C8B4",
+                    },
+                  },
                 }}
               >
                 <ListItemIcon
@@ -103,7 +111,6 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
                       component={Link}
                       to={child.path}
                       selected={location.pathname === child.path}
-                      // onClick={() => setSelectedItem(child.path)}
                       sx={{
                         borderRadius: 2,
                         mx: 1,
@@ -147,7 +154,7 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
           slotProps={{
             paper: {
               sx: {
-                width: 240,
+                width: "max-content",
                 backgroundColor: "#E8EBDF",
                 padding: 1,
                 overflowY: "auto",

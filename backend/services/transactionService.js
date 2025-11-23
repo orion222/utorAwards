@@ -582,18 +582,21 @@ class TransactionService {
     return { count, queryResults };
   }
 
-  static async retrieveUserTransactions(userId, type, relatedId, promotionId, amount, operator, page = 1, limit = 10) {
+  static async retrieveUserTransactions(userId, type, remark, relatedId, promotionId, amount, operator, page = 1, limit = 10) {
     const whereFields = {};
 
     if (!userId) throw new BadRequestError("Must include user id");
     whereFields.userId = userId;
 
-    if ((!type && relatedId) || (amount && !operator) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
+    if ((!type && relatedId) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
 
     if (type) whereFields.type = type;
+    if (remark) whereFields.remark = { contains: remark };
     if (relatedId) whereFields.relatedId = relatedId;
     if (promotionId) whereFields.promotions = { some: { id: promotionId } };
+
     if (amount && operator) whereFields.amount = { [operator]: amount };
+    else if (amount && !operator) whereFields.amount = amount;
 
     const [count, results] = await prisma.$transaction([
         prisma.transaction.count({ where: whereFields }),
@@ -609,7 +612,19 @@ class TransactionService {
                 id: true,
               }
             },
+            user: {
+              select: {
+                utorid: true
+              }
+            },
+            targetUser: {
+              select: {
+                utorid: true
+              }
+            },
+            suspicious: true,
             remark: true,
+            relatedId: true,
           },
           take: limit,
           skip: (page - 1) * limit,
