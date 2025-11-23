@@ -566,7 +566,7 @@ class TransactionService {
     return { count, queryResults };
   }
 
-  static async retrieveUserTransactions(userId, type, relatedId, promotionId, amount, operator, page = 1, limit = 10) {
+  static async retrieveUserTransactions(userId, type, remark, relatedId, promotionId, amount, operator, page = 1, limit = 10) {
     const whereFields = {};
 
     if (!userId) throw new BadRequestError("Must include user id");
@@ -575,6 +575,7 @@ class TransactionService {
     if ((!type && relatedId) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
 
     if (type) whereFields.type = type;
+    if (remark) whereFields.remark = { contains: remark };
     if (relatedId) whereFields.relatedId = relatedId;
     if (promotionId) whereFields.promotions = { some: { id: promotionId } };
 
@@ -595,6 +596,9 @@ class TransactionService {
                 id: true,
               }
             },
+            user: true,
+            targetUser: true,
+            suspicious: true,
             remark: true,
           },
           take: limit,
