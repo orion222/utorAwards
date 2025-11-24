@@ -100,7 +100,6 @@ export default function RedeemPoints() {
                 control={control}
                 render={({ field }) => (
                   <TextField
-                    {...field}
                     label="Points to redeem"
                     error={!!errors.points}
                     helperText={errors.points?.message}
