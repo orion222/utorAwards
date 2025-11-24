@@ -28,7 +28,6 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
         try {
             const { data } = await api.get(`${apiEndpoint}?${params}`);
             setTotalCount(data.count);
-            console.log(data)
             return data.results;
         } catch (error) {
             console.error(error);

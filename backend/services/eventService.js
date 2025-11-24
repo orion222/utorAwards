@@ -117,9 +117,6 @@ class EventService {
 
     filterDetails.AND.push(tempFilterDetail);
 
-    console.log(JSON.stringify(filterDetails, null, 2));
-    console.log("--------------------------------------------------");
-
     const selectDetails = {
       id: true,
       name: true,
