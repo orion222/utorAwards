@@ -16,7 +16,7 @@ const REGULAR_ITEMS = [
   { label: "Home", icon: HomeIcon, path: "/dashboard" },
   { label: "Wallet", icon: WalletIcon, path: "/wallet" },
   { label: "Past Transactions", icon: History, path: "/past-transactions" },
-  { label: "Explore Events", icon: Compass, path: "/events" },
+  { label: "Explore", icon: Compass, path: "/explore", children: [ { label: "Events", path: "/explore/events" }, { label: "Promotions", path: "/explore/promotions" }] },
   { label: "Event Invitations", icon: Mail, path: "/events/invitations" },
 ];
 

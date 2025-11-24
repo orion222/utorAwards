@@ -1,7 +1,7 @@
-import { Box, Button, Collapse, IconButton, TextField, Pagination, Chip, FormControl, InputLabel, Select, MenuItem, useMediaQuery } from "@mui/material";
+import { Box, Button, Collapse, IconButton, TextField, Pagination, Chip, FormControl, InputLabel, Select, MenuItem, useMediaQuery, Typography } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 import FilterListIcon from "@mui/icons-material/FilterList"
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../api/api.js";
 
@@ -18,12 +18,17 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
 
     const isMobileWidth = useMediaQuery('(max-width:800px)');
 
+    if (!filterConfig || !apiEndpoint || !queryKey) {
+      return <Typography>Missing FilterableList props</Typography>
+    }
+
     const fetchData = async () => {
         const params = new URLSearchParams({ ...appliedFilters, page, limit });
         
         try {
             const { data } = await api.get(`${apiEndpoint}?${params}`);
             setTotalCount(data.count);
+            console.log(data)
             return data.results;
         } catch (error) {
             console.error(error);
@@ -39,10 +44,12 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
 
     const applyFilters = () => {
         const newFilters = Object.fromEntries(
-            Object.entries(tempFilters).map(([key, value]) => [
-                key,
-                typeof value === "string" ? value.toLowerCase() : value
-            ])
+            Object.entries(tempFilters).map(([key, value]) => {
+              if (key !== "name" && key !== "description" && key !== "remark" && key !== "location") {
+                return [key, typeof value === "string" ? value.toLowerCase() : value];
+              }
+              return [key, value];
+            })
         );
 
         if (searchInput.trim()) {

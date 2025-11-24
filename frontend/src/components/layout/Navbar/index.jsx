@@ -41,101 +41,103 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
       }}
     >
       <MenuList sx={{ p: 0 }}>
-        {navItems.map((item) => (
-          <Box key={item.path}>
-            <Tooltip title={isOpen ? "" : item.label} placement="right">
-              <MenuItem
-                selected={!item.children && item.path && location.pathname === item.path}
-                onClick={() => {
-                  if (item.children) {
-                    if (isOpen) {
-                      toggleExpand(item.path);
-                    } 
-                    else {
-                      navigate(item.children[0].path);
+        {navItems.map((item) => {
+          const hasActiveChild = item.children?.some((child) => location.pathname === child.path) || false;
+
+          return (
+            <Box key={item.path}>
+              <Tooltip title={isOpen ? "" : item.label} placement="right">
+                <MenuItem
+                  selected={(!item.children && location.pathname === item.path) || hasActiveChild}
+                  onClick={() => {
+                    if (item.children) {
+                      if (isOpen) {
+                        toggleExpand(item.path);
+                      } else {
+                        navigate(item.children[0].path);
+                      }
+                    } else {
+                      navigate(item.path);
                     }
-                  } 
-                  else {
-                    navigate(item.path);
-                  }
-                }}
-                sx={{
-                  minHeight: 48,
-                  px: 1,
-                  mx: 1,
-                  borderRadius: 2,
-                  my: 1,
-                  justifyContent: isOpen ? "flex-start" : "center",
-                  "&.Mui-selected": {
-                    backgroundColor: "#CFD4C0",
-                    "&:hover": {
-                      backgroundColor: "#C2C8B4",
-                    },
-                  },
-                }}
-              >
-                <ListItemIcon
+                  }}
                   sx={{
-                    minWidth: 0,
-                    mr: isOpen ? 2 : 0,
-                    justifyContent: "center",
+                    minHeight: 48,
+                    px: 1,
+                    mx: 1,
+                    borderRadius: 2,
+                    my: 1,
+                    justifyContent: isOpen ? "flex-start" : "center",
+                    "&.Mui-selected": {
+                      backgroundColor: "#CFD4C0",
+                      "&:hover": {
+                        backgroundColor: "#C2C8B4",
+                      },
+                    },
                   }}
                 >
-                  <item.icon />
-                </ListItemIcon>
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: isOpen ? 2 : 0,
+                      justifyContent: "center",
+                    }}
+                  >
+                    <item.icon/>
+                  </ListItemIcon>
 
-                <ListItemText
-                  primary={item.label}
-                  sx={{
-                    opacity: isOpen ? 1 : 0,
-                    transition: "opacity 0.3s",
-                    whiteSpace: "nowrap",
-                    "& .MuiTypography-root": {
-                      fontSize: "0.8rem"
-                    }
-                  }}
-                />
+                  <ListItemText
+                    primary={item.label}
+                    sx={{
+                      opacity: isOpen ? 1 : 0,
+                      transition: "opacity 0.3s",
+                      whiteSpace: "nowrap",
+                      "& .MuiTypography-root": {
+                        fontSize: "0.8rem"
+                      }
+                    }}
+                  />
 
-                {item.children && isOpen && (
-                  expandedItems[item.path] ? <ExpandLess /> : <ExpandMore />
-                )}
-              </MenuItem>
-            </Tooltip>
+                  {item.children && isOpen && (
+                    expandedItems[item.path] ? <ExpandLess/> : <ExpandMore/>
+                  )}
+                </MenuItem>
+              </Tooltip>
 
-            {item.children && (
-              <Collapse in={expandedItems[item.path] && isOpen} timeout="auto">
-                <MenuList sx={{ pl: 4, p: 0 }}>
-                  {item.children.map((child) => (
-                    <MenuItem
-                      key={child.path}
-                      component={Link}
-                      to={child.path}
-                      selected={location.pathname === child.path}
-                      sx={{
-                        borderRadius: 2,
-                        mx: 1,
-                        mb: 0.5,
-                        minHeight: 40,
-                      }}
-                    >
-                      <ListItemText
-                        primary={child.label}
+              {item.children && (
+                <Collapse in={expandedItems[item.path] && isOpen} timeout="auto">
+                  <MenuList sx={{pl: 4, p: 0}}>
+                    {item.children.map((child) => (
+                      <MenuItem
+                        key={child.path}
+                        component={Link}
+                        to={child.path}
+                        selected={location.pathname === child.path}
                         sx={{
-                          opacity: isOpen ? 1 : 0,
-                          transition: "opacity 0.3s",
-                          whiteSpace: "nowrap",
-                          "& .MuiTypography-root": {
-                            fontSize: "0.8rem"
-                          },
+                          borderRadius: 2,
+                          mx: 1,
+                          mb: 0.5,
+                          minHeight: 40,
                         }}
-                      />
-                    </MenuItem>
-                  ))}
-                </MenuList>
-              </Collapse>
-            )}
-          </Box>
-        ))}
+                      >
+                        <ListItemText
+                          primary={child.label}
+                          sx={{
+                            opacity: isOpen ? 1 : 0,
+                            transition: "opacity 0.3s",
+                            whiteSpace: "nowrap",
+                            "& .MuiTypography-root": {
+                              fontSize: "0.8rem"
+                            },
+                          }}
+                        />
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </Collapse>
+              )}
+            </Box>
+          );
+        })}
       </MenuList>
     </Box>
   );

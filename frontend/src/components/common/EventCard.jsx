@@ -11,14 +11,6 @@ function EventCard({ event }) {
     const { name, description, location, startTime, endTime, capacity, numGuests, points} = event;
     const [viewDetails, setViewDetails] = useState(false);
 
-    const typeToColour = {
-        "purchase": "#7CD93A",
-        "redemption": "#F59B66",
-        "adjustment": "#F2B84B",
-        "event": "#7DA4F2",
-        "transfer": "#BBA3E5",
-    }
-
     const formatDate = (isoDate) => {
         const formattedDate = new Intl.DateTimeFormat('en-US', {
             month: 'short',
@@ -29,11 +21,11 @@ function EventCard({ event }) {
     }
     
     function truncateStr(str) {
-        let truncated = description;
-        if (isSmall && str.length > 20) {
+        let truncated = str;
+        if (isSmall && str?.length > 20) {
             truncated = str.substring(0 , 20) + "...";
         }
-        else if (!isSmall && str.length > 100) {
+        else if (!isSmall && str?.length > 100) {
             truncated = str.substring(0 , 100) + "...";
         }
         return truncated;
@@ -46,12 +38,12 @@ function EventCard({ event }) {
                 borderRadius: "8px",
                 display: "flex",
                 flexDirection: "row",
-                width: isSmall ? "325px" : "33.33%",
                 gap: "10px",
                 justifyContent: "space-between", 
                 border: 1, 
                 borderColor: theme.palette.custom.border,
-                bgcolor: theme.palette.background.paper}}>
+                bgcolor: theme.palette.background.paper
+            }}>
                     <Box sx={{display: "flex", flexDirection: "column", gap: "8px"}}>
                         <Box sx={{display: "flex", flexDirection: "column", gap: "4px"}}>
                             <Typography sx={{fontSize: 20, fontWeight:"bold"}}>
@@ -78,7 +70,7 @@ function EventCard({ event }) {
                             <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                                 <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
                                 <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
-                                    {numGuests}/{capacity}
+                                  {capacity === null ? `${numGuests}` : `${numGuests}/${capacity}`}
                                 </Typography>
                             </Box>
                         </Box>
@@ -101,12 +93,13 @@ function EventCard({ event }) {
                 borderRadius: "8px",
                 display: "flex",
                 flexDirection: "row",
-                width: isSmall ? "325px" : "33.33%",
                 gap: "10px",
                 justifyContent: "space-between", 
                 border: 1, 
                 borderColor: theme.palette.custom.border,
-                bgcolor: theme.palette.background.paper}}>
+                bgcolor: theme.palette.background.paper,
+                flexShrink: 1
+            }}>
                 <Box sx={{display: "flex", flexDirection: "column", width: "auto", justifyContent: "space-between", gap: "8px"}}> {/* left side */}
                     <Box sx={{display: "flex", flexDirection: "column", gap: "4px"}}>
                         <Typography sx={{fontSize: 20, fontWeight:"bold"}}>
@@ -124,7 +117,7 @@ function EventCard({ event }) {
                                 {location}
                             </Typography>
                         </Box>
-                        <Typography sx={{fontSize: 11, width: "260px", height: isSmall ? "22.5px":"45px"}}>
+                        <Typography sx={{fontSize: 11, maxWidth: "260px", height: isSmall ? "22.5px":"45px"}}>
                             {truncateStr(description)}
                         </Typography>
                     </Box>
@@ -144,7 +137,7 @@ function EventCard({ event }) {
                     <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                         <PeopleAltIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
                         <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}>
-                            {numGuests}/{capacity}
+                          {capacity === null ? `${numGuests}` : `${numGuests}/${capacity}`}
                         </Typography>
                     </Box>
                 </Box>
