@@ -16,7 +16,6 @@ export default function useMediaQuery() {
       setWidth((prev) => (prev === w ? prev : w));
     }
     window.addEventListener("resize", handleResize);
-    // initial log
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
