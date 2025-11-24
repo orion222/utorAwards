@@ -19,7 +19,7 @@ export default function ConfirmDialog({open, title, description, confirmLabel = 
     };
 
     return (
-        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" closeAfterTransition={false}>
+        <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm" closeAfterTransition={false} slotProps={{ paper: { sx: { p: 2 } } }}>
             <DialogTitle
                 sx={{ fontFamily: "Inter, sans-serif", color: "#232715" }}
             >
@@ -32,7 +32,7 @@ export default function ConfirmDialog({open, title, description, confirmLabel = 
                 </DialogContent>
             )}
 
-            <DialogActions sx={{ p: 2 }}>
+            <DialogActions sx={{ p: 3 }}>
                 <Button
                     onClick={handleClose}
                     variant="outlined"

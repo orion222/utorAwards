@@ -44,8 +44,16 @@ export default function CreatePurchase() {
             showToast("Purchase transaction created successfully", "success");
         }
         catch (error) {
-            const message = error.response?.data?.error || error.response?.data?.message || "Purchase transaction creation failed";
-            showToast(message, "error");
+            const errMessage = error.response?.data?.error || error.response?.data?.message || "Purchase transaction creation failed";
+            const msg = (
+            <Stack spacing={1}>
+                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", color: "#232715", fontWeight: 600 }}>Purchase Transaction Creation Failed</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>An error has occurred: {errMessage}</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Please try again later.</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>If this error persists, please contact your manager.</Typography>
+            </Stack>
+            );
+            showToast(msg, "error");
         }
     };
 
@@ -200,7 +208,7 @@ export default function CreatePurchase() {
                             />
                         </LabeledField>
                         
-                        <Typography variant="body5" color="error" sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center", }}>
+                        <Typography variant="body2" color="error" sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center", }}>
                             * Required
                         </Typography>
 

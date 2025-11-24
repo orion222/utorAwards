@@ -54,8 +54,16 @@ export default function ProcessRedemption() {
             showToast("Redemption processed successfully", "success");
         }
         catch (error) {
-            const message = error.response?.data?.error || error.response?.data?.message || "Redemption processing failed";
-            showToast(message, "error");
+            const errMessage = error.response?.data?.error || error.response?.data?.message || "Redemption processing failed";
+            const msg = (
+            <Stack spacing={1}>
+                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", color: "#232715", fontWeight: 600 }}>Redemption Failed</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>An error has occurred: {errMessage}</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Please try again later.</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>If this error persists, please contact your manager.</Typography>
+            </Stack>
+            );
+            showToast(msg, "error");
         }
         finally {
             setProcessing(false);
@@ -127,7 +135,7 @@ export default function ProcessRedemption() {
                             />
                         </LabeledField>
                         
-                        <Typography variant="body5" color="error" sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center", }}>
+                        <Typography variant="body2" color="error" sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center", }}>
                             * Required
                         </Typography>
 
@@ -161,10 +169,10 @@ export default function ProcessRedemption() {
                         title="Confirm Process Redemption"
                         description={
                             <>  
-                                <Stack spacing={2}>
-                                    <Typography variant="body5" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Are you sure you want to process the following redemption?</Typography>
-                                    <Typography variant="body5" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Transaction ID: {transactionData.id}</Typography>
-                                    <Typography variant="body5" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>This action cannot be undone.</Typography>
+                                <Stack spacing={2} sx={{ p: 1 }}>
+                                    <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Are you sure you want to process the following redemption?</Typography>
+                                    <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Transaction ID: {transactionData.id}</Typography>
+                                    <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>This action cannot be undone.</Typography>
                                 </Stack>
                             </>
                         }
