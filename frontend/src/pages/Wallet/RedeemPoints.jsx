@@ -24,7 +24,6 @@ export default function RedeemPoints() {
   const { showToast, ToastComponent } = useToast();
   const { redemptionData, setRedemption } = useWallet();
   const status = Boolean(redemptionData?.processedBy);
-  console.log(redemptionData);
   const { canvasRef, isGenerating } = useQRCode(redemptionData);
 
   const {

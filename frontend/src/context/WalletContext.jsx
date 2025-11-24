@@ -9,7 +9,6 @@ export const WalletProvider = ({ children }) => {
   const setRedemption = (data) => {
     setRedemptionData(data);
   };
-  console.log("in context: ", redemptionData);
   return (
     <WalletContext.Provider value={{ redemptionData, setRedemption }}>
       {children}
