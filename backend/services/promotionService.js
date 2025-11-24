@@ -54,6 +54,7 @@ class PromotionService {
   static async retrievePromotions(
     userId,
     role,
+    search,
     name,
     type,
     page,
@@ -63,9 +64,23 @@ class PromotionService {
   ) {
     const where = {};
 
-    if (name) {
-      where.name = name;
+    where.AND = [];
+    let tempFilterDetail = { OR: [] };    
+
+    if (search) {
+      tempFilterDetail.OR.push({ name: { contains: search }});
+      tempFilterDetail.OR.push({ description: { contains: search }});
     }
+
+    if (name) {
+      tempFilterDetail.OR.push({ name: name });
+    }
+
+    if (tempFilterDetail.OR.length !== 0) {
+      where.AND.push(tempFilterDetail);
+    }
+
+    tempFilterDetail = { OR: [] };
 
     if (type) {
       where.type = type;
