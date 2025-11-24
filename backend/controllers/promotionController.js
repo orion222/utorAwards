@@ -108,7 +108,7 @@ async function createPromotion(req, res) {
 
 async function retrievePromotion(req, res) {
   const user = req.user;
-  const { name, type, page, limit, started, ended } = req.query;
+  const { search, name, type, page, limit, started, ended } = req.query;
 
   var pageNum = Number(page);
   var limitNum = Number(limit);
@@ -163,6 +163,7 @@ async function retrievePromotion(req, res) {
     const promotionData = await PromotionService.retrievePromotions(
       user.id,
       user.role,
+      search,
       name,
       type,
       pageNum,

@@ -4,7 +4,7 @@ const { RoleType, TransactionType } = require("@prisma/client");
 const { isInISODateString } = require("../utils/generalHelpers");
 
 async function getFilteredEvents(req, res) {
-  const { name, location, started, ended, showFull, page, limit, published } =
+  const { search, name, location, started, ended, showFull, page, limit, published } =
     req.query;
 
   if (showFull && showFull !== "true" && showFull !== "false") {
@@ -59,13 +59,14 @@ async function getFilteredEvents(req, res) {
 
   try {
     const filteredEventsData = await EventService.getFilteredEvents(
+      search,
       name,
       location,
       started,
       ended,
       showFull,
-      page,
-      limit,
+      pageNum,
+      limitNum,
       published,
       userRole,
     );
