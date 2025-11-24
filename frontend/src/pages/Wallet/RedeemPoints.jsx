@@ -102,7 +102,6 @@ export default function RedeemPoints() {
                   <TextField
                     {...field}
                     label="Points to redeem"
-                    variant="outlined"
                     error={!!errors.points}
                     helperText={errors.points?.message}
                     disabled={hasGeneratedQR}
@@ -115,19 +114,13 @@ export default function RedeemPoints() {
                 name="remarks"
                 control={control}
                 render={({ field }) => (
-                  <TextareaAutosize
+                  <TextField
                     {...field}
+                    placeholder="Enter any remarks here (Optional)"
+                    multiline
                     minRows={3}
-                    placeholder="Remarks (optional)"
-                    style={{
-                      padding: 12,
-                      fontFamily: "inherit",
-                      fontSize: "1rem",
-                      borderRadius: 4,
-                      border: errors.remarks
-                        ? "1px solid #d32f2f"
-                        : "1px solid #ccc",
-                    }}
+                    variant="outlined"
+                    error={!!errors.remarks}
                     disabled={hasGeneratedQR}
                     value={redemptionData?.remark || field.value}
                   />
