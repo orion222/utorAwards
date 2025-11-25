@@ -21,6 +21,10 @@ import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
 import PastTransactions from "./pages/transactions/PastTransactions";
 import Explore from "./pages/Explore";
+import MyEvents from "./pages/MyEvents/index.jsx";
+import Invitations from "./pages/MyEvents/Invitations.jsx";
+import EventManagement from "./pages/MyEvents/EventManagement.jsx";
+import ProtectedOrganizerRoute from "./components/routes/ProtectedOrganizerRoute.jsx";
 
 function App() {
   return (
@@ -44,6 +48,10 @@ function App() {
               <Route path="explore" element={<Explore />}>
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />
+              </Route>
+              <Route path="my-events" element={ <MyEvents /> }>
+                <Route path="invitations" element={ <Invitations /> } />
+                <Route path="management" element={ <ProtectedOrganizerRoute /> } />
               </Route>
             </Route>
 

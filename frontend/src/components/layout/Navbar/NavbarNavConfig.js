@@ -17,7 +17,7 @@ const REGULAR_ITEMS = [
   { label: "Wallet", icon: WalletIcon, path: "/wallet" },
   { label: "Past Transactions", icon: History, path: "/past-transactions" },
   { label: "Explore", icon: Compass, path: "/explore", children: [ { label: "Events", path: "/explore/events" }, { label: "Promotions", path: "/explore/promotions" }] },
-  { label: "Event Invitations", icon: Mail, path: "/events/invitations" },
+  { label: "My Events", icon: Mail, path: "/my-events/invitations" },
 ];
 
 const CASHIER_EXTRA = [
@@ -34,7 +34,7 @@ const SUPERUSER_EXTRA = [
   { label: "Manage Users", icon: Users, path: "/manageUsers" },
 ];
 
-export function getNavForRole(role) {
+export function getNavForRole(role, isEventOrganizer) {
   const items = [...REGULAR_ITEMS];
 
   if (role === "cashier" || role === "manager" || role === "superuser") {
@@ -47,6 +47,10 @@ export function getNavForRole(role) {
 
   if (role === "superuser") {
     items.push(...SUPERUSER_EXTRA);
+  }
+
+  if (isEventOrganizer) {
+    items[4] = { label: "My Events", icon: Mail, path: "/my-events", children: [ { label: "Invitations", path: "/my-events/invitations" }, { label: "Management", path: "/my-events/management" }] };
   }
 
   return items;
