@@ -53,17 +53,17 @@ function Dashboard() {
 
     const viewPromotions = (e) => {
         e.preventDefault();
-        navigate("/promotions");
+        navigate("/explore/promotions");
     };
 
     const viewTransactions = (e) => {
         e.preventDefault();
-        navigate("/transactions");
+        navigate("/past-transactions");
     };
 
     const viewEvents = (e) => {
         e.preventDefault();
-        navigate("/events");
+        navigate("/explore/events");
     };
 
     const isSmall = useMediaQuery("(max-width: 670px)");
@@ -111,7 +111,7 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Promotions For You
                 </Typography>
-                <Box sx={{ display: 'flex', flexDirection: isSmall ? "column" : "row", gap: 1 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
                     {promotions.length > 0 ? (
                                     promotions.map(promotion => (
                                         <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
@@ -130,7 +130,7 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
-                <Box sx={{display: "flex", flexDirection: isSmall ? "column" : "row", gap: 1, width: "auto"}}>
+                <Box sx={{display: 'grid', gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
                         {events.length > 0 ? (
                             events.map(event => (
                                     <EventCard event={event} key={event.id}></EventCard>

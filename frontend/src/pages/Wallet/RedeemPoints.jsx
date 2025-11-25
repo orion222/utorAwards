@@ -18,25 +18,19 @@ import useQRCode from "../../components/common/hooks/useQRcode.jsx";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import PendingIcon from "@mui/icons-material/Pending";
 import convertToMDY from "../../components/common/helpers/convertToMDY.js";
+import { useWallet } from "../../context/WalletContext.jsx";
 
 export default function RedeemPoints() {
   const { showToast, ToastComponent } = useToast();
-  const [redemptionData, setRedemptionData] = useState(null);
-  const [status, setStatus] = useState(false);
-  const {
-    canvasRef,
-    qrCodeDataURL,
-    isGenerating,
-    QRerror: error,
-    downloadQRCode,
-    copyQRData,
-  } = useQRCode(redemptionData);
+  const { redemptionData, setRedemption } = useWallet();
+  const status = Boolean(redemptionData?.processedBy);
+  const { canvasRef, isGenerating } = useQRCode(redemptionData);
 
   const {
     control,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
+    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -69,20 +63,23 @@ export default function RedeemPoints() {
       remark: remarks || "",
     };
     const response = await api.post(`/users/me/transactions`, payload);
-    setRedemptionData(response.data);
-    setStatus(response.data.processedBy !== null);
+    setRedemption(response.data);
     showToast("Created redemption!", "success");
   };
   const submitCancelRedemption = async (id) => {
     const payload = {
       id,
     };
-    const response = await api.delete(`/users/me/transactions`, {
+    const res = await api.delete(`/users/me/transactions`, {
       data: payload,
     });
-    showToast("Redemption cancelled!", "info");
-    setRedemptionData(null);
-    setStatus(null);
+    if (res.status === 201) {
+      showToast("Redemption cancelled!", "info");
+      setRedemption(null);
+      reset();
+    } else {
+      showToast("Cancellation failed", "error");
+    }
   };
 
   return (
@@ -105,9 +102,10 @@ export default function RedeemPoints() {
                   <TextField
                     {...field}
                     label="Points to redeem"
-                    variant="outlined"
                     error={!!errors.points}
                     helperText={errors.points?.message}
+                    disabled={hasGeneratedQR}
+                    value={redemptionData?.amount || field.value}
                   />
                 )}
               />
@@ -116,19 +114,15 @@ export default function RedeemPoints() {
                 name="remarks"
                 control={control}
                 render={({ field }) => (
-                  <TextareaAutosize
+                  <TextField
                     {...field}
+                    placeholder="Enter any remarks here (Optional)"
+                    multiline
                     minRows={3}
-                    placeholder="Remarks (optional)"
-                    style={{
-                      padding: 12,
-                      fontFamily: "inherit",
-                      fontSize: "1rem",
-                      borderRadius: 4,
-                      border: errors.remarks
-                        ? "1px solid #d32f2f"
-                        : "1px solid #ccc",
-                    }}
+                    variant="outlined"
+                    error={!!errors.remarks}
+                    disabled={hasGeneratedQR}
+                    value={redemptionData?.remark || field.value}
                   />
                 )}
               />
