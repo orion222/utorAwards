@@ -112,7 +112,6 @@ class EventService {
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
     }
 
     filterDetails.AND.push(tempFilterDetail);
