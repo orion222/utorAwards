@@ -64,8 +64,8 @@ async function getFilteredEvents(req, res) {
       started,
       ended,
       showFull,
-      page,
-      limit,
+      pageNum,
+      limitNum,
       published,
       userRole,
     );
