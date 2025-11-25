@@ -27,7 +27,6 @@ function PromotionCard({ promotion }) {
             borderRadius: "8px",
             display: "flex",
             flexDirection: "row",
-            width: isSmall ? "325px" : "33.33%",
             gap: "5px",
             justifyContent: "space-between", 
             border: 1, 
@@ -53,6 +52,9 @@ function PromotionCard({ promotion }) {
                                 Until {formatDate(endTime)}
                             </Typography>
                     </Box>
+                    <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
+                        {description}
+                    </Typography>
                 </Box>
                 <Box> {/* right side */}
                     <Box sx={{backgroundColor: theme.palette.custom.border, borderRadius: "8px", padding: "4px"}}>

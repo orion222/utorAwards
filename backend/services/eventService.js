@@ -49,6 +49,7 @@ class EventService {
   }
 
   static async getFilteredEvents(
+    search,
     name,
     location,
     started,
@@ -60,13 +61,31 @@ class EventService {
     role,
   ) {
     const filterDetails = {};
+
+    filterDetails.AND = [];
+
+    let tempFilterDetail = { OR: [] };
+
+    if (search) {
+      tempFilterDetail.OR.push({ name: { contains: search } });
+      tempFilterDetail.OR.push({ description: { contains: search } });
+      tempFilterDetail.OR.push({ location: { contains: search } });
+    }
+
     if (name) {
-      filterDetails.name = name;
+      tempFilterDetail.OR.push({ name: name });
     }
 
     if (location) {
-      filterDetails.location = location;
+      tempFilterDetail.OR.push({ location: location });
     }
+
+    if (tempFilterDetail.OR.length !== 0) {
+      filterDetails.AND.push(tempFilterDetail);
+    }
+
+    tempFilterDetail = { OR: [] };
+
     const currDate = new Date();
     if (started === true) {
       filterDetails.startTime = { lt: currDate };
@@ -84,15 +103,19 @@ class EventService {
       filterDetails.published = published === "true";
     }
 
-    filterDetails.numGuests = { lt: prisma.event.fields.capacity };
+    tempFilterDetail.OR.push({ capacity: null });
+    tempFilterDetail.OR.push({ numGuests: { lt: prisma.event.fields.capacity } });
+
     if (showFull === "true") {
-      delete filterDetails.numGuests;
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      delete filterDetails.numGuests;
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
     }
+
+    filterDetails.AND.push(tempFilterDetail);
 
     const selectDetails = {
       id: true,
@@ -102,6 +125,7 @@ class EventService {
       endTime: true,
       capacity: true,
       numGuests: true,
+      points: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {

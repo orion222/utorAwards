@@ -17,7 +17,6 @@ export default function useMediaQuery() {
     }
     window.addEventListener("resize", handleResize);
     // initial log
-    console.log("width:", window.innerWidth);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 

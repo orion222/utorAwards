@@ -9,9 +9,8 @@ import AppLayout from "./components/layout/AppLayout";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 // import Dashboard from "./pages/Dashboard";
-import Transactions from "./pages/Transactions";
-import Events from "./pages/Events";
-import Promotions from "./pages/Promotions";
+import Events from "./pages/Explore/Events.jsx";
+import Promotions from "./pages/Explore/Promotions.jsx";
 import Login from "./pages/Login";
 import ProtectedAuthRoute from "./components/routes/RootElement.jsx";
 import NotFound from "./pages/NotFound";
@@ -23,6 +22,7 @@ import CreatePurchase from "./pages/CreatePurchase";
 import PastTransactions from "./pages/transactions/PastTransactions";
 import ProcessRedemption from "./pages/ProcessRedemption";
 import CreateUser from "./pages/CreateUser";
+import Explore from "./pages/Explore";
 
 function App() {
   return (
@@ -42,7 +42,11 @@ function App() {
               <Route path="past-transactions" element={<PastTransactions />} />
               <Route path="events" element={<Events />} />
               <Route path="promotions" element={<Promotions />} />
-              <Route path="wallet" element={<Wallet />}></Route>
+              <Route path="wallet" element={<Wallet />} />
+              <Route path="explore" element={<Explore />}>
+                <Route path="events" element={<Events />} />
+                <Route path="promotions" element={<Promotions />} />
+              </Route>
             </Route>
 
             {/* ROUTES FOR CASHIERS */}

@@ -372,7 +372,6 @@ async function createTransfer(req, res) {
 async function deleteRedemption(req, res) {
   const { id } = req.body;
 
-  console.log(req.body, id);
   if (!Number.isInteger(id) || id <= 0) {
     return res.status(400).json({ error: "Bad Request" });
   }
