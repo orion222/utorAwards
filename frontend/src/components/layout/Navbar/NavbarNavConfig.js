@@ -49,7 +49,7 @@ export function getNavForRole(role, isEventOrganizer) {
     items.push(...SUPERUSER_EXTRA);
   }
 
-  if (isEventOrganizer) {
+  if (isEventOrganizer || role === "manager" || role === "superuser") {
     items[4] = { label: "My Events", icon: Mail, path: "/my-events", children: [ { label: "Invitations", path: "/my-events/invitations" }, { label: "Management", path: "/my-events/management" }] };
   }
 

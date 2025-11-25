@@ -4,7 +4,7 @@ import { useUser } from "../../context/UserContext";
 function ProtectedOrganizerRoute() {
     const { user } = useUser();
 
-    if (!user?.isEventOrganizer) {
+    if (!user?.isEventOrganizer || (user?.role !== "manager" && user?.role !== "superuser")) {
         return <Navigate to="/dashboard" />;
     }
 
