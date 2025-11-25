@@ -70,7 +70,7 @@ function EventModal({ event, onClose, onRsvp, onUnRsvp }) {
     }
 
     return (
-        <Box sx={{backgroundColor: "#fff", borderRadius: "8px", boxShadow: 3, width: "35%", height: "auto", backgroundColor: theme.palette.background.paper,
+        <Box sx={{backgroundColor: "#fff", borderRadius: "8px", boxShadow: 3, width: isSmall ? "90%" : "35%", height: "auto", backgroundColor: theme.palette.background.paper,
             display: "flex", flexDirection: "column", gap: "0px"
         }}>
             <Box sx={{ position: "relative" }}>

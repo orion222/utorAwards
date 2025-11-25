@@ -26,10 +26,11 @@ function UnRSVPSuccessModal({ event, onClose }) {
     }
 
     return (
-    <Box sx={{backgroundColor: "#fff", borderRadius: "8px", boxShadow: 3, width: "25%", height: "auto", backgroundColor: theme.palette.background.paper,
+    <Box sx={{backgroundColor: "#fff", borderRadius: "8px", boxShadow: 3, width: isSmall ? "90%" : "25%", height: "auto", backgroundColor: theme.palette.background.paper,
         display: "flex", flexDirection: "column", gap: "8px", padding: "16px"}}>
         
-            <Typography>We're sad you couldn't make it. You are no longer attending this event</Typography>
+            <Typography sx={{fontSize: 20}}>We're sad you couldn't make it</Typography>
+            <Typography sx={{fontSize: 16, color: theme.palette.text.secondary}}>You are no longer attending this event</Typography>
             <Box sx={{border: 1, borderColor: theme.palette.custom.border,
         bgcolor: theme.palette.background.paper, display: "grid", flexDirection: "column", gap: "4px", borderRadius: "8px", padding: "8px"}}>
                 <Typography sx={{fontSize: 20, fontWeight:"bold"}}>

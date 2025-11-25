@@ -67,7 +67,7 @@ function Dashboard() {
     };
 
     const isSmall = useMediaQuery("(max-width: 670px)");
-    console.log(events);
+
     return (
       <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
