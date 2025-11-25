@@ -60,6 +60,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const logout = useCallback(() => {
+    localStorage.clear();
     removeCookie("token", { path: "/" });
     setUser(null);
   }, []);
