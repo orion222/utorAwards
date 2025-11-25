@@ -1,9 +1,11 @@
+import { Box, Typography } from '@mui/material';
+
 function NotFound() {
     return (
-        <div>
-            <h1>404 Not Found</h1>
-            <span>The page you're looking for doesn't exist</span>
-        </div>
+        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+            <Typography variant="h3" fontWeight={600}>404 - Page Not Found</Typography>
+            <Typography variant="body1" sx={{ mt: 2 }}>Uh oh! The page you are looking for does not exist.</Typography>
+        </Box>
     );
 }
 
