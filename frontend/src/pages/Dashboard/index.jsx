@@ -30,7 +30,7 @@ function Dashboard() {
                 params: {limit: 3}
             });
 
-            const { data: eventData } = await api.get("/users/me/events", {
+            const { data: eventData } = await api.get("/events", {
                 params: {limit: 3}
             });
             
@@ -67,7 +67,7 @@ function Dashboard() {
     };
 
     const isSmall = useMediaQuery("(max-width: 670px)");
-
+    console.log(events);
     return (
       <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
