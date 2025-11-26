@@ -12,7 +12,7 @@ function MyEvents() {
   return (
     <>
       <Typography variant="h4">My Events</Typography>
-      {user?.isEventOrganizer && (
+      {(user?.isEventOrganizer || user?.role === "manager" || user?.role === "superuser") && (
         <Tabs value={location.pathname}>
           <Tab label="Invitations" value="/my-events/invitations" component={Link} to="/my-events/invitations" />
           <Tab label="Management" value="/my-events/management" component={Link} to="/my-events/management" />

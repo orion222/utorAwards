@@ -17,9 +17,22 @@ function Promotions() {
     }
   }
 
+  const orderByConfig = [
+    { label: "Start Time (Earliest)", value: "startTime_asc" },
+    { label: "Start Time (Latest)", value: "startTime_desc" },
+    { label: "End Time (Earliest)", value: "endTime_asc" },
+    { label: "End Time (Latest)", value: "endTime_desc" },
+    { label: "Points (Lowest)", value: "points_asc" },
+    { label: "Points (Highest)", value: "points_desc" },
+    { label: "Minimum Spending (Lowest)", value: "minSpending_asc" },
+    { label: "Minimum Spending (Highest)", value: "minSpending_desc" },
+    { label: "Discount Rate (Lowest)", value: "rate_asc" },
+    { label: "Discount Rate (Highest)", value: "rate_desc" },
+  ];
+
   return (
     <Box sx={{ my: 2 }}>
-      <FilterableList queryKey="promotions" apiEndpoint="/promotions" filterConfig={filterConfig}>
+      <FilterableList queryKey="promotions" apiEndpoint="/promotions" filterConfig={filterConfig} orderByConfig={orderByConfig}>
         {({ data, isFetching, error }) => {
           if (error) {
             return (

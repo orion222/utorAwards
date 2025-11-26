@@ -32,6 +32,17 @@ function Events() {
     },
   }
 
+  const orderByConfig = [
+    { label: "Start Time (Earliest)", value: "startTime_asc" },
+    { label: "Start Time (Latest)", value: "startTime_desc" },
+    { label: "End Time (Earliest)", value: "endTime_asc" },
+    { label: "End Time (Latest)", value: "endTime_desc" },
+    { label: "Points (Lowest)", value: "points_asc" },
+    { label: "Points (Highest)", value: "points_desc" },
+    { label: "Number of Guests (Lowest)", value: "numGuests_asc" },
+    { label: "Number of Guests (Highest)", value: "numGuests_desc" },
+  ];
+
   if (user.role === "manager" || user.role === "superuser") {
     filterConfig.published = {
       type: "select",
@@ -42,7 +53,7 @@ function Events() {
 
   return (
     <Box sx={{ my: 2 }}>
-      <FilterableList queryKey="events" apiEndpoint="/events" filterConfig={filterConfig}>
+      <FilterableList queryKey="events" apiEndpoint="/events" filterConfig={filterConfig} orderByConfig={orderByConfig}>
         {({ data, isFetching, error }) => {
           if (error) {
             return (

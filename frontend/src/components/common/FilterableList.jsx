@@ -3,13 +3,15 @@ import { SearchIcon } from "lucide-react";
 import FilterListIcon from "@mui/icons-material/FilterList"
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import api from "../../api/api.js";
 
-function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, children}) {
+function FilterableList({ apiEndpoint, queryKey, filterConfig, orderByConfig, limit = 10, children}) {
     const [searchInput, setSearchInput] = useState("");
     const [showFilters, setShowFilters] = useState(false);
     const [tempFilters, setTempFilters] = useState({});
-    const [appliedFilters, setAppliedFilters] = useState({});
+    const [searchParams, setSearchParams] = useSearchParams();
+    const appliedFilters = Object.fromEntries(searchParams.entries());
 
     const [page, setPage] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
@@ -44,7 +46,7 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
     const applyFilters = () => {
         const newFilters = Object.fromEntries(
             Object.entries(tempFilters).map(([key, value]) => {
-              if (key !== "name" && key !== "description" && key !== "remark" && key !== "location") {
+              if (key !== "name" && key !== "description" && key !== "remark" && key !== "location" && key !== "orderBy") {
                 return [key, typeof value === "string" ? value.toLowerCase() : value];
               }
               return [key, value];
@@ -54,7 +56,7 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
         if (searchInput.trim()) {
             newFilters.search = searchInput;
         }
-        setAppliedFilters(newFilters);
+        setSearchParams({ ...newFilters, page: 1 });
         setPage(1);
     };
 
@@ -72,9 +74,9 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
     };
 
     const removeFilter = key => {
-        const newApplied = {...appliedFilters};
-        delete newApplied[key];
-        setAppliedFilters(newApplied);
+        const newParams = Object.fromEntries(searchParams.entries());
+        delete newParams[key];
+        setSearchParams({ ...newParams, page: 1 });
         setPage(1);
 
         if (key === "search") {
@@ -99,6 +101,13 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
         }
       });
     }, [tempFilters]);
+
+    useEffect(() => {
+        const pageParam = searchParams.get("page");
+        if (pageParam && Number(pageParam) !== page) {
+            setPage(Number(pageParam));
+        }
+    }, [searchParams]);
 
     return (
         <Box>
@@ -221,6 +230,24 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
                             return null;
                           })}
 
+                          {/* ORDER BY SELECT */}
+                          {orderByConfig && (
+                            <FormControl size="small" sx={{ width: 160 }}>
+                              <InputLabel>Order By</InputLabel>
+                              <Select
+                                label="Order By"
+                                value={tempFilters.orderBy || ""}
+                                onChange={(e) => updateTempFilter("orderBy", e.target.value)}
+                              >
+                                {orderByConfig.map(opt => (
+                                  <MenuItem key={opt.value} value={opt.value}>
+                                    {opt.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+                          )}
+
                             <Button
                                 variant="contained"
                                 onClick={applyFilters}
@@ -240,13 +267,15 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
 
             {/* Small chips for filters */}
             <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-                {Object.entries(appliedFilters).map(([key, value]) => (
-                    <Chip
-                        key={key}
-                        label={`${key}: ${value}`}
-                        onDelete={() => removeFilter(key)}
-                        size="small"
-                    />
+                {Object.entries(appliedFilters)
+                    .filter(([key]) => key !== "page")
+                    .map(([key, value]) => (
+                        <Chip
+                            key={key}
+                            label={`${key}: ${value}`}
+                            onDelete={() => removeFilter(key)}
+                            size="small"
+                        />
                 ))}
             </Box>
             
@@ -258,7 +287,10 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, limit = 10, child
                     <Pagination
                         count={totalPages}
                         page={page}
-                        onChange={(e, value) => setPage(value)}
+                        onChange={(e) => {
+                            setPage(e.target.value);
+                            setSearchParams({ ...appliedFilters, page: e.target.value });
+                        }}
                         color="primary"
                     />
                 </Box>
