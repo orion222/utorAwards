@@ -107,7 +107,7 @@ export default function ProcessRedemption() {
                 overflowY: "auto",
             }}
         >
-            <Typography variant="h5" pb={1}>Process Redemption</Typography>
+            <Typography variant="h4" pb={1}>Process Redemption</Typography>
             <Typography variant="body2" color="text.secondary">Enter Transaction ID to process redemption requests</Typography>
 
             <FormCard width="100%" contentPadding={1}>
