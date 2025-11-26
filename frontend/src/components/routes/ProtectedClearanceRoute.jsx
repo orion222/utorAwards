@@ -3,7 +3,7 @@ import { useUser } from "../../context/UserContext";
 
 function ProtectedClearanceRoute({ requiredClearance = [] }) {
   const { user, loading } = useUser();
-
+  console.log("user is ", user);
   if (loading) {
     return <div>Loading...</div>;
   }

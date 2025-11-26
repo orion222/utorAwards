@@ -1,7 +1,7 @@
 import { useTheme, useMediaQuery } from "@mui/material";
-import { Box, Card, CardContent } from "@mui/material";
-
-function FormCard({ width, contentPadding, children }) {
+import { Box, Card, CardContent, Button } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+function FormCard({ width, contentPadding, showClose = false, children }) {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const cardWidth = width || 420;
@@ -21,6 +21,25 @@ function FormCard({ width, contentPadding, children }) {
         <Box sx={{ width: "100%", p: padding }}>{children}</Box>
       ) : (
         <Card sx={{ width: cardWidth, p: padding }}>
+          {showClose && (
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                startIcon={
+                  <CloseIcon
+                    sx={{
+                      color: "red",
+                    }}
+                  />
+                }
+                sx={{
+                  "&:hover": { backgroundColor: "#CBCBCB" },
+                  color: theme.palette.text.secondary,
+                }}
+              >
+                Close
+              </Button>
+            </Box>
+          )}
           <CardContent>{children}</CardContent>
         </Card>
       )}

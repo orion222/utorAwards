@@ -208,6 +208,7 @@ class UserService {
         avatarUrl: true,
         promotions: true,
         isEventOrganizer: true,
+        organizedEvents: true,
       },
     });
 

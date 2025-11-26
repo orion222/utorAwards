@@ -29,6 +29,8 @@ import ProtectedOrganizerRoute from "./components/routes/ProtectedOrganizerRoute
 import QRCode from "./pages/Wallet/QRCode.jsx";
 import RedeemPoints from "./pages/Wallet/RedeemPoints.jsx";
 import Transfer from "./pages/Wallet/TransferPoints.jsx";
+import EventEditForm from "./pages/Events/EditEventForm.jsx";
+import Unauthorized from "./pages/Unauthorized";
 
 function App() {
   return (
@@ -40,6 +42,7 @@ function App() {
           <Route path="components" element={<ComponentLibrary />}></Route>
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
+          <Route path="unauthorized" element={<Unauthorized />} />
 
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
@@ -77,6 +80,15 @@ function App() {
               <Route path="createUser" element={<CreateUser />} />
             </Route>
 
+
+            {/*ROUTES FOR ORGANIZERS*/}
+            <Route
+              element={
+                <ProtectedClearanceRoute requiredClearance={["organizer"]} />
+              }
+            >
+              <Route path="events/:eventId/edit" element={<EventEditForm />} />
+            </Route>
             {/* ROUTES FOR MANAGERS */}
             <Route
               element={
@@ -84,18 +96,14 @@ function App() {
                   requiredClearance={["manager", "superuser"]}
                 />
               }
-            >
-
-            </Route>
+            ></Route>
 
             {/* ROUTES FOR SUPERUSERS */}
             <Route
               element={
                 <ProtectedClearanceRoute requiredClearance={["superuser"]} />
               }
-            >
-
-            </Route>
+            ></Route>
           </Route>
 
           <Route path="*" element={<NotFound />} />

@@ -105,10 +105,14 @@ class EventService {
     }
 
     tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({ numGuests: { lt: prisma.event.fields.capacity } });
+    tempFilterDetail.OR.push({
+      numGuests: { lt: prisma.event.fields.capacity },
+    });
 
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(
+        (obj) => !("numGuests" in obj),
+      );
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
@@ -127,7 +131,6 @@ class EventService {
       endTime: true,
       capacity: true,
       numGuests: true,
-      points: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -463,8 +466,8 @@ class EventService {
           where: { utorid },
           data: {
             isEventOrganizer: true,
-          }
-        });        
+          },
+        });
       }
 
       const event = await tx.event.update({
@@ -487,10 +490,9 @@ class EventService {
           },
         },
       });
-      
+
       return event;
     });
-
 
     return updatedEvent;
   }
@@ -516,16 +518,16 @@ class EventService {
             disconnect: { id: userId },
           },
         },
-      });     
+      });
 
       const organizedEventsCount = await tx.events.count({
-        where: { 
+        where: {
           organizers: {
             some: {
-              utorid
-            }
-          } 
-        }
+              utorid,
+            },
+          },
+        },
       });
 
       if (organizedEventsCount === 0) {
@@ -533,12 +535,12 @@ class EventService {
           where: { utorid },
           data: {
             isEventOrganizer: false,
-          }
+          },
         });
       }
-      
+
       return event;
-    })
+    });
 
     return updatedEvent;
   }
@@ -661,9 +663,21 @@ class EventService {
     });
   }
 
+<<<<<<< HEAD
   static async retrieveEvents(userId, name, location, started, ended, page, limit, orderBy) {
+=======
+  static async retrieveEvents(
+    userId,
+    name,
+    location,
+    started,
+    ended,
+    page,
+    limit,
+  ) {
+>>>>>>> 4f154c9 (finish edit event form)
     const filters = {};
-    
+
     if (name && typeof name !== "string") {
       throw new BadRequestError("invalid event name");
     } else if (name) {
@@ -687,7 +701,7 @@ class EventService {
     } else if (ended === true || ended === false) {
       filters.ended = ended;
     }
-    
+
     const take = limit;
     const skip = (page - 1) * take;
     const select = {
@@ -700,10 +714,10 @@ class EventService {
       endTime: true,
       numGuests: true,
       capacity: true,
-    }
+    };
 
-    const {count, events} = await prisma.$transaction(async (tx) => {
-      filters.rsvps =  {some: {userId}}
+    const { count, events } = await prisma.$transaction(async (tx) => {
+      filters.rsvps = { some: { userId } };
 
       const count = await tx.event.count({ where: filters });
       const events = await tx.event.findMany({
@@ -711,13 +725,20 @@ class EventService {
         skip,
         take,
         select,
+<<<<<<< HEAD
         orderBy: orderBy ? orderBy : { startTime: "asc" }
       })
     
       return {count, events};
+=======
+        orderBy: { startTime: "asc" },
+      });
+
+      return { count, events };
+>>>>>>> 4f154c9 (finish edit event form)
     });
 
-    return {count, results: events}
+    return { count, results: events };
   }
 
   static async getMyInvitedFilteredEvents(
