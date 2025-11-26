@@ -59,6 +59,7 @@ class EventService {
     limit = 10,
     published,
     role,
+    orderBy,
   ) {
     const filterDetails = {};
 
@@ -142,6 +143,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
+        orderBy: orderBy ? orderBy : {},
       }),
     ]);
 
@@ -659,7 +661,7 @@ class EventService {
     });
   }
 
-  static async retrieveEvents(userId, name, location, started, ended, page, limit ) {
+  static async retrieveEvents(userId, name, location, started, ended, page, limit, orderBy) {
     const filters = {};
     
     if (name && typeof name !== "string") {
@@ -709,7 +711,7 @@ class EventService {
         skip,
         take,
         select,
-        orderBy: { startTime: "asc" }
+        orderBy: orderBy ? orderBy : { startTime: "asc" }
       })
     
       return {count, events};
@@ -720,6 +722,7 @@ class EventService {
 
   static async getMyInvitedFilteredEvents(
     userId,
+    role,
     search,
     name,
     location,
@@ -729,6 +732,7 @@ class EventService {
     page = 1,
     limit = 10,
     published,
+    orderBy,
   ) {
     const filterDetails = {};
 
@@ -813,6 +817,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
+        orderBy: orderBy ? orderBy : {},
       }),
     ]);
 
@@ -824,6 +829,7 @@ class EventService {
 
   static async getMyManagedFilteredEvents(
     userId,
+    role,
     search,
     name,
     location,
@@ -833,6 +839,7 @@ class EventService {
     page = 1,
     limit = 10,
     published,
+    orderBy,
   ) {
     const filterDetails = {};
 
@@ -908,7 +915,7 @@ class EventService {
       selectDetails.published = true;
     }
 
-    filterDetails.organizers = { some: { userId: userId } };
+    filterDetails.organizers = { some: { id: userId } };
 
     const [count, results] = await prisma.$transaction([
       prisma.event.count({ where: filterDetails }),
@@ -917,6 +924,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
+        orderBy: orderBy ? orderBy : {},
       }),
     ]);
 

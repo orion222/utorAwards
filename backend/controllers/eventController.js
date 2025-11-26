@@ -1,10 +1,10 @@
 const { EventService } = require("../services/eventService");
 const { TransactionService } = require("../services/transactionService");
 const { RoleType, TransactionType } = require("@prisma/client");
-const { isInISODateString } = require("../utils/generalHelpers");
+const { isInISODateString, convertOrderByField } = require("../utils/generalHelpers");
 
 async function getFilteredEvents(req, res) {
-  const { search, name, location, started, ended, showFull, page, limit, published } =
+  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } =
     req.query;
 
   if (showFull && showFull !== "true" && showFull !== "false") {
@@ -28,6 +28,15 @@ async function getFilteredEvents(req, res) {
 
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["startTime", "endTime", "points", "numGuests"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
 
   if (pageNum < 1 || limitNum < 1) {
     return res
@@ -69,6 +78,7 @@ async function getFilteredEvents(req, res) {
       limitNum,
       published,
       userRole,
+      orderByObj
     );
     res.status(200).json(filteredEventsData);
   } catch (error) {

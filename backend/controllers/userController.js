@@ -2,9 +2,7 @@ const { RoleType } = require("@prisma/client");
 const { UserService } = require("../services/userService");
 const { EventService } = require("../services/eventService");
 const { TransactionService } = require("../services/transactionService");
-const { PromotionService } = require("../services/promotionService");
-const { isValidYYYYMMDD } = require("../utils/generalHelpers");
-const { mapByTransactionType } = require("../utils/transactionHelpers");
+const { isValidYYYYMMDD, convertOrderByField } = require("../utils/generalHelpers");
 const { validRetrieveBody } = require("../utils/userHelpers");
 
 async function registerUser(req, res) {
@@ -453,13 +451,22 @@ async function updateMyPassword(req, res) {
 }
 
 async function retrieveMyEventInvitations(req, res) {
-  const { search, name, location, started, ended, showFull, page, limit, published } = req.query;
-  const { id: userId } = req.user;
+  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } = req.query;
+  const { id: userId, role } = req.user;
 
   if (showFull && showFull !== "true" && showFull !== "false") {
     return res
       .status(400)
       .json({ error: "Bad Request: invalid showFull value" });
+  }
+
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["startTime", "endTime", "points", "numGuests"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
   }
 
   if (
@@ -509,6 +516,7 @@ async function retrieveMyEventInvitations(req, res) {
   try {
     const filteredEventsData = await EventService.getMyInvitedFilteredEvents(
       userId,
+      role,
       search,
       name,
       location,
@@ -518,7 +526,7 @@ async function retrieveMyEventInvitations(req, res) {
       pageNum,
       limitNum,
       published,
-      userRole,
+      orderByObj,
     );
     res.status(200).json(filteredEventsData);
   } catch (error) {
@@ -527,13 +535,22 @@ async function retrieveMyEventInvitations(req, res) {
 }
 
 async function retrieveMyEventManagement(req, res) {
-  const { search, name, location, started, ended, showFull, page, limit, published } = req.query;
-  const { id: userId } = req.user;
+  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } = req.query;
+  const { id: userId, role } = req.user;
 
   if (showFull && showFull !== "true" && showFull !== "false") {
     return res
       .status(400)
       .json({ error: "Bad Request: invalid showFull value" });
+  }
+
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["startTime", "endTime", "points", "numGuests"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
   }
 
   if (
@@ -583,6 +600,7 @@ async function retrieveMyEventManagement(req, res) {
   try {
     const filteredEventsData = await EventService.getMyManagedFilteredEvents(
       userId,
+      role,
       search,
       name,
       location,
@@ -592,7 +610,7 @@ async function retrieveMyEventManagement(req, res) {
       pageNum,
       limitNum,
       published,
-      userRole,
+      orderByObj,
     );
     res.status(200).json(filteredEventsData);
   } catch (error) {

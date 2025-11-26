@@ -1,6 +1,6 @@
 const { PromotionService } = require("../services/promotionService");
 const { RoleType } = require("@prisma/client");
-const { isInISODateString } = require("../utils/generalHelpers");
+const { isInISODateString, convertOrderByField } = require("../utils/generalHelpers");
 
 async function createPromotion(req, res) {
   const {
@@ -108,7 +108,7 @@ async function createPromotion(req, res) {
 
 async function retrievePromotion(req, res) {
   const user = req.user;
-  const { search, name, type, page, limit, started, ended } = req.query;
+  const { search, name, type, page, limit, started, ended, orderBy } = req.query;
 
   var pageNum = Number(page);
   var limitNum = Number(limit);
@@ -122,6 +122,15 @@ async function retrievePromotion(req, res) {
       .json({ error: "Bad Request: Invalid query parameters" });
   }
 
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["startTime", "endTime", "points", "minSpending", "rate"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
+
   if (
     (page && (isNaN(pageNum) || !Number.isInteger(pageNum))) ||
     (limit && (isNaN(limitNum) || !Number.isInteger(limitNum)))
@@ -133,8 +142,6 @@ async function retrievePromotion(req, res) {
 
   pageNum = page ? pageNum : 1;
   limitNum = limit ? limitNum : 10;
-
-  // const onlyActive = req.user.role === RoleType.regular;
 
   if (
     req.user.role === RoleType.manager ||
@@ -170,6 +177,7 @@ async function retrievePromotion(req, res) {
       limitNum,
       startedBool,
       endedBool,
+      orderByObj,
     );
     res.status(200).json(promotionData);
   } catch (error) {

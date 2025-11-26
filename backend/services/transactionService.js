@@ -528,6 +528,7 @@ class TransactionService {
     operator,
     page,
     limit,
+    orderBy,
   ) {
     const where = {};
 
@@ -575,14 +576,14 @@ class TransactionService {
         skip,
         take,
         include,
-        orderBy: { createdAt: "asc" },
+        orderBy: orderBy ? orderBy : { createdAt: "asc" },
       }),
     ]);
 
     return { count, queryResults };
   }
 
-  static async retrieveUserTransactions(userId, type, remark, relatedId, promotionId, amount, operator, page = 1, limit = 10) {
+  static async retrieveUserTransactions(userId, type, remark, relatedId, promotionId, amount, operator, page = 1, limit = 10, orderBy) {
     const whereFields = {};
 
     if (!userId) throw new BadRequestError("Must include user id");
@@ -628,6 +629,7 @@ class TransactionService {
           },
           take: limit,
           skip: (page - 1) * limit,
+          orderBy: orderBy ? orderBy : {},
         })
     ]);
 
