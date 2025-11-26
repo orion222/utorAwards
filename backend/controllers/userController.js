@@ -621,6 +621,13 @@ async function retrieveMyEventManagement(req, res) {
 async function retrieveLeaderboard(req, res) {
   const { limit } = req.query;
 
+  if (
+    limit &&
+    (!Number.isInteger(parseInt(limit, 10)) || parseInt(limit, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid limit value" });
+  }
+
   try {
     const leaderboardData = await UserService.getLeaderboard(limit);
     res.status(200).json(leaderboardData);
