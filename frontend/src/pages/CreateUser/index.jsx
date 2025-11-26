@@ -10,6 +10,8 @@ import useToast from "../../components/common/hooks/useToast.jsx";
 import LabeledField from "../../components/common/LabeledField.jsx";
 import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 
+const APP_PREFIX = "utorAwards:";
+
 export default function CreateUser() {
     const { showToast, ToastComponent } = useToast();
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -33,7 +35,7 @@ export default function CreateUser() {
         }
         try {
             const response = await api.post(`/users`, payload);
-            localStorage.removeItem("createUserForm");
+            localStorage.removeItem(`${APP_PREFIX}createUserForm`);
             reset(defaultValues);
             showToast("User profile created successfully", "success");
         }
@@ -62,7 +64,7 @@ export default function CreateUser() {
 
     const savedValues = (() => {
         try {
-            const items = localStorage.getItem("createUserForm");
+            const items = localStorage.getItem(`${APP_PREFIX}createUserForm`);
             return items ? JSON.parse(items) : defaultValues;
         }
         catch {
@@ -81,7 +83,7 @@ export default function CreateUser() {
     
     useEffect(() => {
         try {
-            localStorage.setItem("createUserForm", JSON.stringify(formValues || {}));
+            localStorage.setItem(`${APP_PREFIX}createUserForm`, JSON.stringify(formValues || {}));
         } catch (err) {
             console.error("Failed to persist createUserForm to localStorage:", err); //debugging
         }

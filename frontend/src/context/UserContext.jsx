@@ -8,6 +8,7 @@ import {
 import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
 import api from "../api/api";
+import { clearStorage } from "../components/common/helpers/clearStorage";
 
 const UserContext = createContext();
 
@@ -60,7 +61,7 @@ export const UserProvider = ({ children }) => {
   };
 
   const logout = useCallback(() => {
-    localStorage.clear();
+    clearStorage();
     removeCookie("token", { path: "/" });
     setUser(null);
   }, []);

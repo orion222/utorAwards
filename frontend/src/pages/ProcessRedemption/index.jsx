@@ -13,6 +13,8 @@ import RedemptionCard from "../../components/common/RedemptionCard.jsx";
 import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 import { useUser } from "../../context/UserContext";
 
+const APP_PREFIX = "utorAwards:";
+
 export default function ProcessRedemption() {
     const { showToast, ToastComponent } = useToast();
     const [transactionData, setTransactionData] = useState(null);
@@ -31,7 +33,7 @@ export default function ProcessRedemption() {
                 return;
             }
             setTransactionData(details);
-            localStorage.removeItem("redemptionForm");
+            localStorage.removeItem(`${APP_PREFIX}redemptionForm`);
             reset(defaultValues);
         }
         catch (error) {
@@ -76,7 +78,7 @@ export default function ProcessRedemption() {
 
     const savedValues = (() => {
         try {
-            const items = localStorage.getItem("redemptionForm");
+            const items = localStorage.getItem(`${APP_PREFIX}redemptionForm`);
             return items ? JSON.parse(items) : defaultValues;
         }
         catch {
@@ -95,7 +97,7 @@ export default function ProcessRedemption() {
 
     useEffect(() => {
         try {
-            localStorage.setItem("redemptionForm", JSON.stringify(formValues || {}));
+            localStorage.setItem(`${APP_PREFIX}redemptionForm`, JSON.stringify(formValues || {}));
         } catch (err) {
             console.error("Failed to persist redemptionForm to localStorage:", err); //debugging
         }
