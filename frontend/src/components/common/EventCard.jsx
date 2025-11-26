@@ -1,15 +1,20 @@
-import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Button } from "@mui/material";
+import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Button, Modal } from "@mui/material";
 import theme from '../../theme.js';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import { TheatersOutlined } from "@mui/icons-material";
 import { useState } from "react";
+import EventModal from "./EventModal.jsx";
+import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
+import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
 
 function EventCard({ event }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
     const { name, description, location, startTime, endTime, capacity, numGuests, points} = event;
     const [viewDetails, setViewDetails] = useState(false);
+    const [rsvpSuccess, setRsvpSuccess] = useState(false);
+    const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
 
     const formatDate = (isoDate) => {
         const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -75,13 +80,40 @@ function EventCard({ event }) {
                             </Box>
                         </Box>
                         <Button variant="contained" sx={{fontSize: 12,
-                                padding: "8px", 
-                                backgroundColor: theme.palette.secondary.main,
-                                borderRadius: "8px",
-                                width: "fit-content"}}
-                                onClick={() => setViewDetails(true)}>      
-                                View Details
-                        </Button>
+                        padding: "8px", 
+                        backgroundColor: theme.palette.secondary.main,
+                        borderRadius: "8px",
+                        width: "fit-content"}}
+                        onClick={() => setViewDetails(true)}>      
+                        View Details
+                    </Button>
+                    <Modal
+                        open={viewDetails}
+                        onClose={() => setViewDetails(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                            display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <EventModal event={event} onClose={() => setViewDetails(false)} onRsvp={() => setRsvpSuccess(true)} onUnRsvp={() => setUnRsvpSuccess(true)}></EventModal>
+                    </Modal>
+                    <Modal
+                        open={rsvpSuccess}
+                        onClose={() => setRsvpSuccess(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                        display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <RSVPSuccessModal event={event} onClose={() => setRsvpSuccess(false)}></RSVPSuccessModal>
+                    </Modal>
+                    <Modal
+                        open={unRsvpSuccess}
+                        onClose={() => setUnRsvpSuccess(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                        display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <UnRSVPSuccessModal event={event} onClose={() => setUnRsvpSuccess(false)}></UnRSVPSuccessModal>
+                    </Modal>
                     </Box>
             </Box>
         
@@ -129,6 +161,33 @@ function EventCard({ event }) {
                         onClick={() => setViewDetails(true)}>      
                         View Details
                     </Button>
+                    <Modal
+                        open={viewDetails}
+                        onClose={() => setViewDetails(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                            display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <EventModal event={event} onClose={() => setViewDetails(false)} onRsvp={() => setRsvpSuccess(true)} onUnRsvp={() => setUnRsvpSuccess(true)}></EventModal>
+                    </Modal>
+                    <Modal
+                        open={rsvpSuccess}
+                        onClose={() => setRsvpSuccess(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                        display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <RSVPSuccessModal event={event} onClose={() => setRsvpSuccess(false)}></RSVPSuccessModal>
+                    </Modal>
+                    <Modal
+                        open={unRsvpSuccess}
+                        onClose={() => setUnRsvpSuccess(false)}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                        sx={{position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)",
+                        display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000}}>
+                        <UnRSVPSuccessModal event={event} onClose={() => setUnRsvpSuccess(false)}></UnRSVPSuccessModal>
+                    </Modal>
                 </Box>
                 <Box sx={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between',}}> {/* right side */}
                     <Typography sx={{fontSize: 20, fontWeight: "bold"}}>

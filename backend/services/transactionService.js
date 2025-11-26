@@ -733,6 +733,9 @@ class TransactionService {
         user: true,
         targetUser: true,
         relatedId: true,
+        createdAt: true,
+        processed: true,
+        processedByUser: true
       },
     });
 
@@ -740,18 +743,24 @@ class TransactionService {
       throw new NotFoundError();
     }
 
-    return {
+    const query = {
       id: transaction.id,
       utorid: transaction.targetUser.utorid,
       type: transaction.type,
       spent: transaction.spent,
       amount: transaction.amount,
       promotionIds: transaction.promotions.map((promotion) => promotion.id),
-      suspicious: transaction.suspicious,
+      createdAt: transaction.createdAt,
       remark: transaction.remark,
       createdBy: transaction.user.utorid,
       relatedId: transaction.relatedId,
-    };
+      suspicious: transaction.suspicious,
+      processed: transaction.processed,
+    }
+
+    return transaction.processed ? {
+      ...query, processedBy: transaction.processedByUser?.utorid ?? null
+    } : query;
   }
 
   static async updateTransactionSuspicion(transactionId, isNowSuspicious) {

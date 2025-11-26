@@ -20,6 +20,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
 import PastTransactions from "./pages/transactions/PastTransactions";
+import ProcessRedemption from "./pages/ProcessRedemption";
+import CreateUser from "./pages/CreateUser";
 import Explore from "./pages/Explore";
 import MyEvents from "./pages/MyEvents/index.jsx";
 import Invitations from "./pages/MyEvents/Invitations.jsx";
@@ -64,6 +66,8 @@ function App() {
               }
             >
               <Route path="create" element={<CreatePurchase />} />
+              <Route path="redeem" element={<ProcessRedemption />} />
+              <Route path="createUser" element={<CreateUser />} />
             </Route>
 
             {/*ROUTES FOR ORGANIZERS*/}

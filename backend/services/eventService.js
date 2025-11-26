@@ -112,7 +112,6 @@ class EventService {
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -121,6 +120,8 @@ class EventService {
       id: true,
       name: true,
       location: true,
+      description: true,
+      points: true,
       startTime: true,
       endTime: true,
       capacity: true,
@@ -688,6 +689,7 @@ class EventService {
     const take = limit;
     const skip = (page - 1) * take;
     const select = {
+      id: true,
       name: true,
       description: true,
       location: true,
