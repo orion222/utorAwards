@@ -244,6 +244,34 @@ class UserService {
       },
     });
   }
+
+  static async getLeaderboard(topN) {
+    const users = await prisma.user.findMany({
+      orderBy: {
+        grossPoints: 'desc',
+      },
+      take: topN,
+      select: {
+        utorid: true,
+        name: true,
+        points: true,
+        grossPoints: true,
+        hideUtorid: true,
+      },
+    });
+
+    const transformedUsers = users.map(user => {
+      if (user.hideUtorid) {
+        return {
+          ...user,
+          utorid: 'Hidden',
+        };
+      }
+      return user;  
+    })
+    
+    return transformedUsers;
+  }
 }
 
 module.exports = { UserService };

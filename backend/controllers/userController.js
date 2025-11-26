@@ -618,6 +618,17 @@ async function retrieveMyEventManagement(req, res) {
   }
 }
 
+async function retrieveLeaderboard(req, res) {
+  const { limit } = req.query;
+
+  try {
+    const leaderboardData = await UserService.getLeaderboard(limit);
+    res.status(200).json(leaderboardData);
+  } catch (error) {
+    res.status(error.status || 500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   registerUser,
   getFilteredUsers,
@@ -633,4 +644,5 @@ module.exports = {
   deleteRedemption,
   retrieveMyEventInvitations,
   retrieveMyEventManagement,
+  retrieveLeaderboard,
 };
