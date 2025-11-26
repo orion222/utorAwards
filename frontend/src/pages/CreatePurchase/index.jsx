@@ -9,6 +9,8 @@ import api from "../../api/api";
 import useToast from "../../components/common/hooks/useToast.jsx";
 import LabeledField from "../../components/common/LabeledField.jsx";
 
+const APP_PREFIX = "utorAwards:";
+
 export default function CreatePurchase() {
     const { showToast, ToastComponent } = useToast();
     const [promotionIds, setPromotionIds] = useState([]);
@@ -38,7 +40,7 @@ export default function CreatePurchase() {
         }
         try {
             const response = await api.post(`/transactions`, payload);
-            localStorage.removeItem("purchaseForm");
+            localStorage.removeItem(`${APP_PREFIX}purchaseForm`);
             setPromotionIds([]);
             reset(defaultValues);
             showToast("Purchase transaction created successfully", "success");
@@ -66,7 +68,7 @@ export default function CreatePurchase() {
 
     const savedValues = (() => {
         try {
-            const items = localStorage.getItem("purchaseForm");
+            const items = localStorage.getItem(`${APP_PREFIX}purchaseForm`);
             return items ? JSON.parse(items) : defaultValues;
         }
         catch {
@@ -85,7 +87,7 @@ export default function CreatePurchase() {
     
     useEffect(() => {
         try {
-            localStorage.setItem("purchaseForm", JSON.stringify(formValues || {}));
+            localStorage.setItem(`${APP_PREFIX}purchaseForm`, JSON.stringify(formValues || {}));
         } catch (err) {
             console.error("Failed to persist purchaseForm to localStorage:", err); //debugging
         }
