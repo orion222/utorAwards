@@ -12,10 +12,6 @@ function ProtectedClearanceRoute({ requiredClearance = [] }) {
     return <Navigate to="/login" replace={true} />;
   }
 
-  if (requiredClearance.includes("organizer") && !user.isOrganizer) {
-    return <Navigate to="/dashboard" />;
-  }
-
   if (requiredClearance.length > 0 && !requiredClearance.includes(user.role)) {
     return <Navigate to="/dashboard" />; // TODO: replace with either a unauthorized page or something else
   }

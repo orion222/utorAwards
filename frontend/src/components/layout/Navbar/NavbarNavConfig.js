@@ -14,7 +14,7 @@ import {
 
 const REGULAR_ITEMS = [
   { label: "Home", icon: HomeIcon, path: "/dashboard" },
-  { label: "Wallet", icon: WalletIcon, path: "/wallet" },
+  { label: "Wallet", icon: WalletIcon, path: "/wallet", children: [ { label: "My QR Code", path: "/wallet/my-qr-code" }, { label: "Redeem Points", path: "/wallet/redeem" }, { label: "Transfer Points", path: "/wallet/transfer" } ] },
   { label: "Past Transactions", icon: History, path: "/past-transactions" },
   { label: "Explore", icon: Compass, path: "/explore", children: [ { label: "Events", path: "/explore/events" }, { label: "Promotions", path: "/explore/promotions" }] },
   { label: "My Events", icon: Mail, path: "/my-events/invitations" },
