@@ -29,6 +29,7 @@ async function createEvent(name, description, location, startTime, endTime, capa
         capacity: capacity,
         points: points,
         pointsRemain: points,
+        published: true,
         createdBy: { connect: { id: 1 }}
       },
     });

@@ -34,18 +34,22 @@ function PromotionCard({ promotion }) {
             bgcolor: theme.palette.background.paper}}>
                 <Box sx={{display: "flex", flexDirection: "column"}}> {/* left side */}
                     <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
-                    {rate && <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                    {rate ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                             <StarIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
                             <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                                +{rate/100}% Boosted Rate
+                                +{rate*100}% Boosted Rate
                             </Typography>
-                    </Box>}
-                    {points && <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                    </Box>) : (
+                            <Box></Box>
+                    )}
+                    {points ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                             <PaidIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
                             <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                                {rate/100} Bonus Points
+                                {points} Bonus Points
                             </Typography>
-                    </Box>}
+                    </Box>) : (
+                        <Box></Box>
+                    )}
                     <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                             <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
                             <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
