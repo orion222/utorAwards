@@ -93,7 +93,7 @@ export default function CreateUser() {
                 overflowY: "auto",
             }}
         >
-            <Typography variant="h3" pb={1}>Create New User Profile</Typography>
+            <Typography variant="h4" pb={1}>Create New User Profile</Typography>
             <Typography variant="body1" color="text.secondary">Fill out the form below to create a new user profile in the system</Typography>
 
             <FormCard width="100%" contentPadding={1} >

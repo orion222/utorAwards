@@ -5,22 +5,26 @@ import RedeemPoints from "./RedeemPoints.jsx";
 import TransferPoints from "./TransferPoints.jsx";
 import useMediaQuery from "../../components/common/hooks/useMediaQuery.js";
 import { useState } from "react";
+import { Outlet, Link, useLocation, Navigate } from "react-router-dom";
 
 export default function Wallet() {
-  const [tab, setTab] = useState(0);
   const { shortenTab } = useMediaQuery();
+  const location = useLocation();
+
+  if (location.pathname === "/wallet") {
+    return <Navigate to="my-qr-code" />;
+  }
+
   return (
     <>
       <Typography variant="h4">My Wallet</Typography>
-      <Tabs value={tab} onChange={(e, value) => setTab(value)}>
-        <Tab label={shortenTab ? "QR Code" : "MY QR CODE"} />
-        <Tab label={shortenTab ? "Transfer" : "Transfer points"} />
-        <Tab label={shortenTab ? "Redeem" : "Redeem points"} />
+      <Tabs value={location.pathname}>
+        <Tab label={shortenTab ? "QR Code" : "MY QR CODE"} value="/wallet/my-qr-code" component={Link} to="/wallet/my-qr-code" />
+        <Tab label={shortenTab ? "Transfer" : "Transfer points"} value="/wallet/transfer" component={Link} to="/wallet/transfer" />
+        <Tab label={shortenTab ? "Redeem" : "Redeem points"} value="/wallet/redeem" component={Link} to="/wallet/redeem" />
       </Tabs>
-      <Box sx={{ p: 2, border: 1, borderColor: "divider", borderTop: 0 }}>
-        {tab === 0 && <QRCode />}
-        {tab === 1 && <TransferPoints />}
-        {tab === 2 && <RedeemPoints />}
+      <Box sx={{ p: 2 }}>
+        <Outlet />
       </Box>
     </>
   );

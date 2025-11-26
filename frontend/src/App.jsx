@@ -23,6 +23,12 @@ import PastTransactions from "./pages/transactions/PastTransactions";
 import ProcessRedemption from "./pages/ProcessRedemption";
 import CreateUser from "./pages/CreateUser";
 import Explore from "./pages/Explore";
+import MyEvents from "./pages/MyEvents/index.jsx";
+import Invitations from "./pages/MyEvents/Invitations.jsx";
+import ProtectedOrganizerRoute from "./components/routes/ProtectedOrganizerRoute.jsx";
+import QRCode from "./pages/Wallet/QRCode.jsx";
+import RedeemPoints from "./pages/Wallet/RedeemPoints.jsx";
+import Transfer from "./pages/Wallet/TransferPoints.jsx";
 
 function App() {
   return (
@@ -42,10 +48,19 @@ function App() {
               <Route path="past-transactions" element={<PastTransactions />} />
               <Route path="events" element={<Events />} />
               <Route path="promotions" element={<Promotions />} />
-              <Route path="wallet" element={<Wallet />} />
+              <Route path="wallet" element={<Wallet />}>
+                <Route path="my-qr-code" element={<QRCode />} />
+                <Route path="redeem" element={<RedeemPoints />} />
+                <Route path="transfer" element={<Transfer />} />
+              </Route>
+              {/* <Route path="wallet" element={<Wallet />} /> */}
               <Route path="explore" element={<Explore />}>
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />
+              </Route>
+              <Route path="my-events" element={ <MyEvents /> }>
+                <Route path="invitations" element={ <Invitations /> } />
+                <Route path="management" element={ <ProtectedOrganizerRoute /> } />
               </Route>
             </Route>
 
@@ -60,17 +75,6 @@ function App() {
               <Route path="create" element={<CreatePurchase />} />
               <Route path="redeem" element={<ProcessRedemption />} />
               <Route path="createUser" element={<CreateUser />} />
-            </Route>
-
-            {/*ROUTES FOR ORGANIZERS*/}
-            <Route
-              element={
-                <ProtectedClearanceRoute
-                  requiredClearance={["organizer"]}
-                />
-              }
-            >
-              ss
             </Route>
 
             {/* ROUTES FOR MANAGERS */}

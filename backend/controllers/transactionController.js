@@ -5,6 +5,7 @@ const {
   validRetrieveBody,
   mapByTransactionType,
 } = require("../utils/transactionHelpers");
+const { convertOrderByField } = require("../utils/generalHelpers");
 
 async function createTransaction(req, res) {
   const { type, spent, amount, relatedId } = req.body;
@@ -146,6 +147,7 @@ async function retrieveTransactions(req, res) {
     operator,
     page,
     limit,
+    orderBy,
   } = req.query;
 
   const suspiciousBool =
@@ -156,6 +158,15 @@ async function retrieveTransactions(req, res) {
 
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["createdAt", "amount", "spent", "type"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
 
   try {
     const transactionData = await TransactionService.retrieveTransactions(
@@ -169,6 +180,7 @@ async function retrieveTransactions(req, res) {
       operator,
       pageNum,
       limitNum,
+      orderByObj,
     );
     const results = mapByTransactionType(transactionData.queryResults);
     res.status(200).json({ count: transactionData.count, results: results });

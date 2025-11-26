@@ -35,4 +35,13 @@ function isInISODateString(dateString) {
   return isoDateRegex.test(dateString);
 }
 
-module.exports = { isValidYYYYMMDD, isInISODateString };
+function convertOrderByField(field, validFields) {
+  const [key, direction] = field.split("_");
+  
+  if (validFields.includes(key) && (direction === "asc" || direction === "desc")) {
+    return { [key]: direction };
+  }
+  return null;
+}
+
+module.exports = { isValidYYYYMMDD, isInISODateString, convertOrderByField };

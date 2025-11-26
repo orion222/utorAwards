@@ -3,7 +3,7 @@ import {Alert, AlertTitle, Box, CircularProgress, Typography} from "@mui/materia
 import {useUser} from "../../context/UserContext.jsx";
 import EventCard from "../../components/common/EventCard.jsx";
 
-function Events() {
+function Invitations() {
   const { user } = useUser();
 
   const filterConfig = {
@@ -53,7 +53,7 @@ function Events() {
 
   return (
     <Box sx={{ my: 2 }}>
-      <FilterableList queryKey="events" apiEndpoint="/events" filterConfig={filterConfig} orderByConfig={orderByConfig}>
+      <FilterableList queryKey="my-event-invitations" apiEndpoint="/users/me/events/invitations" filterConfig={filterConfig} orderByConfig={orderByConfig}>
         {({ data, isFetching, error }) => {
           if (error) {
             return (
@@ -107,4 +107,4 @@ function Events() {
   );
 }
 
-export default Events;
+export default Invitations;

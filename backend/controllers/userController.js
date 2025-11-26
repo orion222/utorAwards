@@ -2,9 +2,7 @@ const { RoleType } = require("@prisma/client");
 const { UserService } = require("../services/userService");
 const { EventService } = require("../services/eventService");
 const { TransactionService } = require("../services/transactionService");
-const { PromotionService } = require("../services/promotionService");
-const { isValidYYYYMMDD } = require("../utils/generalHelpers");
-const { mapByTransactionType } = require("../utils/transactionHelpers");
+const { isValidYYYYMMDD, convertOrderByField } = require("../utils/generalHelpers");
 const { validRetrieveBody } = require("../utils/userHelpers");
 
 async function registerUser(req, res) {
@@ -452,6 +450,174 @@ async function updateMyPassword(req, res) {
   }
 }
 
+async function retrieveMyEventInvitations(req, res) {
+  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } = req.query;
+  const { id: userId, role } = req.user;
+
+  if (showFull && showFull !== "true" && showFull !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid showFull value" });
+  }
+
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["startTime", "endTime", "points", "numGuests"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
+
+  if (
+    page &&
+    (!Number.isInteger(parseInt(page, 10)) || parseInt(page, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid page value" });
+  }
+  if (
+    limit &&
+    (!Number.isInteger(parseInt(limit, 10)) || parseInt(limit, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid limit value" });
+  }
+
+  const pageNum = page ? parseInt(page, 10) : 1;
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  if (pageNum < 1 || limitNum < 1) {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: page must be at least 1" });
+  }
+
+  const userRole = req.user.role;
+  if (published && published !== "true" && published !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid published value" });
+  }
+  if (
+    published &&
+    userRole !== RoleType.manager &&
+    userRole !== RoleType.superuser
+  ) {
+    return res.status(403).json({
+      error: "only managers and superusers can see unpublished events",
+    });
+  }
+
+  if (started && ended) {
+    return res
+      .status(400)
+      .json({ error: "cannot specify both started and ended" });
+  }
+
+  try {
+    const filteredEventsData = await EventService.getMyInvitedFilteredEvents(
+      userId,
+      role,
+      search,
+      name,
+      location,
+      started,
+      ended,
+      showFull,
+      pageNum,
+      limitNum,
+      published,
+      orderByObj,
+    );
+    res.status(200).json(filteredEventsData);
+  } catch (error) {
+    res.status(409).json({ error: error.message });
+  }
+}
+
+async function retrieveMyEventManagement(req, res) {
+  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } = req.query;
+  const { id: userId, role } = req.user;
+
+  if (showFull && showFull !== "true" && showFull !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid showFull value" });
+  }
+
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["startTime", "endTime", "points", "numGuests"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
+
+  if (
+    page &&
+    (!Number.isInteger(parseInt(page, 10)) || parseInt(page, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid page value" });
+  }
+  if (
+    limit &&
+    (!Number.isInteger(parseInt(limit, 10)) || parseInt(limit, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid limit value" });
+  }
+
+  const pageNum = page ? parseInt(page, 10) : 1;
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
+  if (pageNum < 1 || limitNum < 1) {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: page must be at least 1" });
+  }
+
+  const userRole = req.user.role;
+  if (published && published !== "true" && published !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid published value" });
+  }
+  if (
+    published &&
+    userRole !== RoleType.manager &&
+    userRole !== RoleType.superuser
+  ) {
+    return res.status(403).json({
+      error: "only managers and superusers can see unpublished events",
+    });
+  }
+
+  if (started && ended) {
+    return res
+      .status(400)
+      .json({ error: "cannot specify both started and ended" });
+  }
+
+  try {
+    const filteredEventsData = await EventService.getMyManagedFilteredEvents(
+      userId,
+      role,
+      search,
+      name,
+      location,
+      started,
+      ended,
+      showFull,
+      pageNum,
+      limitNum,
+      published,
+      orderByObj,
+    );
+    res.status(200).json(filteredEventsData);
+  } catch (error) {
+    res.status(409).json({ error: error.message });
+  }
+}
+
 module.exports = {
   registerUser,
   getFilteredUsers,
@@ -465,4 +631,6 @@ module.exports = {
   getMyUserInfo,
   updateMyPassword,
   deleteRedemption,
+  retrieveMyEventInvitations,
+  retrieveMyEventManagement,
 };

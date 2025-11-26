@@ -24,7 +24,7 @@ function AppLayout() {
   // app layout reads user from stored state and does not rerender like child elements like dashboard
   const navItems = useMemo(() => {
     if (!user) return [];
-    return getNavForRole(user.role, user.isOrganizer);
+    return getNavForRole(user?.role, user?.isEventOrganizer);
   }, [user]);
 
   const loading = (

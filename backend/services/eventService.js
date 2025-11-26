@@ -59,6 +59,7 @@ class EventService {
     limit = 10,
     published,
     role,
+    orderBy,
   ) {
     const filterDetails = {};
 
@@ -142,6 +143,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
+        orderBy: orderBy ? orderBy : {},
       }),
     ]);
 
@@ -659,7 +661,7 @@ class EventService {
     });
   }
 
-  static async retrieveEvents(userId, name, location, started, ended, page, limit ) {
+  static async retrieveEvents(userId, name, location, started, ended, page, limit, orderBy) {
     const filters = {};
     
     if (name && typeof name !== "string") {
@@ -709,7 +711,7 @@ class EventService {
         skip,
         take,
         select,
-        orderBy: { startTime: "asc" }
+        orderBy: orderBy ? orderBy : { startTime: "asc" }
       })
     
       return {count, events};
@@ -717,6 +719,221 @@ class EventService {
 
     return {count, results: events}
   }
+
+  static async getMyInvitedFilteredEvents(
+    userId,
+    role,
+    search,
+    name,
+    location,
+    started,
+    ended,
+    showFull,
+    page = 1,
+    limit = 10,
+    published,
+    orderBy,
+  ) {
+    const filterDetails = {};
+
+    filterDetails.AND = [];
+
+    let tempFilterDetail = { OR: [] };
+
+    if (search) {
+      tempFilterDetail.OR.push({ name: { contains: search } });
+      tempFilterDetail.OR.push({ description: { contains: search } });
+      tempFilterDetail.OR.push({ location: { contains: search } });
+    }
+
+    if (name) {
+      tempFilterDetail.OR.push({ name: name });
+    }
+
+    if (location) {
+      tempFilterDetail.OR.push({ location: location });
+    }
+
+    if (tempFilterDetail.OR.length !== 0) {
+      filterDetails.AND.push(tempFilterDetail);
+    }
+
+    tempFilterDetail = { OR: [] };
+
+    const currDate = new Date();
+    if (started === true) {
+      filterDetails.startTime = { lt: currDate };
+    } else if (started === false) {
+      filterDetails.startTime = { gt: currDate };
+    }
+
+    if (ended === true) {
+      filterDetails.endTime = { lt: currDate };
+    } else if (ended === false) {
+      filterDetails.endTime = { gt: currDate };
+    }
+
+    if (published) {
+      filterDetails.published = published === "true";
+    }
+
+    tempFilterDetail.OR.push({ capacity: null });
+    tempFilterDetail.OR.push({ numGuests: { lt: prisma.event.fields.capacity } });
+
+    if (showFull === "true") {
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+    }
+
+    if (role === RoleType.regular || role === RoleType.cashier) {
+      filterDetails.published = true;
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+    }
+
+    filterDetails.AND.push(tempFilterDetail);
+
+    const selectDetails = {
+      id: true,
+      name: true,
+      location: true,
+      startTime: true,
+      endTime: true,
+      capacity: true,
+      numGuests: true,
+      points: true,
+    };
+
+    if (role === RoleType.manager || role === RoleType.superuser) {
+      selectDetails.pointsRemain = true;
+      selectDetails.pointsAwarded = true;
+      selectDetails.published = true;
+    }
+
+    filterDetails.rsvps = { some: { userId: userId } };
+
+    const [count, results] = await prisma.$transaction([
+      prisma.event.count({ where: filterDetails }),
+      prisma.event.findMany({
+        where: filterDetails,
+        take: limit,
+        skip: (page - 1) * limit,
+        select: selectDetails,
+        orderBy: orderBy ? orderBy : {},
+      }),
+    ]);
+
+    return {
+      count: count,
+      results: results,
+    };
+  }
+
+  static async getMyManagedFilteredEvents(
+    userId,
+    role,
+    search,
+    name,
+    location,
+    started,
+    ended,
+    showFull,
+    page = 1,
+    limit = 10,
+    published,
+    orderBy,
+  ) {
+    const filterDetails = {};
+
+    filterDetails.AND = [];
+
+    let tempFilterDetail = { OR: [] };
+
+    if (search) {
+      tempFilterDetail.OR.push({ name: { contains: search } });
+      tempFilterDetail.OR.push({ description: { contains: search } });
+      tempFilterDetail.OR.push({ location: { contains: search } });
+    }
+
+    if (name) {
+      tempFilterDetail.OR.push({ name: name });
+    }
+
+    if (location) {
+      tempFilterDetail.OR.push({ location: location });
+    }
+
+    if (tempFilterDetail.OR.length !== 0) {
+      filterDetails.AND.push(tempFilterDetail);
+    }
+
+    tempFilterDetail = { OR: [] };
+
+    const currDate = new Date();
+    if (started === true) {
+      filterDetails.startTime = { lt: currDate };
+    } else if (started === false) {
+      filterDetails.startTime = { gt: currDate };
+    }
+
+    if (ended === true) {
+      filterDetails.endTime = { lt: currDate };
+    } else if (ended === false) {
+      filterDetails.endTime = { gt: currDate };
+    }
+
+    if (published) {
+      filterDetails.published = published === "true";
+    }
+
+    tempFilterDetail.OR.push({ capacity: null });
+    tempFilterDetail.OR.push({ numGuests: { lt: prisma.event.fields.capacity } });
+
+    if (showFull === "true") {
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+    }
+
+    if (role === RoleType.regular || role === RoleType.cashier) {
+      filterDetails.published = true;
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+    }
+
+    filterDetails.AND.push(tempFilterDetail);
+
+    const selectDetails = {
+      id: true,
+      name: true,
+      location: true,
+      startTime: true,
+      endTime: true,
+      capacity: true,
+      numGuests: true,
+      points: true,
+    };
+
+    if (role === RoleType.manager || role === RoleType.superuser) {
+      selectDetails.pointsRemain = true;
+      selectDetails.pointsAwarded = true;
+      selectDetails.published = true;
+    }
+
+    filterDetails.organizers = { some: { id: userId } };
+
+    const [count, results] = await prisma.$transaction([
+      prisma.event.count({ where: filterDetails }),
+      prisma.event.findMany({
+        where: filterDetails,
+        take: limit,
+        skip: (page - 1) * limit,
+        select: selectDetails,
+        orderBy: orderBy ? orderBy : {},
+      }),
+    ]);
+
+    return {
+      count: count,
+      results: results,
+    };
+  }
+
 }
 
 module.exports = { EventService };

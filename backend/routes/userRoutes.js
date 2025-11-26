@@ -12,6 +12,8 @@ const {
   updateMyPassword,
   createTransfer,
   deleteRedemption,
+  retrieveMyEventInvitations,
+  retrieveMyEventManagement,
 } = require("../controllers/userController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
 const upload = require("../middleware/upload");
@@ -75,6 +77,10 @@ userRouter.delete("/me/transactions", verifyToken, deleteRedemption);
 userRouter.get("/me/transactions", verifyToken, retrieveTransactions);
 
 userRouter.get("/me/events", verifyToken, retrieveEvents);
+
+userRouter.get("/me/events/invitations", verifyToken, retrieveMyEventInvitations);
+
+userRouter.get("/me/events/management", verifyToken, retrieveMyEventManagement);
 
 userRouter.post("/:userId/transactions", verifyToken, createTransfer);
 

@@ -97,7 +97,7 @@ export default function CreatePurchase() {
                 overflowY: "auto",
             }}
         >
-            <Typography variant="h3" pb={1}>Create Purchase Transaction</Typography>
+            <Typography variant="h4" pb={1}>Create Purchase Transaction</Typography>
             <Typography variant="body1" color="text.secondary">Process a new purchase and award points to customer</Typography>
 
             <FormCard width="100%" contentPadding={1} >

@@ -104,8 +104,8 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
               </Tooltip>
 
               {item.children && (
-                <Collapse in={expandedItems[item.path] && isOpen} timeout="auto">
-                  <MenuList sx={{pl: 4, p: 0}}>
+                <Collapse in={expandedItems[item.path] && isOpen} timeout="auto" sx={{ mb: -1 }}>
+                  <MenuList sx={{ pl: 4, p: 0 }}>
                     {item.children.map((child) => (
                       <MenuItem
                         key={child.path}
