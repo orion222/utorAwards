@@ -37,7 +37,7 @@ function EventDetails() {
                 params: {limit: 3}
             });
 
-            if (user.role === "manager") eventData.numGuests = eventData.guests.length;
+            if (user.role === "manager" || user.role === "superuser") eventData.numGuests = eventData.guests.length;
             setEvent(eventData);
 
             const { data: myEvents } = await api.get("users/me/events", {
@@ -158,6 +158,7 @@ function EventDetails() {
                 >
                     {description}
                 </Typography>
+                
                 <Box>
                     {!rsvp && (<Button onClick={rsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
                         <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 18}}></ArrowDropDownIcon>

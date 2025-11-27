@@ -6,9 +6,11 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import StarIcon from '@mui/icons-material/Star';
 import SellIcon from '@mui/icons-material/Sell';
 import PaidIcon from '@mui/icons-material/Paid';
-import { TheatersOutlined } from "@mui/icons-material";
+import { TheatersOutlined } from "@mui/icons-material"
+import { useNavigate } from "react-router-dom";;
 
 function PromotionCard({ promotion }) {
+    const navigate = useNavigate();
     const isSmall = useMediaQuery("(max-width: 670px)");
     const {name, description, type, endTime, rate, points} = promotion;
 
@@ -21,6 +23,10 @@ function PromotionCard({ promotion }) {
           return formattedDate;
     }
 
+    const handleViewPromotion = () => {
+        navigate(`/promotions/${promotion.id}`);
+    };
+
     return (
         <Box sx={{
             padding: "16px",
@@ -31,7 +37,11 @@ function PromotionCard({ promotion }) {
             justifyContent: "space-between", 
             border: 1, 
             borderColor: theme.palette.custom.border,
-            bgcolor: theme.palette.background.paper}}>
+            bgcolor: theme.palette.background.paper,
+            '&:hover': { cursor: 'pointer' }
+            }}
+            onClick={handleViewPromotion}
+            >
                 <Box sx={{display: "flex", flexDirection: "column"}}> {/* left side */}
                     <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
                     {rate ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>

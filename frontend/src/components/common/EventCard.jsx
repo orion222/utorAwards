@@ -159,7 +159,7 @@ function EventCard({ event, editable = false }) {
                 borderRadius: "8px",
                 width: "fit-content",
               }}
-              onClick={() => setViewDetails(true)}
+              onClick={handleViewDetails}
             >
               View Details
             </Button>
@@ -191,77 +191,7 @@ function EventCard({ event, editable = false }) {
               )
             )}
           </Stack>
-          <Modal
-            open={viewDetails}
-            onClose={() => setViewDetails(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zindex: 1300,
-            }}
-          >
-            <EventModal
-              event={event}
-              onClose={() => setViewDetails(false)}
-              onRsvp={() => setRsvpSuccess(true)}
-              onUnRsvp={() => setUnRsvpSuccess(true)}
-            ></EventModal>
-          </Modal>
-          <Modal
-            open={rsvpSuccess}
-            onClose={() => setRsvpSuccess(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zindex: 1300,
-            }}
-          >
-            <RSVPSuccessModal
-              event={event}
-              onClose={() => setRsvpSuccess(false)}
-            ></RSVPSuccessModal>
-          </Modal>
-          <Modal
-            open={unRsvpSuccess}
-            onClose={() => setUnRsvpSuccess(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zindex: 1300,
-            }}
-          >
-            <UnRSVPSuccessModal
-              event={event}
-              onClose={() => setUnRsvpSuccess(false)}
-            ></UnRSVPSuccessModal>
-          </Modal>
+         
           <Modal
             open={editModal}
             onClose={() => setEditModal(false)}
@@ -385,7 +315,7 @@ function EventCard({ event, editable = false }) {
                 borderRadius: "8px",
                 width: "fit-content",
               }}
-              onClick={() => setViewDetails(true)}
+              onClick={handleViewDetails}
             >
               View Details
             </Button>
@@ -417,77 +347,7 @@ function EventCard({ event, editable = false }) {
               )
             )}
           </Stack>
-          <Modal
-            open={viewDetails}
-            onClose={() => setViewDetails(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1300,
-            }}
-          >
-            <EventModal
-              event={event}
-              onClose={() => setViewDetails(false)}
-              onRsvp={() => setRsvpSuccess(true)}
-              onUnRsvp={() => setUnRsvpSuccess(true)}
-            ></EventModal>
-          </Modal>
-          <Modal
-            open={rsvpSuccess}
-            onClose={() => setRsvpSuccess(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zindex: 1300,
-            }}
-          >
-            <RSVPSuccessModal
-              event={event}
-              onClose={() => setRsvpSuccess(false)}
-            ></RSVPSuccessModal>
-          </Modal>
-          <Modal
-            open={unRsvpSuccess}
-            onClose={() => setUnRsvpSuccess(false)}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zindex: 1300,
-            }}
-          >
-            <UnRSVPSuccessModal
-              event={event}
-              onClose={() => setUnRsvpSuccess(false)}
-            ></UnRSVPSuccessModal>
-          </Modal>
+         
           <Modal
             open={editModal}
             onClose={() => setEditModal(false)}

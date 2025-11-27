@@ -1,9 +1,11 @@
 import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider } from "@mui/material";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useNavigate } from "react-router-dom";
 
 function TransactionItemCard({ transaction }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
+    const navigate = useNavigate();
     const { type, spent, amount, earned, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
@@ -15,6 +17,10 @@ function TransactionItemCard({ transaction }) {
 
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
+    const handleViewTransaction = () => {
+        navigate(`/past-transactions/${transaction.id}`);
+    };
+
     if (isSmall) {
         return (
             <Box 
@@ -23,7 +29,9 @@ function TransactionItemCard({ transaction }) {
                     width: "100%",
                     maxWidth: "unset",
                     flex: 1
+                    
                 }}
+                onClick={handleViewTransaction}
             >
                 <Accordion
                     sx={{
@@ -115,7 +123,9 @@ function TransactionItemCard({ transaction }) {
                 borderRadius: 3,
                 position: "relative",
                 overflow: "visible",
+                '&:hover': { cursor: 'pointer' }
             }}
+            onClick={handleViewTransaction}
         >
             {/* Colour strip */}
             <Box
