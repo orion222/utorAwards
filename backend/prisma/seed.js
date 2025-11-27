@@ -1,6 +1,6 @@
 "use strict";
 
-const { prisma, RoleType, PromotionType } = require("../prisma/prisma");
+const { prisma, PromotionType } = require("../prisma/prisma");
 const bcrypt = require("bcrypt");
 
 async function createUser(name, utorid, email, password, role) {
@@ -51,29 +51,6 @@ async function createPromotion(name, description, type, startTime, endTime, minS
       },
     });
   }
-
-
-// 1 super user, 2 managers, 3 cashiers, 5 regular users
-const dumb_pw = "Hello.123"
-createUser("Sofia Nguyen", "snguyen", "sofia.nguyen@mail.utoronto.ca", dumb_pw, RoleType.superuser).finally(() => prisma.$disconnect());
-
-createUser("Ethan Rodriguez", "erodrigu", "ethan.rod@mail.utoronto.ca", dumb_pw, RoleType.manager).finally(() => prisma.$disconnect());
-createUser("Liam Patel", "lpatel34", "liam.patel@mail.utoronto.ca", dumb_pw, RoleType.manager).finally(() => prisma.$disconnect());
-
-createUser("Maya Thompson", "mthompso", "maya.thompson@mail.utoronto.ca", dumb_pw, RoleType.cashier).finally(() => prisma.$disconnect());
-createUser("Noah Kim", "nkim3154", "noah.kim@mail.utoronto.ca", dumb_pw, RoleType.cashier).finally(() => prisma.$disconnect());
-createUser("Olivia Johnson", "ojohnson", "olivia.johnson@mail.utoronto.ca", dumb_pw, RoleType.cashier).finally(() => prisma.$disconnect());
-
-createUser("Lucas Carter", "lcarter3", "lucas.carter@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Ava Chen", "achen568", "ava.chen@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Isabella Singh", "isingh21", "isabella.singh@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Benjamin Wright", "bwright7", "ben.wright@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Elijah Brooks", "ebrooks9", "elijah.brooks@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Harper Garcia", "hgarcia5", "harper.garcia@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Amelia Davis", "adavis56", "amelia.davis@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Mateo Wilson", "mwilson3", "mateo.wilson@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-createUser("Chloe Brown", "cbrown23", "chloe.brown@mail.utoronto.ca", dumb_pw, RoleType.regular).finally(() => prisma.$disconnect());
-
 
 // 6 events
 createEvent("Winter Gala", "Dress up for an elegant night", "Toronto Convention Centre", "2025-12-20T18:00:00.000Z", "2025-12-20T23:00:00.000Z", 300, 1500).finally(() => prisma.$disconnect());
