@@ -19,6 +19,7 @@ function EventDetails() {
     const [rsvp, setRSVP] = useState(false);
     const [rsvpSuccess, setRsvpSuccess] = useState(false);
     const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
+    const { user } = useUser();
     
     const formatDate = (isoDate) => {
         const formattedDate = new Intl.DateTimeFormat("en-US", {
@@ -35,6 +36,8 @@ function EventDetails() {
             const { data: eventData } = await api.get(`/events/${eventId}`, {
                 params: {limit: 3}
             });
+
+            if (user.role === "manager") eventData.numGuests = eventData.guests.length;
             setEvent(eventData);
 
             const { data: myEvents } = await api.get("users/me/events", {
