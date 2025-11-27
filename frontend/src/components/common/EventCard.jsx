@@ -19,10 +19,12 @@ import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
 import { FiEdit } from "react-icons/fi";
 import EditEventForm from "../../pages/Events/EditEventForm.jsx";
 import useToast from "../../components/common/hooks/useToast.jsx";
+import { useNavigate } from "react-router-dom";
 
 function EventCard({ event, editable = false }) {
   const isSmall = useMediaQuery("(max-width: 670px)");
   const {
+    id,
     name,
     description,
     location,
@@ -37,6 +39,8 @@ function EventCard({ event, editable = false }) {
   const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const { showToast, ToastComponent } = useToast();
+  const navigate = useNavigate();
+
   const formatDate = (isoDate) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -55,6 +59,10 @@ function EventCard({ event, editable = false }) {
     return truncated;
   }
   const hasStarted = new Date(startTime) < new Date();
+  const handleViewDetails = () => {
+    navigate(`/events/${event.id}`);
+  };
+
   if (isSmall) {
     return (
       <Box
