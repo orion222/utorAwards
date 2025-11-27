@@ -9,21 +9,23 @@ import {
 } from "@mui/material";
 import Permission from "./Permission";
 import ChangePassword from "./ChangePassword";
+import useToast from "../../common/hooks/useToast";
 
 export default function SettingsModal({ open, onClose, showToast }) {
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Settings</DialogTitle>
-      <DialogContent>
-        <Stack spacing={4} sx={{ mt: 1 }}>
-          <Permission showToast={showToast} />
-          <Divider />
-          <ChangePassword showToast={showToast} />
-        </Stack>
-      </DialogContent>
-      <DialogActions sx={{ p: "0 24px 16px" }}>
-        <Button onClick={onClose}>Close</Button>
-      </DialogActions>
-    </Dialog>
-  );
+    const { showToast: modalShowToast, ToastComponent } = useToast();
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Settings</DialogTitle>
+        <DialogContent>
+            <Stack spacing={4} sx={{ mt: 1 }}>
+            <Permission showToast={showToast} />
+            <Divider />
+            <ChangePassword showToast={modalShowToast} />
+            </Stack>
+        </DialogContent>
+        <DialogActions sx={{ p: "0 24px 16px" }}>
+            <Button onClick={onClose}>Close</Button>
+        </DialogActions>
+        </Dialog>
+    );
 }
