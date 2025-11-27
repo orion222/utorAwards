@@ -1,6 +1,12 @@
 import FilterableList from "../../components/common/FilterableList.jsx";
-import {Alert, AlertTitle, Box, CircularProgress, Typography} from "@mui/material";
-import {useUser} from "../../context/UserContext.jsx";
+import {
+  Alert,
+  AlertTitle,
+  Box,
+  CircularProgress,
+  Typography,
+} from "@mui/material";
+import { useUser } from "../../context/UserContext.jsx";
 import EventCard from "../../components/common/EventCard.jsx";
 
 function EventManagement() {
@@ -13,7 +19,7 @@ function EventManagement() {
     },
     location: {
       type: "text",
-      label: "Location"
+      label: "Location",
     },
     started: {
       type: "select",
@@ -30,7 +36,7 @@ function EventManagement() {
       label: "Is Full",
       options: ["True", "False"],
     },
-  }
+  };
 
   const orderByConfig = [
     { label: "Start Time (Earliest)", value: "startTime_asc" },
@@ -48,22 +54,28 @@ function EventManagement() {
       type: "select",
       label: "Published",
       options: ["True", "False"],
-    }
+    };
   }
 
   return (
     <Box sx={{ my: 2 }}>
-      <FilterableList queryKey="my-managed-events" apiEndpoint="/users/me/events/management" filterConfig={filterConfig} orderByConfig={orderByConfig}>
+      <FilterableList
+        queryKey="my-managed-events"
+        apiEndpoint="/users/me/events/management"
+        filterConfig={filterConfig}
+        orderByConfig={orderByConfig}
+      >
         {({ data, isFetching, error }) => {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
                 <Alert>
                   <AlertTitle>Error</AlertTitle>
-                  Something went wrong while fetching your transactions. Try again later.
+                  Something went wrong while fetching your transactions. Try
+                  again later.
                 </Alert>
               </Box>
-            )
+            );
           }
 
           if (isFetching) {
@@ -78,7 +90,9 @@ function EventManagement() {
             <>
               {data.length === 0 ? (
                 <Box>
-                  <Typography variant="body2" color="textSecondary">No results found</Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    No results found
+                  </Typography>
                 </Box>
               ) : (
                 <Box
@@ -87,20 +101,20 @@ function EventManagement() {
                     maxWidth: "100%",
                     display: "grid",
                     gridTemplateColumns: {
-                      xs: '1fr',
-                      sm: 'repeat(2, 1fr)',
-                      md: 'repeat(3, 1fr)',
+                      xs: "1fr",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
                     },
                     gap: 1,
                   }}
                 >
-                  {data.map(event => (
-                    <EventCard event={event} key={event.id} />
+                  {data.map((event) => (
+                    <EventCard event={event} key={event.id} editable={true} />
                   ))}
                 </Box>
               )}
             </>
-          )
+          );
         }}
       </FilterableList>
     </Box>
