@@ -3,7 +3,8 @@ import { Menu, MenuItem, ListItemIcon, ListItemText, Avatar } from "@mui/materia
 import { User, Settings, LogOut, Bell } from "lucide-react";
 import { useUser } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import ProfileModal from "../../../pages/Profile/ProfileModal";
+import ProfileModal from "./ProfileModal";
+import SettingsModal from "./SettingsModal";
 import useToast from "../../common/hooks/useToast";
 
 export default function Profile() {
@@ -13,6 +14,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const { showToast, ToastComponent } = useToast();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
+  const [settingsModalOpen, setSettingsModalOpen] = useState(false);
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -33,7 +35,7 @@ export default function Profile() {
   };
 
   const handleSettings = () => {
-    // e.g. navigate("/settings");
+    setSettingsModalOpen(true);
     handleClose();
   };
 
@@ -48,7 +50,11 @@ export default function Profile() {
       <Avatar src={user?.avatarURL} alt="Profile photo" sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen} />
 
       {profileModalOpen && (
-        <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />
+        <ProfileModal user={user} open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />
+      )}
+
+      {settingsModalOpen && (
+        <SettingsModal open={settingsModalOpen} onClose={() => setSettingsModalOpen(false)} showToast={showToast} />
       )}
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}
