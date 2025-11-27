@@ -8,6 +8,7 @@ function FormCard({
   onClose,
   fullWidth = false,
   children,
+  keepForm = false,
 }) {
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
@@ -25,7 +26,7 @@ function FormCard({
         width: "100%",
       }}
     >
-      {isSmall ? (
+      {isSmall && !keepForm ? (
         <Box sx={{ width: "100%", p: padding }}>{children}</Box>
       ) : (
         <Card
