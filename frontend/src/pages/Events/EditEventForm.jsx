@@ -112,6 +112,7 @@ export default function EditEventForm({ event, onClose, showToast }) {
       showClose={true}
       onClose={onClose}
       fullWidth={!!onClose}
+      keepForm={true}
       children={
         <Box>
           <Typography variant="h5" fontWeight="bold">
