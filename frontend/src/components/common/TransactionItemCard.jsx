@@ -18,7 +18,7 @@ function TransactionItemCard({ transaction }) {
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
     const handleViewTransaction = () => {
-        navigate(`/past-transactions/${transaction.id}`);
+        navigate(`/past-transactions/${transaction.id}`, { state: { transaction } });
     };
 
     if (isSmall) {
@@ -123,7 +123,7 @@ function TransactionItemCard({ transaction }) {
                 borderRadius: 3,
                 position: "relative",
                 overflow: "visible",
-                '&:hover': { cursor: 'pointer' }
+                '&:hover': { cursor: 'pointer', boxShadow: 4, }
             }}
             onClick={handleViewTransaction}
         >

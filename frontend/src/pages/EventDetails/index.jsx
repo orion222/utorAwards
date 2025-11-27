@@ -112,7 +112,7 @@ function EventDetails() {
                 {" "}
                 {/* left side */}
                 <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                <Typography sx={{ fontSize: isSmall ? 20 : 35, fontWeight: "bold" }}>
+                <Typography sx={{ fontSize: isSmall ? 20 : 30, fontWeight: "bold" }}>
                     {name}
                 </Typography>
                 <Box
@@ -124,10 +124,10 @@ function EventDetails() {
                     }}
                 >
                     <CalendarTodayIcon
-                        sx={{ fontSize: isSmall ? 14 : 24, color: theme.palette.text.secondary }}
+                        sx={{ fontSize: isSmall ? 14 : 22, color: theme.palette.text.secondary }}
                     />
                     <Typography
-                        sx={{ fontSize: isSmall ? 11: 18, color: theme.palette.text.secondary }}
+                        sx={{ fontSize: isSmall ? 11: 14, color: theme.palette.text.secondary }}
                     >
                         {formatDate(startTime)} - {formatDate(endTime)}
                     </Typography>
@@ -141,17 +141,17 @@ function EventDetails() {
                     }}
                 >
                     <LocationPinIcon
-                    sx={{ fontSize: isSmall ? 14 : 24, color: theme.palette.text.secondary }}
+                    sx={{ fontSize: isSmall ? 14 : 22, color: theme.palette.text.secondary }}
                     />
                     <Typography
-                    sx={{ fontSize: isSmall ? 11 : 18, color: theme.palette.text.secondary }}
+                    sx={{ fontSize: isSmall ? 11 : 14, color: theme.palette.text.secondary }}
                     >
                     {location}
                     </Typography>
                 </Box>
                 <Typography
                     sx={{
-                    fontSize: isSmall ? 11 : 18,
+                    fontSize: isSmall ? 11 : 14,
                     width: "100%",
                     height: "auto",
                     }}
@@ -161,13 +161,13 @@ function EventDetails() {
                 
                 <Box>
                     {!rsvp && (<Button onClick={rsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
-                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 18}}></ArrowDropDownIcon>
-                        <Typography sx={{fontSize: isSmall ? 11 : 18}}>RSVP</Typography>
+                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
+                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>RSVP</Typography>
                     </Button>
                     )}
                     {rsvp && (<Button onClick={unRsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
-                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 18}}></ArrowDropDownIcon>
-                        <Typography sx={{fontSize: isSmall ? 11 : 18}}>Cancel RSVP</Typography>
+                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
+                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>Cancel RSVP</Typography>
                     </Button>
                     )}
                 </Box>
@@ -231,7 +231,7 @@ function EventDetails() {
             >
                 {" "}
                 {/* right side */}
-                <Typography sx={{ fontSize: isSmall ? 20 : 35, fontWeight: "bold" }}>
+                <Typography sx={{ fontSize: isSmall ? 20 : 30, fontWeight: "bold" }}>
                 {points} pts
                 </Typography>
                 <Box
@@ -243,10 +243,10 @@ function EventDetails() {
                 }}
                 >
                 <PeopleAltIcon
-                    sx={{ fontSize: isSmall ? 14 : 24, color: theme.palette.text.secondary }}
+                    sx={{ fontSize: isSmall ? 14 : 22, color: theme.palette.text.secondary }}
                 />
                 <Typography
-                    sx={{ fontSize: isSmall ? 11 : 18, color: theme.palette.text.secondary }}
+                    sx={{ fontSize: isSmall ? 11 : 14, color: theme.palette.text.secondary }}
                 >
                     {capacity === null ? `${numGuests}` : `${numGuests}/${capacity}`}
                 </Typography>

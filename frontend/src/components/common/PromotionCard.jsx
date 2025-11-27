@@ -6,8 +6,8 @@ import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import StarIcon from '@mui/icons-material/Star';
 import SellIcon from '@mui/icons-material/Sell';
 import PaidIcon from '@mui/icons-material/Paid';
-import { TheatersOutlined } from "@mui/icons-material"
-import { useNavigate } from "react-router-dom";;
+import { TheatersOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
 function PromotionCard({ promotion }) {
     const navigate = useNavigate();
@@ -38,7 +38,7 @@ function PromotionCard({ promotion }) {
             border: 1, 
             borderColor: theme.palette.custom.border,
             bgcolor: theme.palette.background.paper,
-            '&:hover': { cursor: 'pointer' }
+            '&:hover': { cursor: 'pointer', boxShadow: 4 }
             }}
             onClick={handleViewPromotion}
             >
