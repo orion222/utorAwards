@@ -9,13 +9,9 @@ export const profileSchema = yup.object().shape({
     .email("Invalid email format")
     .matches(/@mail\.utoronto\.ca$/, "Email must be a @mail.utoronto.ca address")
     .required("Email is required"),
-  birthYear: yup
-    .number()
-    .typeError("Year is required").required("Year is required"),
-  birthMonth: yup
-    .number()
-    .typeError("Month is required").required("Month is required"),
-  birthDay: yup
-    .number()
-    .typeError("Day is required").required("Day is required"),
+  birthday: yup
+    .date()
+    .nullable()
+    .transform((v) => (v instanceof Date && !isNaN(v) ? v : null))
+    .max(new Date(), "Birthday cannot be in the future")
 });

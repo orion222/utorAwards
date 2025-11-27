@@ -8,22 +8,19 @@ import {
   TextField,
   Stack,
   Avatar,
-  Grid,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormHelperText,
-  FormLabel
 } from "@mui/material";
 import { PhotoCamera } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import dayjs from "dayjs";
 import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
 import { profileSchema as schema } from "./constant";
 
-export default function ProfileModal({ showToast, open, onClose }) {
+export default function ProfileModal({ open, onClose, showToast }) {
   const { user } = useUser();
   const [avatarPreview, setAvatarPreview] = useState(user?.avatarURL);
   const [avatarFile, setAvatarFile] = useState(null);
@@ -38,21 +35,16 @@ export default function ProfileModal({ showToast, open, onClose }) {
     defaultValues: {
       name: user?.name || "",
       email: user?.email || "",
-      birthYear: user?.birthday ? parseInt(user.birthday.split('-')[0], 10) : "",
-      birthMonth: user?.birthday ? parseInt(user.birthday.split('-')[1], 10) : "",
-      birthDay: user?.birthday ? parseInt(user.birthday.split('-')[2], 10) : "",
+      birthday: user?.birthday ? dayjs(user.birthday) : null,
     },
   });
 
   useEffect(() => {
     if (user) {
-      const birthdayParts = user.birthday ? user.birthday.split('-') : null;
       reset({
         name: user.name || "",
         email: user.email || "",
-        birthYear: birthdayParts ? parseInt(birthdayParts[0], 10) : "",
-        birthMonth: birthdayParts ? parseInt(birthdayParts[1], 10) : "",
-        birthDay: birthdayParts ? parseInt(birthdayParts[2], 10) : "",
+        birthday: user.birthday ? dayjs(user.birthday) : null,
       });
       setAvatarPreview(user.avatarURL);
     }
@@ -74,11 +66,8 @@ export default function ProfileModal({ showToast, open, onClose }) {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);
-    const year = data.birthYear;
-    const month = String(data.birthMonth).padStart(2, '0');
-    const day = String(data.birthDay).padStart(2, '0');
-    const birthdayPayload = `${year}-${month}-${day}`;
-    formData.append("birthday", birthdayPayload);
+    const birthdayString = dayjs(data.birthday).format("YYYY-MM-DD");
+    formData.append("birthday", birthdayString);
 
     if (avatarFile) {
       formData.append("avatar", avatarFile);
@@ -101,27 +90,11 @@ export default function ProfileModal({ showToast, open, onClose }) {
     }
   };
 
-  const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
-  const months = [
-    { value: 1, label: "January" },
-    { value: 2, label: "February" },
-    { value: 3, label: "March" },
-    { value: 4, label: "April" },
-    { value: 5, label: "May" },
-    { value: 6, label: "June" },
-    { value: 7, label: "July" },
-    { value: 8, label: "August" },
-    { value: 9, label: "September" },
-    { value: 10, label: "October" },
-    { value: 11, label: "November" },
-    { value: 12, label: "December" },
-  ];
-  const days = Array.from({ length: 31 }, (_, i) => i + 1);
-
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>My Profile</DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>My Profile</DialogTitle>
+        <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <Stack spacing={3} sx={{ mt: 1 }}>
             <Stack direction="row" spacing={2} alignItems="center">
@@ -146,53 +119,24 @@ export default function ProfileModal({ showToast, open, onClose }) {
               )}
             />
 
-            <FormControl component="fieldset" variant="standard">
-              <FormLabel component="legend" sx={{ mb: 1 }}>Birthday</FormLabel>
-              <Grid container spacing={2}>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth error={!!errors.birthYear}>
-                  <InputLabel>Year</InputLabel>
-                  <Controller name="birthYear" control={control} render={({ field }) => (
-                      <Select {...field} label="Year">
-                        {years.map((year) => (
-                          <MenuItem key={year} value={year}>{year}</MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                  {errors.birthYear && <FormHelperText>{errors.birthYear.message}</FormHelperText>}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth error={!!errors.birthMonth}>
-                  <InputLabel>Month</InputLabel>
-                  <Controller name="birthMonth" control={control} render={({ field }) => (
-                      <Select {...field} label="Month">
-                        {months.map((month) => (
-                          <MenuItem key={month.value} value={month.value}>{month.label}</MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                   {errors.birthMonth && <FormHelperText>{errors.birthMonth.message}</FormHelperText>}
-                </FormControl>
-              </Grid>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <FormControl fullWidth error={!!errors.birthDay}>
-                  <InputLabel>Day</InputLabel>
-                  <Controller name="birthDay" control={control} render={({ field }) => (
-                      <Select {...field} label="Day">
-                        {days.map((day) => (
-                          <MenuItem key={day} value={day}>{day}</MenuItem>
-                        ))}
-                      </Select>
-                    )}
-                  />
-                  {errors.birthDay && <FormHelperText>{errors.birthDay.message}</FormHelperText>}
-                </FormControl>
-              </Grid>
-            </Grid>
-            </FormControl>
+            <Controller
+              name="birthday"
+              control={control}
+              render={({ field }) => (
+                <DatePicker
+                  {...field}
+                  label="Birthday"
+                  disableFuture
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      error: !!errors.birthday,
+                      helperText: errors.birthday?.message,
+                    },
+                  }}
+                />
+              )}
+            />
           </Stack>
         </DialogContent>
         <DialogActions sx={{ p: "0 24px 16px" }}>
@@ -201,7 +145,8 @@ export default function ProfileModal({ showToast, open, onClose }) {
             {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </DialogActions>
-      </form>
-    </Dialog>
+        </form>
+      </Dialog>
+    </LocalizationProvider>
   );
 }
