@@ -1,30 +1,26 @@
 import {
-  Card,
-  CardContent,
   Stack,
-  Chip,
   Box,
   Typography,
-  Accordion,
-  AccordionSummary,
   useMediaQuery,
-  useTheme,
-  AccordionDetails,
-  Divider,
   Button,
   Modal,
+  Chip,
 } from "@mui/material";
 import theme from "../../theme.js";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import { TheatersOutlined } from "@mui/icons-material";
+
 import { useState } from "react";
 import EventModal from "./EventModal.jsx";
 import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
 import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
+import { FiEdit } from "react-icons/fi";
+import EditEventForm from "../../pages/Events/EditEventForm.jsx";
+import useToast from "../../components/common/hooks/useToast.jsx";
 
-function EventCard({ event }) {
+function EventCard({ event, editable = false }) {
   const isSmall = useMediaQuery("(max-width: 670px)");
   const {
     name,
@@ -39,14 +35,14 @@ function EventCard({ event }) {
   const [viewDetails, setViewDetails] = useState(false);
   const [rsvpSuccess, setRsvpSuccess] = useState(false);
   const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
-
+  const [editModal, setEditModal] = useState(false);
+  const { showToast, ToastComponent } = useToast();
   const formatDate = (isoDate) => {
-    const formattedDate = new Intl.DateTimeFormat("en-US", {
+    return new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "2-digit",
       year: "numeric",
     }).format(new Date(isoDate));
-    return formattedDate;
   };
 
   function truncateStr(str) {
@@ -58,7 +54,7 @@ function EventCard({ event }) {
     }
     return truncated;
   }
-
+  const hasStarted = new Date(startTime) < new Date();
   if (isSmall) {
     return (
       <Box
@@ -145,19 +141,48 @@ function EventCard({ event }) {
               </Typography>
             </Box>
           </Box>
-          <Button
-            variant="contained"
-            sx={{
-              fontSize: 12,
-              padding: "8px",
-              backgroundColor: theme.palette.secondary.main,
-              borderRadius: "8px",
-              width: "fit-content",
-            }}
-            onClick={() => setViewDetails(true)}
-          >
-            View Details
-          </Button>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button
+              variant="contained"
+              sx={{
+                fontSize: 12,
+                padding: "8px",
+                backgroundColor: theme.palette.secondary.main,
+                borderRadius: "8px",
+                width: "fit-content",
+              }}
+              onClick={() => setViewDetails(true)}
+            >
+              View Details
+            </Button>
+            {hasStarted ? (
+              <Chip
+                label="LIVE"
+                size="small"
+                sx={{
+                  backgroundColor: "#ff4444",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 10,
+                }}
+              />
+            ) : (
+              editable && (
+                <Button
+                  startIcon={<FiEdit color="grey" />}
+                  onClick={() => setEditModal(true)}
+                  sx={{
+                    fontSize: 12,
+                    color: "grey",
+                    borderRadius: "8px",
+                    width: "fit-content",
+                  }}
+                >
+                  Edit
+                </Button>
+              )
+            )}
+          </Stack>
           <Modal
             open={viewDetails}
             onClose={() => setViewDetails(false)}
@@ -228,6 +253,41 @@ function EventCard({ event }) {
               event={event}
               onClose={() => setUnRsvpSuccess(false)}
             ></UnRSVPSuccessModal>
+          </Modal>
+          <Modal
+            open={editModal}
+            onClose={() => setEditModal(false)}
+            aria-labelledby="edit-event-modal"
+            aria-describedby="edit-event-form"
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1300,
+            }}
+          >
+            <Box
+              sx={{
+                width: "90%",
+                maxWidth: "600px",
+                maxHeight: "90vh",
+                overflow: "auto",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <EditEventForm
+                event={event}
+                showToast={showToast}
+                onClose={() => setEditModal(false)}
+              />
+            </Box>
           </Modal>
         </Box>
       </Box>
@@ -307,19 +367,48 @@ function EventCard({ event }) {
               {truncateStr(description)}
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            sx={{
-              fontSize: 12,
-              padding: "8px",
-              backgroundColor: theme.palette.secondary.main,
-              borderRadius: "8px",
-              width: "fit-content",
-            }}
-            onClick={() => setViewDetails(true)}
-          >
-            View Details
-          </Button>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <Button
+              variant="contained"
+              sx={{
+                fontSize: 12,
+                padding: "8px",
+                backgroundColor: theme.palette.secondary.main,
+                borderRadius: "8px",
+                width: "fit-content",
+              }}
+              onClick={() => setViewDetails(true)}
+            >
+              View Details
+            </Button>
+            {hasStarted ? (
+              <Chip
+                label="LIVE"
+                size="small"
+                sx={{
+                  backgroundColor: "#ff4444",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 10,
+                }}
+              />
+            ) : (
+              editable && (
+                <Button
+                  startIcon={<FiEdit color="grey" />}
+                  onClick={() => setEditModal(true)}
+                  sx={{
+                    fontSize: 12,
+                    color: "grey",
+                    borderRadius: "8px",
+                    width: "fit-content",
+                  }}
+                >
+                  Edit
+                </Button>
+              )
+            )}
+          </Stack>
           <Modal
             open={viewDetails}
             onClose={() => setViewDetails(false)}
@@ -391,6 +480,41 @@ function EventCard({ event }) {
               onClose={() => setUnRsvpSuccess(false)}
             ></UnRSVPSuccessModal>
           </Modal>
+          <Modal
+            open={editModal}
+            onClose={() => setEditModal(false)}
+            aria-labelledby="edit-event-modal"
+            aria-describedby="edit-event-form"
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1300,
+            }}
+          >
+            <Box
+              sx={{
+                width: "90%",
+                maxWidth: "600px",
+                maxHeight: "90vh",
+                overflow: "auto",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <EditEventForm
+                event={event}
+                showToast={showToast}
+                onClose={() => setEditModal(false)}
+              />
+            </Box>
+          </Modal>
         </Box>
         <Box
           sx={{
@@ -422,6 +546,7 @@ function EventCard({ event }) {
             </Typography>
           </Box>
         </Box>
+        {ToastComponent}
       </Box>
     );
   }

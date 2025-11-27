@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -25,13 +24,8 @@ import {
 
 import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api.js";
-import useToast from "../../components/common/hooks/useToast.jsx";
 import PeopleIcon from "@mui/icons-material/People";
-export default function EditEventForm() {
-  const { eventId } = useParams();
-  const [event, setEvent] = useState(null);
-  const { ToastComponent, showToast } = useToast();
-
+export default function EditEventForm({ event, onClose, showToast }) {
   const {
     control,
     handleSubmit,
@@ -40,42 +34,17 @@ export default function EditEventForm() {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: "",
-      description: "",
-      startTime: null,
-      endTime: null,
-      location: "",
-      pointsRemain: 0,
-      numGuests: 0,
-      capacity: 0,
-      published: false,
+      name: event.name,
+      description: event.description,
+      startTime: dayjs(event.startTime),
+      endTime: dayjs(event.endTime),
+      location: event.location,
+      pointsRemain: event.pointsRemain,
+      numGuests: event.numGuests,
+      capacity: event.capacity,
+      published: event.published,
     },
   });
-
-  useEffect(() => {
-    const fetchEvent = async () => {
-      try {
-        const res = await api.get(`/events/${eventId}`);
-        setEvent(res.data);
-        // Reset form with fetched data
-        reset({
-          name: res.data.name,
-          description: res.data.description,
-          startTime: dayjs(res.data.startTime),
-          endTime: dayjs(res.data.endTime),
-          location: res.data.location,
-          pointsRemain: res.data.pointsRemain,
-          capacity: res.data.capacity,
-          numGuests: res.data.numGuests,
-          published: res.data.published,
-        });
-      } catch (error) {
-        showToast("Failed to fetch event data", "error");
-        console.log(error);
-      }
-    };
-    fetchEvent();
-  }, [eventId]);
 
   const onSubmit = async (data) => {
     const {
@@ -96,14 +65,17 @@ export default function EditEventForm() {
       location: location,
       points: Number(pointsRemain),
       capacity: Number(capacity),
-      published: published,
     };
+    if (published) {
+      payload["published"] = published;
+    }
 
     try {
-      const res = await api.patch(`/events/${eventId}`, payload);
+      const res = await api.patch(`/events/${event.id}`, payload);
+
       if (res.status === 200) {
         showToast("Edit successful", "success");
-        setEvent(res.data);
+        onClose();
       } else {
         showToast("Edit event failed", "error");
       }
@@ -138,6 +110,8 @@ export default function EditEventForm() {
       title={event.name}
       width="50%"
       showClose={true}
+      onClose={onClose}
+      fullWidth={!!onClose}
       children={
         <Box>
           <Typography variant="h5" fontWeight="bold">
@@ -325,7 +299,6 @@ export default function EditEventForm() {
               </Stack>
             </LocalizationProvider>
           </form>
-          {ToastComponent}
         </Box>
       }
     />
