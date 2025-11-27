@@ -86,14 +86,14 @@ eventRouter.delete(
 eventRouter.post(
   "/:eventId/guests/me",
   verifyToken,
-  checkClearance(["regular"]),
+  checkClearance(["regular", "cashier", "manager", "superuser"]),
   signUpForEvent,
 );
 
 eventRouter.delete(
   "/:eventId/guests/me",
   verifyToken,
-  checkClearance(["regular"]),
+  checkClearance(["regular", "cashier", "manager", "superuser"]),
   removeFromEvent,
 );
 
