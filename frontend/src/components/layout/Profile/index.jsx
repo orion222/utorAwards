@@ -3,12 +3,16 @@ import { Menu, MenuItem, ListItemIcon, ListItemText, Avatar } from "@mui/materia
 import { User, Settings, LogOut, Bell } from "lucide-react";
 import { useUser } from "../../../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import ProfileModal from "../../../pages/Profile/ProfileModal";
+import useToast from "../../common/hooks/useToast";
 
 export default function Profile() {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const { user, logout } = useUser();
   const navigate = useNavigate();
+  const { showToast, ToastComponent } = useToast();
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
 
   const handleOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -18,9 +22,8 @@ export default function Profile() {
     setAnchorEl(null);
   };
 
-  // TODO: replace these with real nav / logout logic
   const handleProfile = () => {
-    // e.g. navigate("/profile");
+    setProfileModalOpen(true);
     handleClose();
   };
 
@@ -43,6 +46,10 @@ export default function Profile() {
   return (
     <>
       <Avatar src={user?.avatarURL} alt="Profile photo" sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen} />
+
+      {profileModalOpen && (
+        <ProfileModal open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />
+      )}
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
@@ -76,6 +83,8 @@ export default function Profile() {
           <ListItemText primary="Logout" />
         </MenuItem>
       </Menu>
+      
+      {ToastComponent}
     </>
   );
 }
