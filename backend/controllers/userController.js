@@ -384,13 +384,13 @@ async function deleteRedemption(req, res) {
 }
 
 async function updateMyUserInfo(req, res) {
-  const { name, email, birthday } = req.body;
+  const { name, email, birthday, hideUtorid } = req.body;
   const { id } = req.user;
   const avatar = req.file;
 
   if (
     Object.keys(req.body).length === 0 ||
-    (!name && !email && !birthday && !avatar)
+    (!name && !email && !birthday && !avatar && hideUtorid === undefined)
   )
     return res
       .status(400)
@@ -401,6 +401,8 @@ async function updateMyUserInfo(req, res) {
     return res.status(400).json({ error: "Bad Request: Invalid email" });
   if (birthday && !isValidYYYYMMDD(birthday))
     return res.status(400).json({ error: "Bad Request: Invalid birthday" });
+  if (hideUtorid !== undefined && typeof hideUtorid !== "boolean") 
+    return res.status(400).json({ error: "Bad Request: Invalid hideUtorid" });
 
   try {
     const updatedUserInfo = await UserService.updateMyUserInfo(
@@ -409,6 +411,7 @@ async function updateMyUserInfo(req, res) {
       email,
       birthday,
       avatar,
+      hideUtorid
     );
     res.status(200).json(updatedUserInfo);
   } catch (error) {
