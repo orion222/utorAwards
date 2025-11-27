@@ -662,10 +662,6 @@ class EventService {
       });
     });
   }
-
-<<<<<<< HEAD
-  static async retrieveEvents(userId, name, location, started, ended, page, limit, orderBy) {
-=======
   static async retrieveEvents(
     userId,
     name,
@@ -675,7 +671,6 @@ class EventService {
     page,
     limit,
   ) {
->>>>>>> 4f154c9 (finish edit event form)
     const filters = {};
 
     if (name && typeof name !== "string") {
@@ -725,17 +720,10 @@ class EventService {
         skip,
         take,
         select,
-<<<<<<< HEAD
-        orderBy: orderBy ? orderBy : { startTime: "asc" }
-      })
-    
-      return {count, events};
-=======
-        orderBy: { startTime: "asc" },
+        orderBy: orderBy ? orderBy : { startTime: "asc" },
       });
 
       return { count, events };
->>>>>>> 4f154c9 (finish edit event form)
     });
 
     return { count, results: events };
@@ -799,15 +787,21 @@ class EventService {
     }
 
     tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({ numGuests: { lt: prisma.event.fields.capacity } });
+    tempFilterDetail.OR.push({
+      numGuests: { lt: prisma.event.fields.capacity },
+    });
 
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(
+        (obj) => !("numGuests" in obj),
+      );
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(
+        (obj) => !("numGuests" in obj),
+      );
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -906,15 +900,21 @@ class EventService {
     }
 
     tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({ numGuests: { lt: prisma.event.fields.capacity } });
+    tempFilterDetail.OR.push({
+      numGuests: { lt: prisma.event.fields.capacity },
+    });
 
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(
+        (obj) => !("numGuests" in obj),
+      );
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(obj => !("numGuests" in obj));
+      tempFilterDetail.OR = tempFilterDetail.OR.filter(
+        (obj) => !("numGuests" in obj),
+      );
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -928,6 +928,8 @@ class EventService {
       capacity: true,
       numGuests: true,
       points: true,
+      description: true,
+      published: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -954,7 +956,6 @@ class EventService {
       results: results,
     };
   }
-
 }
 
 module.exports = { EventService };
