@@ -16,14 +16,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { useUser } from "../../context/UserContext";
-import api from "../../api/api";
+import api from "../../../api/api";
 import { profileSchema as schema } from "./constant";
+import useToast from "../../common/hooks/useToast";
 
-export default function ProfileModal({ open, onClose, showToast }) {
-  const { user } = useUser();
+export default function ProfileModal({ user, open, onClose, showToast }) {
   const [avatarPreview, setAvatarPreview] = useState(user?.avatarURL);
   const [avatarFile, setAvatarFile] = useState(null);
+  const {showToast: modalShowToast, ToastComponent} = useToast();
 
   const {
     control,
@@ -86,12 +86,13 @@ export default function ProfileModal({ open, onClose, showToast }) {
         error.response?.data?.error ||
         error.response?.data?.message ||
         "Failed to update profile";
-      showToast(message, "error");
+      modalShowToast(message, "error");
     }
   };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      {ToastComponent}
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
         <DialogTitle>My Profile</DialogTitle>
         <form onSubmit={handleSubmit(onSubmit)}>
