@@ -12,26 +12,10 @@ import {
 import { useState } from "react";
 import UserDetail from "./UserDetail";
 
-export default function UserCard() {
+export default function UserCard({ user }) {
   const theme = useTheme();
   const [detailsModal, setDetailsModal] = useState(false);
 
-  const user = {
-    id: 1,
-    utorid: "clive123",
-    name: "clive123",
-    email: "clive.su@mail.utoronto.ca",
-    birthday: null,
-    role: "superuser",
-    points: 89,
-    createdAt: "2025-11-18T03:10:22.963Z",
-    lastLogin: "2025-11-27T22:24:33.170Z",
-    verified: true,
-    avatarUrl: null,
-    promotions: [],
-    isEventOrganizer: true,
-    organizedEvents: [],
-  };
   return (
     <Card
       sx={{

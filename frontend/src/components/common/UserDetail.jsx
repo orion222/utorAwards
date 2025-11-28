@@ -11,27 +11,8 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
-export default function UserDetail({ user: propUser, onClose }) {
+export default function UserDetail({ user, onClose }) {
   const theme = useTheme();
-
-  const user = propUser || {
-    id: 1,
-    utorid: "brongoat",
-    name: "LeBron James",
-    email: "lebron.james@mail.utoronto.ca",
-    birthday: "1994-05-07",
-    role: "regular",
-    points: 500,
-    createdAt: "2024-05-06T03:10:22.963Z",
-    lastLogin: "2025-11-05T22:24:33.170Z",
-    verified: true,
-    avatarUrl: null,
-    promotions: [],
-    suspicious: false,
-    isEventOrganizer: false,
-    organizedEvents: [],
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     return new Date(dateString).toLocaleDateString("en-US", {
