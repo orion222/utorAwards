@@ -31,6 +31,8 @@ import RedeemPoints from "./pages/Wallet/RedeemPoints.jsx";
 import Transfer from "./pages/Wallet/TransferPoints.jsx";
 import EventEditForm from "./pages/Events/EditEventForm.jsx";
 import Unauthorized from "./pages/Unauthorized";
+import UserCard from "./components/common/UserCard.jsx";
+import UserDetail from "./components/common/UserDetail.jsx";
 
 function App() {
   return (
@@ -43,6 +45,10 @@ function App() {
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="unauthorized" element={<Unauthorized />} />
+
+          {/* TEMP */}
+          <Route path="usercard" element={<UserCard />} />
+          <Route path="userdetail" element={<UserDetail />} />
 
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
@@ -61,9 +67,12 @@ function App() {
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />
               </Route>
-              <Route path="my-events" element={ <MyEvents /> }>
-                <Route path="invitations" element={ <Invitations /> } />
-                <Route path="management" element={ <ProtectedOrganizerRoute /> } />
+              <Route path="my-events" element={<MyEvents />}>
+                <Route path="invitations" element={<Invitations />} />
+                <Route
+                  path="management"
+                  element={<ProtectedOrganizerRoute />}
+                />
               </Route>
             </Route>
 
@@ -79,7 +88,6 @@ function App() {
               <Route path="redeem" element={<ProcessRedemption />} />
               <Route path="createUser" element={<CreateUser />} />
             </Route>
-
 
             {/*ROUTES FOR ORGANIZERS*/}
             <Route
