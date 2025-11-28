@@ -384,14 +384,11 @@ async function deleteRedemption(req, res) {
 }
 
 async function updateMyUserInfo(req, res) {
-  const { name, email, birthday } = req.body;
+  const { name, email, birthday, hideUtorid } = req.body;
   const { id } = req.user;
   const avatar = req.file;
 
-  if (
-    Object.keys(req.body).length === 0 ||
-    (!name && !email && !birthday && !avatar)
-  )
+  if (!name && !email && !birthday && !avatar && hideUtorid === undefined)
     return res
       .status(400)
       .json({ error: "Bad Request: No valid fields to update" });
@@ -401,6 +398,8 @@ async function updateMyUserInfo(req, res) {
     return res.status(400).json({ error: "Bad Request: Invalid email" });
   if (birthday && !isValidYYYYMMDD(birthday))
     return res.status(400).json({ error: "Bad Request: Invalid birthday" });
+  if (hideUtorid !== undefined && typeof hideUtorid !== "boolean") 
+    return res.status(400).json({ error: "Bad Request: Invalid hideUtorid" });
 
   try {
     const updatedUserInfo = await UserService.updateMyUserInfo(
@@ -409,6 +408,7 @@ async function updateMyUserInfo(req, res) {
       email,
       birthday,
       avatar,
+      hideUtorid
     );
     res.status(200).json(updatedUserInfo);
   } catch (error) {
@@ -618,6 +618,24 @@ async function retrieveMyEventManagement(req, res) {
   }
 }
 
+async function retrieveLeaderboard(req, res) {
+  const { limit } = req.query;
+
+  if (
+    limit &&
+    (!Number.isInteger(parseInt(limit, 10)) || parseInt(limit, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid limit value" });
+  }
+
+  try {
+    const leaderboardData = await UserService.getLeaderboard(limit);
+    res.status(200).json(leaderboardData);
+  } catch (error) {
+    res.status(error.status || 500).json({ error: error.message });
+  }
+}
+
 module.exports = {
   registerUser,
   getFilteredUsers,
@@ -633,4 +651,5 @@ module.exports = {
   deleteRedemption,
   retrieveMyEventInvitations,
   retrieveMyEventManagement,
+  retrieveLeaderboard,
 };

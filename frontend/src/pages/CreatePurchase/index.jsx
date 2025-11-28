@@ -3,7 +3,7 @@ import { Container } from "@mui/system";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { purchaseSchema as schema } from "./constant.js";
-import { Stack, TextField, Button, Chip, Paper, Typography, InputAdornment } from "@mui/material";
+import { Box, Stack, TextField, Button, Chip, Paper, Typography, InputAdornment } from "@mui/material";
 import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api";
 import useToast from "../../components/common/hooks/useToast.jsx";
@@ -38,7 +38,6 @@ export default function CreatePurchase() {
         }
         try {
             const response = await api.post(`/transactions`, payload);
-            localStorage.removeItem("purchaseForm");
             setPromotionIds([]);
             reset(defaultValues);
             showToast("Purchase transaction created successfully", "success");
@@ -64,48 +63,26 @@ export default function CreatePurchase() {
         remarks: "",
     };
 
-    const savedValues = (() => {
-        try {
-            const items = localStorage.getItem("purchaseForm");
-            return items ? JSON.parse(items) : defaultValues;
-        }
-        catch {
-            return defaultValues;
-        }
-    })();
-
     const { control, handleSubmit, reset, formState: { errors, isSubmitting }, getValues, setValue } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange",
-        defaultValues: {...savedValues}
+        defaultValues: defaultValues
     });
 
     const formValues = useWatch({ control });
     
-    useEffect(() => {
-        try {
-            localStorage.setItem("purchaseForm", JSON.stringify(formValues || {}));
-        } catch (err) {
-            console.error("Failed to persist purchaseForm to localStorage:", err); //debugging
-        }
-    }, [formValues]);
-
     return (
-        <Container
-            sx={{
-                overflowY: "auto",
-            }}
-        >
+        <>
             <Typography variant="h4" pb={1}>Create Purchase Transaction</Typography>
             <Typography variant="body1" color="text.secondary">Process a new purchase and award points to customer</Typography>
 
-            <FormCard width="100%" contentPadding={1} >
+            <FormCard>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Stack spacing={2}>
-                        <Typography variant="h4" sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                        <Box component="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                             Purchase Transaction Form
-                        </Typography>
+                        </Box>
 
                         {/* UTORid */}
                         <LabeledField label="Customer UTORid" required>
@@ -227,6 +204,6 @@ export default function CreatePurchase() {
                 
                 {ToastComponent}
             </FormCard>
-        </Container>
+        </>
     );
 }

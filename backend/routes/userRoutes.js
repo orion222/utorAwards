@@ -14,6 +14,7 @@ const {
   deleteRedemption,
   retrieveMyEventInvitations,
   retrieveMyEventManagement,
+  retrieveLeaderboard,
 } = require("../controllers/userController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
 const upload = require("../middleware/upload");
@@ -83,5 +84,7 @@ userRouter.get("/me/events/invitations", verifyToken, retrieveMyEventInvitations
 userRouter.get("/me/events/management", verifyToken, retrieveMyEventManagement);
 
 userRouter.post("/:userId/transactions", verifyToken, createTransfer);
+
+userRouter.get("/leaderboard", verifyToken, retrieveLeaderboard);
 
 module.exports = userRouter;

@@ -3,7 +3,7 @@ import { Container } from "@mui/system";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { purchaseSchema as schema } from "./constant.js";
-import { Stack, TextField, Button, Chip, Paper, Typography, InputAdornment } from "@mui/material";
+import { Box, Stack, TextField, Button, Chip, Paper, Typography, InputAdornment } from "@mui/material";
 import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api";
 import useToast from "../../components/common/hooks/useToast.jsx";
@@ -33,7 +33,6 @@ export default function CreateUser() {
         }
         try {
             const response = await api.post(`/users`, payload);
-            localStorage.removeItem("createUserForm");
             reset(defaultValues);
             showToast("User profile created successfully", "success");
         }
@@ -60,48 +59,26 @@ export default function CreateUser() {
         email: "",
     };
 
-    const savedValues = (() => {
-        try {
-            const items = localStorage.getItem("createUserForm");
-            return items ? JSON.parse(items) : defaultValues;
-        }
-        catch {
-            return defaultValues;
-        }
-    })();
-
     const { control, handleSubmit, reset, formState: { errors, isSubmitting }, getValues, setValue } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange",
-        defaultValues: {...savedValues}
+        defaultValues: defaultValues
     });
 
     const formValues = useWatch({ control });
     
-    useEffect(() => {
-        try {
-            localStorage.setItem("createUserForm", JSON.stringify(formValues || {}));
-        } catch (err) {
-            console.error("Failed to persist createUserForm to localStorage:", err); //debugging
-        }
-    }, [formValues]);
-
     return (
-        <Container
-            sx={{
-                overflowY: "auto",
-            }}
-        >
+        <>
             <Typography variant="h4" pb={1}>Create New User Profile</Typography>
             <Typography variant="body1" color="text.secondary">Fill out the form below to create a new user profile in the system</Typography>
 
-            <FormCard width="100%" contentPadding={1} >
+            <FormCard>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Stack spacing={2}>
-                        <Typography variant="h4" sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                        <Box component="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                             User Profile Information
-                        </Typography>
+                        </Box>
 
                         {/* UTORid */}
                         <LabeledField label="Customer UTORid" required>
@@ -194,6 +171,6 @@ export default function CreateUser() {
                 onConfirm={handleConfirmCreate}
                 loading={processing}
             />
-        </Container>
+        </>
     );
 }

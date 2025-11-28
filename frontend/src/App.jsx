@@ -34,6 +34,8 @@ import Unauthorized from "./pages/Unauthorized";
 import EventDetails from "./pages/EventDetails/index.jsx";
 import PromotionDetails from "./pages/PromotionDetails/index.jsx";
 import TransactionDetails from "./pages/TransactionDetails/index.jsx";
+import UserCard from "./components/common/UserCard.jsx";
+import UserDetail from "./components/common/UserDetail.jsx";
 
 function App() {
   return (
@@ -67,9 +69,12 @@ function App() {
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />
               </Route>
-              <Route path="my-events" element={ <MyEvents /> }>
-                <Route path="invitations" element={ <Invitations /> } />
-                <Route path="management" element={ <ProtectedOrganizerRoute /> } />
+              <Route path="my-events" element={<MyEvents />}>
+                <Route path="invitations" element={<Invitations />} />
+                <Route
+                  path="management"
+                  element={<ProtectedOrganizerRoute />}
+                />
               </Route>
             </Route>
 
@@ -85,7 +90,6 @@ function App() {
               <Route path="redeem" element={<ProcessRedemption />} />
               <Route path="createUser" element={<CreateUser />} />
             </Route>
-
 
             {/*ROUTES FOR ORGANIZERS*/}
             <Route

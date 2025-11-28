@@ -314,6 +314,9 @@ class TransactionService {
           points: {
             increment: amount,
           },
+          grossPoints: {
+            increment: amount,
+          },
         },
       });
 
@@ -461,6 +464,9 @@ class TransactionService {
               points: {
                 increment: amount,
               },
+              grossPoints: {
+                increment: amount,
+              },
             },
           });
           response.push({
@@ -501,6 +507,9 @@ class TransactionService {
         },
         data: {
           points: {
+            increment: amount,
+          },
+          grossPoints: {
             increment: amount,
           },
         },
@@ -658,6 +667,9 @@ class TransactionService {
         },
         data: {
           points: {
+            increment: amount,
+          },
+          grossPoints: {
             increment: amount,
           },
         },
