@@ -31,7 +31,6 @@ export default function ProcessRedemption() {
                 return;
             }
             setTransactionData(details);
-            localStorage.removeItem("redemptionForm");
             reset(defaultValues);
         }
         catch (error) {
@@ -74,32 +73,14 @@ export default function ProcessRedemption() {
         transactionId: "",
     };
 
-    const savedValues = (() => {
-        try {
-            const items = localStorage.getItem("redemptionForm");
-            return items ? JSON.parse(items) : defaultValues;
-        }
-        catch {
-            return defaultValues;
-        }
-    })();
-
     const { control, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange",
-        defaultValues: {...savedValues}
+        defaultValues: defaultValues
     });
 
     const formValues = useWatch({ control });
-
-    useEffect(() => {
-        try {
-            localStorage.setItem("redemptionForm", JSON.stringify(formValues || {}));
-        } catch (err) {
-            console.error("Failed to persist redemptionForm to localStorage:", err); //debugging
-        }
-    }, [formValues]);
 
     return (
         <>

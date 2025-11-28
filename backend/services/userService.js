@@ -153,13 +153,14 @@ class UserService {
     return updatedUser;
   }
 
-  static async updateMyUserInfo(userId, name, email, birthday, avatar) {
+  static async updateMyUserInfo(userId, name, email, birthday, avatar, hideUtorid) {
     const fieldsToUpdate = {};
 
     if (name) fieldsToUpdate.name = name;
     if (email) fieldsToUpdate.email = email;
     if (birthday) fieldsToUpdate.birthday = birthday;
     if (avatar) fieldsToUpdate.avatarUrl = avatar.filename;
+    if (hideUtorid !== undefined) fieldsToUpdate.hideUtorid = hideUtorid;
 
     const user = await prisma.user.findUnique({
       where: {
@@ -186,6 +187,7 @@ class UserService {
         lastLogin: true,
         verified: true,
         avatarUrl: true,
+        hideUtorid: true,
       },
     });
 
@@ -212,6 +214,7 @@ class UserService {
         promotions: true,
         isEventOrganizer: true,
         organizedEvents: true,
+        hideUtorid: true,
       },
     });
 
@@ -247,6 +250,34 @@ class UserService {
         password: hashedPassword,
       },
     });
+  }
+
+  static async getLeaderboard(topN) {
+    const users = await prisma.user.findMany({
+      orderBy: {
+        grossPoints: 'desc',
+      },
+      take: topN,
+      select: {
+        utorid: true,
+        name: true,
+        points: true,
+        grossPoints: true,
+        hideUtorid: true,
+      },
+    });
+
+    const transformedUsers = users.map(user => {
+      if (user.hideUtorid) {
+        return {
+          ...user,
+          utorid: 'Hidden',
+        };
+      }
+      return user;  
+    })
+    
+    return transformedUsers;
   }
 }
 

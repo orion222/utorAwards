@@ -44,12 +44,14 @@ model User {
   verified           Boolean @default(false)
   suspicious         Boolean @default(false)
   points             Int     @default(0)
+  grossPoints        Int     @default(0)
   lastLogin          DateTime?
   avatarUrl          String?
   birthday           String?
   createdAt          DateTime @default(now())
   resetToken         String?
   isEventOrganizer   Boolean @default(false)
+  hideUtorid         Boolean @default(false)
   // transaction relations
   transactions       Transaction[]
   targetTransactions Transaction[] @relation("TargetUserTransactions")

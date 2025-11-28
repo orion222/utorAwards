@@ -33,7 +33,6 @@ export default function CreateUser() {
         }
         try {
             const response = await api.post(`/users`, payload);
-            localStorage.removeItem("createUserForm");
             reset(defaultValues);
             showToast("User profile created successfully", "success");
         }
@@ -60,33 +59,15 @@ export default function CreateUser() {
         email: "",
     };
 
-    const savedValues = (() => {
-        try {
-            const items = localStorage.getItem("createUserForm");
-            return items ? JSON.parse(items) : defaultValues;
-        }
-        catch {
-            return defaultValues;
-        }
-    })();
-
     const { control, handleSubmit, reset, formState: { errors, isSubmitting }, getValues, setValue } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange",
-        defaultValues: {...savedValues}
+        defaultValues: defaultValues
     });
 
     const formValues = useWatch({ control });
     
-    useEffect(() => {
-        try {
-            localStorage.setItem("createUserForm", JSON.stringify(formValues || {}));
-        } catch (err) {
-            console.error("Failed to persist createUserForm to localStorage:", err); //debugging
-        }
-    }, [formValues]);
-
     return (
         <>
             <Typography variant="h4" pb={1}>Create New User Profile</Typography>

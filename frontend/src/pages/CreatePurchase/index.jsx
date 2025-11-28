@@ -38,7 +38,6 @@ export default function CreatePurchase() {
         }
         try {
             const response = await api.post(`/transactions`, payload);
-            localStorage.removeItem("purchaseForm");
             setPromotionIds([]);
             reset(defaultValues);
             showToast("Purchase transaction created successfully", "success");
@@ -64,33 +63,15 @@ export default function CreatePurchase() {
         remarks: "",
     };
 
-    const savedValues = (() => {
-        try {
-            const items = localStorage.getItem("purchaseForm");
-            return items ? JSON.parse(items) : defaultValues;
-        }
-        catch {
-            return defaultValues;
-        }
-    })();
-
     const { control, handleSubmit, reset, formState: { errors, isSubmitting }, getValues, setValue } = useForm({
         resolver: yupResolver(schema),
         mode: "onChange",
         reValidateMode: "onChange",
-        defaultValues: {...savedValues}
+        defaultValues: defaultValues
     });
 
     const formValues = useWatch({ control });
     
-    useEffect(() => {
-        try {
-            localStorage.setItem("purchaseForm", JSON.stringify(formValues || {}));
-        } catch (err) {
-            console.error("Failed to persist purchaseForm to localStorage:", err); //debugging
-        }
-    }, [formValues]);
-
     return (
         <>
             <Typography variant="h4" pb={1}>Create Purchase Transaction</Typography>
