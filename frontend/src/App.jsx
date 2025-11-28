@@ -46,10 +46,6 @@ function App() {
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="unauthorized" element={<Unauthorized />} />
 
-          {/* TEMP */}
-          <Route path="usercard" element={<UserCard />} />
-          <Route path="userdetail" element={<UserDetail />} />
-
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
