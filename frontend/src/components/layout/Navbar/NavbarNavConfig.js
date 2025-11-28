@@ -10,6 +10,7 @@ import {
   Mail,
   Tag,
   Users,
+  ListOrdered
 } from "lucide-react";
 
 const REGULAR_ITEMS = [
@@ -18,6 +19,7 @@ const REGULAR_ITEMS = [
   { label: "Past Transactions", icon: History, path: "/past-transactions" },
   { label: "Explore", icon: Compass, path: "/explore", children: [ { label: "Events", path: "/explore/events" }, { label: "Promotions", path: "/explore/promotions" }] },
   { label: "My Events", icon: Mail, path: "/my-events/invitations" },
+  { label: "Leaderboard", icon: ListOrdered, path: "/leaderboard" },
 ];
 
 const CASHIER_EXTRA = [

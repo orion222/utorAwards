@@ -17,7 +17,7 @@ export default function Permission({ showToast }) {
     setIsPublic(newIsPublic);
 
     try {
-      const response = await api.patch('/users/me', { hideUtorid: !newIsPublic });
+      await api.patch('/users/me', { hideUtorid: !newIsPublic });
     } catch (error) {
       const message = error.response?.data?.error || "Failed to update permission";
       showToast(message, "error");
