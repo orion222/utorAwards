@@ -575,21 +575,38 @@ class TransactionService {
 
     const take = limit;
     const skip = (page - 1) * take;
-
-    const include = {
-      targetUser: true,
-      user: true,
-      promotions: { select: { id: true } },
-      processedByUser: true,
-    };
-
     const [count, queryResults] = await prisma.$transaction([
       prisma.transaction.count({ where }),
       prisma.transaction.findMany({
         where,
         skip,
         take,
-        include,
+        select: {
+          id: true,
+          type: true,
+          spent: true,
+          amount: true,
+          promotions: {
+            select: {
+              id: true,
+            }
+          },
+          user: {
+            select: {
+              utorid: true,
+              name: true,
+            }
+          },
+          targetUser: {
+            select: {
+              utorid: true,
+              name: true,
+            }
+          },
+          suspicious: true,
+          remark: true,
+          relatedId: true,
+        },
         orderBy: orderBy ? orderBy : { createdAt: "asc" },
       }),
     ]);

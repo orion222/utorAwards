@@ -184,7 +184,17 @@ async function retrieveTransactions(req, res) {
       limitNum,
       orderByObj,
     );
-    res.status(200).json({ count, results });
+
+    const formattedResults = results.map((transaction) => {
+      const transactionResObj = {
+        ...transaction,
+        promotionIds: transaction.promotions.map(promo => promo.id),
+      }
+      delete transactionResObj.promotions;
+      return transactionResObj;
+    });
+
+    res.status(200).json({ count, results: formattedResults });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
   }
