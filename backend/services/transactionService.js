@@ -549,6 +549,10 @@ class TransactionService {
       ];
     }
 
+    if (remark) {
+      where.remark = { contains: remark };
+    }
+
     const userFilter = {};
     if (createdBy) userFilter.utorid = { contains: createdBy };
     if (typeof suspicious === "boolean") userFilter.suspicious = suspicious;
