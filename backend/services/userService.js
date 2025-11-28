@@ -177,7 +177,7 @@ class UserService {
     if (name) fieldsToUpdate.name = name;
     if (email) fieldsToUpdate.email = email;
     if (birthday) fieldsToUpdate.birthday = birthday;
-    if (avatar) fieldsToUpdate.avatarUrl = avatar.filename;
+    if (avatar) fieldsToUpdate.avatarUrl = `uploads/avatars/${avatar.filename}`;
     if (hideUtorid !== undefined) fieldsToUpdate.hideUtorid = hideUtorid;
 
     const user = await prisma.user.findUnique({

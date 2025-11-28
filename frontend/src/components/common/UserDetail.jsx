@@ -12,6 +12,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 
 export default function UserDetail({ user, onClose }) {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const theme = useTheme();
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -228,7 +229,7 @@ export default function UserDetail({ user, onClose }) {
 
           <Stack alignItems="center" spacing={1.33}>
             <Avatar
-              src={user.avatarUrl}
+              src={user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined}
               sx={{
                 width: 100,
                 height: 100,

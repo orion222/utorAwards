@@ -13,6 +13,7 @@ import { useState } from "react";
 import UserDetail from "./UserDetail";
 
 export default function UserCard({ user }) {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const theme = useTheme();
   const [detailsModal, setDetailsModal] = useState(false);
 
@@ -117,7 +118,7 @@ export default function UserCard({ user }) {
 
           <Stack alignItems="center" spacing={1}>
             <Avatar
-              src={user.avatarUrl}
+              src={user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined}
               sx={{
                 width: 100,
                 height: 100,
