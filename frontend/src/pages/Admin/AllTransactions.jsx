@@ -63,7 +63,7 @@ function AllTransactions() {
   return (
     <>
       <Box sx={{ my: 2 }}>
-        <FilterableList queryKey="all-transactions" apiEndpoint="/transactions" filterConfig={filterConfig} orderByConfig={orderByConfig} limit={3}>
+        <FilterableList queryKey="all-transactions" apiEndpoint="/transactions" filterConfig={filterConfig} orderByConfig={orderByConfig}>
           {({ data, isFetching, error }) => {
             if (error) {
               return (
