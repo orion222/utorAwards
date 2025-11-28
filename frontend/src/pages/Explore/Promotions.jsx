@@ -1,9 +1,10 @@
 import {Alert, AlertTitle, Box, CircularProgress, Typography} from "@mui/material";
 import FilterableList from "../../components/common/FilterableList.jsx";
-import EventCard from "../../components/common/EventCard.jsx";
 import PromotionCard from "../../components/common/PromotionCard.jsx";
+import { useUser } from "../../context/UserContext.jsx";
 
 function Promotions() {
+  const { user } = useUser();
 
   const filterConfig = {
     name: {
@@ -14,6 +15,14 @@ function Promotions() {
       type: "select",
       label: "Type",
       options: ["Automatic", "Onetime"],
+    }
+  }
+
+  if (user.role === "manager" || user.role === "superuser") {
+    filterConfig.available = {
+      type: "select",
+      label: "Available",
+      options: ["True", "False"],
     }
   }
 

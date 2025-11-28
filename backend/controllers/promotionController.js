@@ -108,7 +108,7 @@ async function createPromotion(req, res) {
 
 async function retrievePromotion(req, res) {
   const user = req.user;
-  const { search, name, type, page, limit, started, ended, orderBy } = req.query;
+  const { search, name, type, page, limit, started, ended, available, orderBy } = req.query;
 
   var pageNum = Number(page);
   var limitNum = Number(limit);
@@ -161,10 +161,20 @@ async function retrievePromotion(req, res) {
         .json({ error: "Bad Request: Invalid ended parameter" });
   }
 
+  if (available && available !== "true" && available !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: Invalid available parameter" });
+  }
+
   var startedBool =
     started === "true" || req.user.role === RoleType.regular ? true : false;
   var endedBool =
     ended === "false" || req.user.role === RoleType.regular ? false : true;
+
+  var availableBool = null;
+  if (available)
+    availableBool = available === "true" || req.user.role === RoleType.regular ? true : false;
 
   try {
     const promotionData = await PromotionService.retrievePromotions(
@@ -177,6 +187,7 @@ async function retrievePromotion(req, res) {
       limitNum,
       startedBool,
       endedBool,
+      availableBool,
       orderByObj,
     );
     res.status(200).json(promotionData);

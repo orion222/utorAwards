@@ -61,6 +61,7 @@ class PromotionService {
     limit,
     started,
     ended,
+    available,
     orderBy,
   ) {
     const where = {};
@@ -102,6 +103,19 @@ class PromotionService {
       }
     }
 
+    if (available === true || role === RoleType.regular || role === RoleType.cashier) {
+      where.NOT = {
+        users: {
+          some: { id: userId },
+        }
+      }
+    }
+    else if (typeof available === "boolean" && available === false) {
+      where.users = {
+        some: { id: userId },
+      }
+    }
+
     const take = limit;
     const skip = (page - 1) * limit;
 
@@ -115,14 +129,9 @@ class PromotionService {
         rate: true,
         points: true,
       };
-      where.NOT = {
-        users: {
-          some: { id: userId },
-        },
-      };
       const [count, results] = await prisma.$transaction([
         prisma.promotion.count({ where }),
-        prisma.promotion.findMany({ where, skip, take, select }),
+        prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { startTime: "asc" } }),
       ]);
 
       return { count, results };
