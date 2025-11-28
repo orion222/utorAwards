@@ -31,6 +31,7 @@ import RedeemPoints from "./pages/Wallet/RedeemPoints.jsx";
 import Transfer from "./pages/Wallet/TransferPoints.jsx";
 import EventEditForm from "./pages/Events/EditEventForm.jsx";
 import Unauthorized from "./pages/Unauthorized";
+import Leaderboard from "./pages/Leaderboard/index.jsx";
 import EventDetails from "./pages/EventDetails/index.jsx";
 import PromotionDetails from "./pages/PromotionDetails/index.jsx";
 import TransactionDetails from "./pages/TransactionDetails/index.jsx";
@@ -64,7 +65,6 @@ function App() {
                 <Route path="redeem" element={<RedeemPoints />} />
                 <Route path="transfer" element={<Transfer />} />
               </Route>
-              {/* <Route path="wallet" element={<Wallet />} /> */}
               <Route path="explore" element={<Explore />}>
                 <Route path="events" element={<Events />} />
                 <Route path="promotions" element={<Promotions />} />
@@ -76,6 +76,7 @@ function App() {
                   element={<ProtectedOrganizerRoute />}
                 />
               </Route>
+              <Route path="leaderboard" element={<Leaderboard />} />
             </Route>
 
             {/* ROUTES FOR CASHIERS */}

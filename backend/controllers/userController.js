@@ -628,8 +628,10 @@ async function retrieveLeaderboard(req, res) {
     return res.status(400).json({ error: "Bad Request: invalid limit value" });
   }
 
+  const limitNum = limit ? parseInt(limit, 10) : 10;
+
   try {
-    const leaderboardData = await UserService.getLeaderboard(limit);
+    const leaderboardData = await UserService.getLeaderboard(limitNum);
     res.status(200).json(leaderboardData);
   } catch (error) {
     res.status(error.status || 500).json({ error: error.message });

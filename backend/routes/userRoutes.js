@@ -55,6 +55,8 @@ userRouter.patch("/me", verifyToken, upload.single("avatar"), updateMyUserInfo);
 
 userRouter.get("/me", verifyToken, getMyUserInfo);
 
+userRouter.get("/leaderboard", verifyToken, retrieveLeaderboard);
+
 userRouter.get(
   "/:userId",
   verifyToken,
@@ -85,6 +87,5 @@ userRouter.get("/me/events/management", verifyToken, retrieveMyEventManagement);
 
 userRouter.post("/:userId/transactions", verifyToken, createTransfer);
 
-userRouter.get("/leaderboard", verifyToken, retrieveLeaderboard);
 
 module.exports = userRouter;
