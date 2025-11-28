@@ -165,6 +165,7 @@ class EventService {
       startTime: true,
       endTime: true,
       capacity: true,
+      points: true,
       pointsAwarded: true,
       pointsRemain: true,
       published: true,

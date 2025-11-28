@@ -31,6 +31,9 @@ import RedeemPoints from "./pages/Wallet/RedeemPoints.jsx";
 import Transfer from "./pages/Wallet/TransferPoints.jsx";
 import EventEditForm from "./pages/Events/EditEventForm.jsx";
 import Unauthorized from "./pages/Unauthorized";
+import EventDetails from "./pages/EventDetails/index.jsx";
+import PromotionDetails from "./pages/PromotionDetails/index.jsx";
+import TransactionDetails from "./pages/TransactionDetails/index.jsx";
 import UserCard from "./components/common/UserCard.jsx";
 import UserDetail from "./components/common/UserDetail.jsx";
 
@@ -51,8 +54,11 @@ function App() {
             <Route element={<ProtectedClearanceRoute />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="past-transactions" element={<PastTransactions />} />
+              <Route path="past-transactions/:transactionId" element={<TransactionDetails />} />
               <Route path="events" element={<Events />} />
+              <Route path="/events/:eventId" element={<EventDetails />} />
               <Route path="promotions" element={<Promotions />} />
+              <Route path="promotions/:promotionId" element={<PromotionDetails />} />
               <Route path="wallet" element={<Wallet />}>
                 <Route path="my-qr-code" element={<QRCode />} />
                 <Route path="redeem" element={<RedeemPoints />} />
