@@ -3,7 +3,7 @@ import { Container } from "@mui/system";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { purchaseSchema as schema } from "./constant.js";
-import { Stack, TextField, Button, Chip, Paper, Typography, InputAdornment } from "@mui/material";
+import { Box, Stack, TextField, Button, Chip, Paper, Typography, InputAdornment } from "@mui/material";
 import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api";
 import useToast from "../../components/common/hooks/useToast.jsx";
@@ -88,20 +88,16 @@ export default function CreateUser() {
     }, [formValues]);
 
     return (
-        <Container
-            sx={{
-                overflowY: "auto",
-            }}
-        >
+        <>
             <Typography variant="h4" pb={1}>Create New User Profile</Typography>
             <Typography variant="body1" color="text.secondary">Fill out the form below to create a new user profile in the system</Typography>
 
-            <FormCard width="100%" contentPadding={1} >
+            <FormCard>
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <Stack spacing={2}>
-                        <Typography variant="h4" sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                        <Box component="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                             User Profile Information
-                        </Typography>
+                        </Box>
 
                         {/* UTORid */}
                         <LabeledField label="Customer UTORid" required>
@@ -194,6 +190,6 @@ export default function CreateUser() {
                 onConfirm={handleConfirmCreate}
                 loading={processing}
             />
-        </Container>
+        </>
     );
 }
