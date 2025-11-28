@@ -528,6 +528,7 @@ class TransactionService {
 
   static async retrieveTransactions(
     name,
+    remark,
     createdBy,
     suspicious,
     promotionId,
@@ -589,7 +590,7 @@ class TransactionService {
       }),
     ]);
 
-    return { count, queryResults };
+    return [count, queryResults];
   }
 
   static async retrieveUserTransactions(userId, type, remark, relatedId, promotionId, amount, operator, page = 1, limit = 10, orderBy) {

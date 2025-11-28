@@ -19,7 +19,7 @@ import Wallet from "./pages/Wallet";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
 import CreatePurchase from "./pages/CreatePurchase";
-import PastTransactions from "./pages/transactions/PastTransactions";
+import PastTransactions from "./pages/PastTransactions";
 import ProcessRedemption from "./pages/ProcessRedemption";
 import CreateUser from "./pages/CreateUser";
 import Explore from "./pages/Explore";
@@ -35,8 +35,9 @@ import Leaderboard from "./pages/Leaderboard/index.jsx";
 import EventDetails from "./pages/EventDetails/index.jsx";
 import PromotionDetails from "./pages/PromotionDetails/index.jsx";
 import TransactionDetails from "./pages/TransactionDetails/index.jsx";
-import UserCard from "./components/common/UserCard.jsx";
-import UserDetail from "./components/common/UserDetail.jsx";
+import Admin from "./pages/Admin/index.jsx";
+import AllUsers from "./pages/Admin/AllUsers.jsx";
+import AllTransactions from "./pages/Admin/AllTransactions.jsx";
 
 function App() {
   return (
@@ -107,7 +108,12 @@ function App() {
                   requiredClearance={["manager", "superuser"]}
                 />
               }
-            ></Route>
+            >
+              <Route path="admin" element={<Admin />}>
+                <Route path="users" element={<AllUsers />} />
+                <Route path="transactions" element={<AllTransactions />} />
+              </Route>
+            </Route>
 
             {/* ROUTES FOR SUPERUSERS */}
             <Route

@@ -137,6 +137,7 @@ async function retrieveTransactions(req, res) {
     return res.status(400).json({ error: "Bad Request" });
 
   const {
+    search,
     name,
     createdBy,
     suspicious,
@@ -169,8 +170,9 @@ async function retrieveTransactions(req, res) {
   }
 
   try {
-    const transactionData = await TransactionService.retrieveTransactions(
+    const [count, results] = await TransactionService.retrieveTransactions(
       name,
+      search,
       createdBy,
       suspiciousBool,
       promotionIdNum,
@@ -182,8 +184,7 @@ async function retrieveTransactions(req, res) {
       limitNum,
       orderByObj,
     );
-    const results = mapByTransactionType(transactionData.queryResults);
-    res.status(200).json({ count: transactionData.count, results: results });
+    res.status(200).json({ count, results });
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
   }

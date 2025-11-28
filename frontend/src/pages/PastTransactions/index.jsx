@@ -36,10 +36,10 @@ function PastTransactions() {
   const orderByConfig = [
     { label: "Date (Newest)", value: "createdAt_desc" },
     { label: "Date (Oldest)", value: "createdAt_asc" },
-    { label: "Amount (Highest)", value: "amount_desc" },
-    { label: "Amount (Lowest)", value: "amount_asc" },
-    { label: "Points Spent (Highest)", value: "spent_desc" },
-    { label: "Points Spent (Lowest)", value: "spent_asc" },
+    { label: "Points (Highest)", value: "amount_desc" },
+    { label: "Points (Lowest)", value: "amount_asc" },
+    { label: "Money Spent (Highest)", value: "spent_desc" },
+    { label: "Money Spent (Lowest)", value: "spent_asc" },
     { label: "Type (A-Z)", value: "type_asc" },
     { label: "Type (Z-A)", value: "type_desc" },
   ];

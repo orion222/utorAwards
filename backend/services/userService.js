@@ -45,11 +45,23 @@ class UserService {
     };
   }
 
-  static async getFilteredUsers(name, role, verified, activated, page, limit) {
+  static async getFilteredUsers(userId, search, name, role, verified, activated, page, limit, orderBy) {
     const filterOptions = {};
 
+    if (search) {
+      filterOptions.AND = [
+        {
+          OR: [
+            { name: { contains: search } },
+            { utorid: { contains: search } },
+            { email: { contains: search } },
+          ],
+        },
+      ];
+    }
+
     if (name) {
-      filterOptions.OR = [{ name }, { utorid: name }];
+        filterOptions.OR = [{ name }, { utorid: name }];
     }
 
     if (role) {
@@ -69,7 +81,12 @@ class UserService {
     const [count, results] = await prisma.$transaction([
       prisma.user.count({ where: filterOptions }),
       prisma.user.findMany({
-        where: filterOptions,
+        where: {
+          ...filterOptions,
+          NOT: {
+            id: userId
+          }
+        },
         take: limit,
         skip: (page - 1) * limit,
         select: {
@@ -83,6 +100,7 @@ class UserService {
           createdAt: true,
           suspicious: true,
         },
+        orderBy: orderBy ? orderBy : { id: "asc" },
       }),
     ]);
 

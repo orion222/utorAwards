@@ -287,9 +287,9 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, orderByConfig, li
                     <Pagination
                         count={totalPages}
                         page={page}
-                        onChange={(e) => {
-                            setPage(e.target.value);
-                            setSearchParams({ ...appliedFilters, page: e.target.value });
+                        onChange={(_e, value) => {
+                            setPage(value);
+                            setSearchParams({ ...appliedFilters, page: value });
                         }}
                         color="primary"
                     />
