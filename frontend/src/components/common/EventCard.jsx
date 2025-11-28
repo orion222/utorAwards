@@ -46,8 +46,6 @@ function EventCard({ event, editable = false, detailsPage = true }) {
   const { showToast, ToastComponent } = useToast();
   const navigate = useNavigate();
   const { user } = useUser();
-  
-  if (user.role === "manager" || user.role === "superuser") eventData.numGuests = eventData.guests.length;
 
   useEffect(() => {
     async function fetchEvent() {

@@ -71,10 +71,6 @@ function Dashboard() {
 
     const isSmall = useMediaQuery("(max-width: 670px)");
 
-    var editable = false;
-    if (user.role === "manager" || user.role === "superuser") editable = true;
-
-
     return (
       <Box sx={{bgcolor: theme.palette.background.default}}>
         <Box sx={{padding: "16px"}}>
@@ -140,7 +136,7 @@ function Dashboard() {
                 <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 1 }}>
                         {events.length > 0 ? (
                             events.map(event => (
-                                    <EventCard event={event} key={event.id} editable={editable}></EventCard>
+                                    <EventCard event={event} key={event.id} ></EventCard>
                             ))
                         ) : (
                             <Typography>No events found.</Typography>
