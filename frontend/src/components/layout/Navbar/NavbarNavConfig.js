@@ -10,7 +10,8 @@ import {
   Mail,
   Tag,
   Users,
-  ListOrdered
+  ListOrdered,
+  ShieldIcon,
 } from "lucide-react";
 
 const REGULAR_ITEMS = [
@@ -30,6 +31,7 @@ const CASHIER_EXTRA = [
 
 const MANAGER_EXTRA = [
   { label: "Promotions", icon: Tag, path: "/promotions" },
+  { label: "Admin", icon: ShieldIcon, path: "/admin", children: [ { label: "Users", path: "/admin/users" }, { label: "Transactions", path: "/admin/transactions" } ] },
 ];
 
 const SUPERUSER_EXTRA = [

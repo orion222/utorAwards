@@ -51,7 +51,7 @@ function TransactionItemCard({ transaction, hover }) {
                                         size="small"
                                         variant="outlined"
                                     />
-                                    {promotionIds.length !== 0 && (
+                                    {promotionIds && promotionIds.length !== 0 && (
                                         <LocalOfferIcon sx={{ fontSize: 18, color: "primary.main" }} />
                                     )}                                    
                                 </Box>
@@ -95,7 +95,7 @@ function TransactionItemCard({ transaction, hover }) {
                                 />                                
                             )}
                         </Stack>
-                        {promotionIds.length !== 0 && (
+                        {promotionIds && promotionIds.length !== 0 && (
                             <>
                                 <Divider />
                                 <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>
@@ -206,7 +206,7 @@ function TransactionItemCard({ transaction, hover }) {
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>
-                {promotionIds.length !== 0 && (
+                {promotionIds && promotionIds.length !== 0 && (
                     <>
                         <Divider />
                         <Box mt={2} sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}>

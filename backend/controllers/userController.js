@@ -32,7 +32,8 @@ async function registerUser(req, res) {
 }
 
 async function getFilteredUsers(req, res) {
-  const { name, role, verified, activated, page, limit } = req.query;
+  const { search, name, role, verified, activated, page, limit, orderBy } = req.query;
+  const { id } = req.user;
 
   if (verified && verified !== "true" && verified !== "false") {
     return res
@@ -57,6 +58,15 @@ async function getFilteredUsers(req, res) {
     return res.status(400).json({ error: "Bad Request: invalid limit value" });
   }
 
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["name", "createdAt", "points", "role"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
+
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
   if (pageNum < 1) {
@@ -66,12 +76,15 @@ async function getFilteredUsers(req, res) {
   }
 
   const filteredUsersData = await UserService.getFilteredUsers(
+    id,
+    search,
     name,
     role,
     verified,
     activated,
     pageNum,
     limitNum,
+    orderByObj
   );
   res.status(200).json(filteredUsersData);
 }

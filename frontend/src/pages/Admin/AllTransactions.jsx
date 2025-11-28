@@ -2,8 +2,21 @@ import {Alert, AlertTitle, Box, CircularProgress, Typography} from "@mui/materia
 import FilterableList from "../../components/common/FilterableList.jsx";
 import TransactionItemCard from "../../components/common/TransactionItemCard.jsx";
 
-function PastTransactions() {
+function AllTransactions() {
   const filterConfig = {
+    name: {
+        type: "text",
+        label: "Name",
+    },
+    createdBy: {
+        type: "text",
+        label: "Created By",
+    },
+    suspicious: {
+        type: "select",
+        label: "Suspicious",
+        options: ["True", "False"],
+    },
     type: {
       type: "select",
       label: "Type",
@@ -34,12 +47,14 @@ function PastTransactions() {
   };
 
   const orderByConfig = [
+    { label: "Name (A-Z)", value: "name_asc" },
+    { label: "Name (Z-A)", value: "name_desc" },
     { label: "Date (Newest)", value: "createdAt_desc" },
     { label: "Date (Oldest)", value: "createdAt_asc" },
-    { label: "Amount (Highest)", value: "amount_desc" },
-    { label: "Amount (Lowest)", value: "amount_asc" },
-    { label: "Points Spent (Highest)", value: "spent_desc" },
-    { label: "Points Spent (Lowest)", value: "spent_asc" },
+    { label: "Points (Highest)", value: "amount_desc" },
+    { label: "Points (Lowest)", value: "amount_asc" },
+    { label: "Money Spent (Highest)", value: "spent_desc" },
+    { label: "Money Spent (Lowest)", value: "spent_asc" },
     { label: "Type (A-Z)", value: "type_asc" },
     { label: "Type (Z-A)", value: "type_desc" },
   ];
@@ -47,16 +62,15 @@ function PastTransactions() {
 
   return (
     <>
-      <Typography variant="h4">Past Transactions</Typography>
       <Box sx={{ my: 2 }}>
-        <FilterableList queryKey="past-transactions" apiEndpoint="/users/me/transactions" filterConfig={filterConfig} orderByConfig={orderByConfig}>
+        <FilterableList queryKey="all-transactions" apiEndpoint="/transactions" filterConfig={filterConfig} orderByConfig={orderByConfig}>
           {({ data, isFetching, error }) => {
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>
                   <Alert>
                     <AlertTitle>Error</AlertTitle>
-                    Something went wrong while fetching your transactions. Try again later.
+                    Something went wrong while fetching all transactions. Try again later.
                   </Alert>
                 </Box>
               )
@@ -92,4 +106,4 @@ function PastTransactions() {
   );
 }
 
-export default PastTransactions;
+export default AllTransactions;

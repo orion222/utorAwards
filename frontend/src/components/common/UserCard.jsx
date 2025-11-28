@@ -19,7 +19,6 @@ export default function UserCard({ user }) {
   return (
     <Card
       sx={{
-        maxWidth: 400,
         bgcolor: theme.palette.background.paper,
         borderRadius: 2,
         border: `1px solid ${theme.palette.custom.border}`,
