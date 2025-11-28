@@ -81,6 +81,7 @@ class UserService {
           role: true,
           points: true,
           createdAt: true,
+          suspicious: true,
         },
       }),
     ]);
@@ -97,6 +98,8 @@ class UserService {
       points: true,
       verified: true,
       promotions: true,
+      organizedEvents: true,
+      suspicious: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
