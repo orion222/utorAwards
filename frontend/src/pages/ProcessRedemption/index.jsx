@@ -4,7 +4,7 @@ import { Container } from "@mui/system";
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { purchaseSchema as schema } from "./constant.js";
-import { Stack, TextField, Button, Typography } from "@mui/material";
+import { Box, Stack, TextField, Button, Typography } from "@mui/material";
 import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api";
 import useToast from "../../components/common/hooks/useToast.jsx";
@@ -102,20 +102,16 @@ export default function ProcessRedemption() {
     }, [formValues]);
 
     return (
-        <Container
-            sx={{
-                overflowY: "auto",
-            }}
-        >
+        <>
             <Typography variant="h4" pb={1}>Process Redemption</Typography>
             <Typography variant="body2" color="text.secondary">Enter Transaction ID to process redemption requests</Typography>
 
-            <FormCard width="100%" contentPadding={1}>
+            <FormCard>
                 <form onSubmit={handleSubmit(onSearch)}>
                     <Stack spacing={2}>
-                        <Typography variant="h6" sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                        <Box component="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                             Search for a redemption to process:
-                        </Typography>
+                        </Box>
 
                         {/* Transaction ID */}
                         <LabeledField label="Transaction ID" required
@@ -183,6 +179,6 @@ export default function ProcessRedemption() {
                     />
                 </>
             )}
-        </Container>            
+        </>            
     );
 }
