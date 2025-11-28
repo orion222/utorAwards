@@ -388,10 +388,7 @@ async function updateMyUserInfo(req, res) {
   const { id } = req.user;
   const avatar = req.file;
 
-  if (
-    Object.keys(req.body).length === 0 ||
-    (!name && !email && !birthday && !avatar && hideUtorid === undefined)
-  )
+  if (!name && !email && !birthday && !avatar && hideUtorid === undefined)
     return res
       .status(400)
       .json({ error: "Bad Request: No valid fields to update" });
