@@ -24,6 +24,7 @@ function Dashboard() {
     const [transactions, setTransactions] = useState([]);
     const [promotions, setPromotions] = useState([]);
     const [events, setEvents] = useState([]);
+    const [ transactionItem, setTransactionItem] = useState(null);
 
     useEffect(() => {
         async function fetchData() {
@@ -101,7 +102,7 @@ function Dashboard() {
                 <Box>
                     {transactions.length > 0 ? (
                                 transactions.map(transaction => (
-                                    <TransactionItemCard transaction={transaction} key={transaction.id}></TransactionItemCard>
+                                    <TransactionItemCard transaction={transaction} key={transaction.id} onClick={() => setTransactionItem(transaction)}></TransactionItemCard>
                                 ))
                             ) : (
                                 <Typography>No transactions found.</Typography>

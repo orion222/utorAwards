@@ -11,8 +11,12 @@ import theme from "../../theme.js";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import api from "../../api/api";
+import { useUser } from "../../context/UserContext";
 
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import EventModal from "./EventModal.jsx";
 import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
 import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
@@ -21,7 +25,7 @@ import EditEventForm from "../../pages/Events/EditEventForm.jsx";
 import useToast from "../../components/common/hooks/useToast.jsx";
 import { useNavigate } from "react-router-dom";
 
-function EventCard({ event, editable = false }) {
+function EventCard({ event, editable = false, detailsPage = true }) {
   const isSmall = useMediaQuery("(max-width: 670px)");
   const {
     id,
@@ -34,12 +38,59 @@ function EventCard({ event, editable = false }) {
     numGuests,
     points,
   } = event;
-  const [viewDetails, setViewDetails] = useState(false);
+
   const [rsvpSuccess, setRsvpSuccess] = useState(false);
   const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [rsvp, setRSVP] = useState(false);
   const { showToast, ToastComponent } = useToast();
   const navigate = useNavigate();
+  const { user } = useUser();
+  
+  if (user.role === "manager" || user.role === "superuser") eventData.numGuests = eventData.guests.length;
+
+  useEffect(() => {
+    async function fetchEvent() {
+      try {
+        const { data: myEvents } = await api.get("users/me/events", {
+            params: {limit: 3}
+        });
+
+        const idList = myEvents.results.map(obj => obj.id);
+        if (idList.includes(event.id)) setRSVP(true);
+
+      } catch (error) {
+        console.error("Error fetching event:", error);
+      }
+    }
+    fetchEvent();
+  }, []);
+
+  const rsvpForEvent = () => {
+      async function fetchData() {
+          try {
+              const { data: rsvpData } = await api.post(`events/${id}/guests/me`, {});
+              setRsvpSuccess(true);
+              setRSVP(true);
+          } catch (error) {
+            console.error("Error rsvp'ing for event:", error);
+          }
+        }
+        fetchData();
+  }
+
+  const unRsvpForEvent = () => {
+      async function fetchData() {
+          try {
+              const { data: rsvpData } = await api.delete(`events/${id}/guests/me`, {});
+              setUnRsvpSuccess(true);
+              setRSVP(false);
+          } catch (error) {
+            console.error("Error un-rsvp'ing for event:", error);
+          }
+        }
+        fetchData();
+  }
 
   const formatDate = (isoDate) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -58,9 +109,11 @@ function EventCard({ event, editable = false }) {
     }
     return truncated;
   }
+
   const hasStarted = new Date(startTime) < new Date();
+
   const handleViewDetails = () => {
-    navigate(`/events/${event.id}`);
+    navigate(`/events/${event.id}`, {state: {event}});
   };
 
   if (isSmall) {
@@ -150,6 +203,7 @@ function EventCard({ event, editable = false }) {
             </Box>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
+            { detailsPage && (
             <Button
               variant="contained"
               sx={{
@@ -163,6 +217,68 @@ function EventCard({ event, editable = false }) {
             >
               View Details
             </Button>
+            )} 
+            {!detailsPage && ( <Box>
+                    {!rsvp && (<Button onClick={rsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
+                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
+                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>RSVP</Typography>
+                    </Button>
+                    )}
+                    {rsvp && (<Button onClick={unRsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
+                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
+                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>Cancel RSVP</Typography>
+                    </Button>
+                    )}
+                </Box>
+              
+              )}
+            <Modal
+                open={rsvpSuccess}
+                onClose={() => setRsvpSuccess(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zindex: 1300,
+                }}
+            >
+                <RSVPSuccessModal
+                event={event}
+                onClose={() => setRsvpSuccess(false)}
+                ></RSVPSuccessModal>
+            </Modal>
+            <Modal
+                open={unRsvpSuccess}
+                onClose={() => setUnRsvpSuccess(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zindex: 1300,
+                }}
+            >
+                <UnRSVPSuccessModal
+                event={event}
+                onClose={() => setUnRsvpSuccess(false)}
+                ></UnRSVPSuccessModal>
+            </Modal>
+
             {hasStarted ? (
               <Chip
                 label="LIVE"
@@ -306,6 +422,7 @@ function EventCard({ event, editable = false }) {
             </Typography>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
+          { detailsPage && (
             <Button
               variant="contained"
               sx={{
@@ -319,6 +436,67 @@ function EventCard({ event, editable = false }) {
             >
               View Details
             </Button>
+            )} 
+            {!detailsPage && ( <Box>
+                    {!rsvp && (<Button onClick={rsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
+                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
+                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>RSVP</Typography>
+                    </Button>
+                    )}
+                    {rsvp && (<Button onClick={unRsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
+                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
+                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>Cancel RSVP</Typography>
+                    </Button>
+                    )}
+                </Box>
+              
+              )}
+            <Modal
+                open={rsvpSuccess}
+                onClose={() => setRsvpSuccess(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zindex: 1300,
+                }}
+            >
+                <RSVPSuccessModal
+                event={event}
+                onClose={() => setRsvpSuccess(false)}
+                ></RSVPSuccessModal>
+            </Modal>
+            <Modal
+                open={unRsvpSuccess}
+                onClose={() => setUnRsvpSuccess(false)}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                sx={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                backgroundColor: "rgba(0,0,0,0.5)",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                zindex: 1300,
+                }}
+            >
+                <UnRSVPSuccessModal
+                event={event}
+                onClose={() => setUnRsvpSuccess(false)}
+                ></UnRSVPSuccessModal>
+            </Modal>
             {hasStarted ? (
               <Chip
                 label="LIVE"

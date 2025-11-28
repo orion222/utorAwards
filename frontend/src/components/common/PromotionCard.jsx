@@ -9,7 +9,7 @@ import PaidIcon from '@mui/icons-material/Paid';
 import { TheatersOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
-function PromotionCard({ promotion }) {
+function PromotionCard({ promotion, hover }) {
     const navigate = useNavigate();
     const isSmall = useMediaQuery("(max-width: 670px)");
     const {name, description, type, endTime, rate, points} = promotion;
@@ -24,8 +24,10 @@ function PromotionCard({ promotion }) {
     }
 
     const handleViewPromotion = () => {
-        navigate(`/promotions/${promotion.id}`);
+        navigate(`/promotions/${promotion.id}`, { state: { promotion } });
     };
+
+    const isHover = hover !== undefined ? hover : true;
 
     return (
         <Box sx={{
@@ -38,7 +40,7 @@ function PromotionCard({ promotion }) {
             border: 1, 
             borderColor: theme.palette.custom.border,
             bgcolor: theme.palette.background.paper,
-            '&:hover': { cursor: 'pointer', boxShadow: 4 }
+            '&:hover': isHover ? { cursor: 'pointer', boxShadow: 4 } :  { cursor: 'default' }
             }}
             onClick={handleViewPromotion}
             >

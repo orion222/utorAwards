@@ -15,15 +15,13 @@ import TransactionItemCard from "../../components/common/TransactionItemCard.jsx
 
 function TransactionDetails() {
     const { transactionId } = useParams();
-    const [transaction, setTransaction] = useState();
     const { state } = useLocation();
-    console.log(state);
 
     return (
         <Box>
-            {/* <TransactionItemCard>
-            transaction={transaction} key={transactionId}
-            </TransactionItemCard> */}
+            <TransactionItemCard transaction={state.transaction} key={transactionId} hover={false}>
+            
+            </TransactionItemCard>
         </Box>
     )
 }
