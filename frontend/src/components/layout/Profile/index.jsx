@@ -48,7 +48,7 @@ export default function Profile() {
 
   return (
     <>
-      <Avatar src={user?.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen} />
+      <Avatar src={user?.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} alt={`${user?.name} Profile`} sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen} />
 
       {profileModalOpen && (
         <ProfileModal user={user} setUser={setUser} open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />
