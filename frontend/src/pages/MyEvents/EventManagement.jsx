@@ -65,7 +65,7 @@ function EventManagement() {
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
       >
-        {({ data, isFetching, error }) => {
+        {({ data, isFetching, error, refetch }) => {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
@@ -109,7 +109,12 @@ function EventManagement() {
                   }}
                 >
                   {data.map((event) => (
-                    <EventCard event={event} key={event.id} editable={true} />
+                    <EventCard
+                      event={event}
+                      key={event.id}
+                      editable={true}
+                      refetch={refetch}
+                    />
                   ))}
                 </Box>
               )}

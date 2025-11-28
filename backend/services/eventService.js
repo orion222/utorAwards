@@ -146,7 +146,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
-        orderBy: orderBy ? orderBy : {},
+        orderBy: orderBy || undefined,
       }),
     ]);
 
@@ -671,6 +671,7 @@ class EventService {
     ended,
     page,
     limit,
+    orderBy,
   ) {
     const filters = {};
 
