@@ -16,11 +16,13 @@ import api from "../../api/api";
 import { useUser } from "../../context/UserContext";
 
 import { useState, useEffect } from "react";
-import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
-import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
+import EventModal from "./EventModal.jsx";
+import AcceptRsvpModal from "./AcceptRsvpModal.jsx"
+import DeclineRsvpModal from "./DeclineRsvpModal.jsx";
 import { FiEdit } from "react-icons/fi";
 import EditEventForm from "../../pages/Events/EditEventForm.jsx";
-import ManageEventUsers from "../../pages/Events/ManageEventUsers.jsx";
+import useToast from "../../components/common/hooks/useToast.jsx";
+import RsvpButtons from "./RSVPButtons.jsx";
 import { useNavigate } from "react-router-dom";
 import FormCard from "./FormCard.jsx";
 
@@ -42,8 +44,8 @@ function EventCard({
     points,
   } = event;
 
-  const [rsvpSuccess, setRsvpSuccess] = useState(false);
-  const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
+  const [acceptRsvp, setAcceptRsvp] = useState(false);
+  const [declineRsvp, setDeclineRsvp] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [rsvp, setRSVP] = useState(false);
   const navigate = useNavigate();
@@ -64,7 +66,6 @@ function EventCard({
     }
     fetchEvent();
   }, []);
-
 
 
   const formatDate = (isoDate) => {
@@ -264,9 +265,18 @@ function EventCard({
             </Typography>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
+            {!detailsPage && (
+              <Box>
+                <RsvpButtons
+                  rsvp={rsvp}
+                  onAccept={rsvpForEvent}
+                  onDecline={cancelRsvpForEvent}
+              ></RsvpButtons>
+              </Box>
+            )}
             <Modal
-              open={rsvpSuccess}
-              onClose={() => setRsvpSuccess(false)}
+              open={acceptRsvp}
+              onClose={() => setAcceptRsvp(false)}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
               sx={{
@@ -282,14 +292,14 @@ function EventCard({
                 zindex: 1300,
               }}
             >
-              <RSVPSuccessModal
+              <AcceptRsvpModal
                 event={event}
-                onClose={() => setRsvpSuccess(false)}
-              ></RSVPSuccessModal>
+                onClose={() => setAcceptRsvp(false)}
+              ></AcceptRsvpModal>
             </Modal>
             <Modal
-              open={unRsvpSuccess}
-              onClose={() => setUnRsvpSuccess(false)}
+              open={declineRsvp}
+              onClose={() => setDeclineRsvp(false)}
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
               sx={{
@@ -305,10 +315,10 @@ function EventCard({
                 zindex: 1300,
               }}
             >
-              <UnRSVPSuccessModal
+              <DeclineRsvpModal
                 event={event}
-                onClose={() => setUnRsvpSuccess(false)}
-              ></UnRSVPSuccessModal>
+                onClose={() => setDeclineRsvp(false)}
+              ></DeclineRsvpModal>
             </Modal>
             {hasEnded ? (
               <Chip
