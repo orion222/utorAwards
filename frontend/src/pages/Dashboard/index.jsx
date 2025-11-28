@@ -14,6 +14,8 @@ import { TheatersOutlined } from "@mui/icons-material";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
 import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+// import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
+// import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
 
 function Dashboard() {
     const { user } = useUser();
@@ -22,6 +24,7 @@ function Dashboard() {
     const [transactions, setTransactions] = useState([]);
     const [promotions, setPromotions] = useState([]);
     const [events, setEvents] = useState([]);
+    const [ transactionItem, setTransactionItem] = useState(null);
 
     useEffect(() => {
         async function fetchData() {
@@ -95,7 +98,7 @@ function Dashboard() {
                 <Box>
                     {transactions.length > 0 ? (
                                 transactions.map(transaction => (
-                                    <TransactionItemCard transaction={transaction} key={transaction.id}></TransactionItemCard>
+                                    <TransactionItemCard transaction={transaction} key={transaction.id} onClick={() => setTransactionItem(transaction)}></TransactionItemCard>
                                 ))
                             ) : (
                                 <Typography>No transactions found.</Typography>
@@ -111,7 +114,7 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Promotions For You
                 </Typography>
-                <Box sx={{ display: 'grid', gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
+                <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 1 }}>
                     {promotions.length > 0 ? (
                                     promotions.map(promotion => (
                                         <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
@@ -130,10 +133,10 @@ function Dashboard() {
                 <Typography sx={{fontSize: 24}}>
                     Upcoming Events
                 </Typography>
-                <Box sx={{display: 'grid', gridTemplateColumns: "repeat(3, 1fr)", gap: 1 }}>
+                <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 1 }}>
                         {events.length > 0 ? (
                             events.map(event => (
-                                    <EventCard event={event} key={event.id}></EventCard>
+                                    <EventCard event={event} key={event.id} ></EventCard>
                             ))
                         ) : (
                             <Typography>No events found.</Typography>

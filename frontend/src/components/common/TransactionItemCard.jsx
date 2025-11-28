@@ -1,9 +1,11 @@
 import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider } from "@mui/material";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useNavigate } from "react-router-dom";
 
-function TransactionItemCard({ transaction }) {
+function TransactionItemCard({ transaction, hover }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
+    const navigate = useNavigate();
     const { type, spent, amount, earned, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
@@ -12,8 +14,14 @@ function TransactionItemCard({ transaction }) {
         "event": "#7DA4F2",
         "transfer": "#BBA3E5",
     }
+    
+    const isHover = hover !== undefined ? hover : true;
 
     const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+
+    const handleViewTransaction = () => {
+        navigate(`/past-transactions/${transaction.id}`, { state: { transaction } });
+    };
 
     if (isSmall) {
         return (
@@ -23,7 +31,9 @@ function TransactionItemCard({ transaction }) {
                     width: "100%",
                     maxWidth: "unset",
                     flex: 1
+                    
                 }}
+                onClick={handleViewTransaction}
             >
                 <Accordion
                     sx={{
@@ -115,7 +125,9 @@ function TransactionItemCard({ transaction }) {
                 borderRadius: 3,
                 position: "relative",
                 overflow: "visible",
+                '&:hover': isHover ? { cursor: 'pointer', boxShadow: 4 } :  { cursor: 'default' }
             }}
+            onClick={handleViewTransaction}
         >
             {/* Colour strip */}
             <Box

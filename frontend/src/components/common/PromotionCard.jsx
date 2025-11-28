@@ -7,8 +7,10 @@ import StarIcon from '@mui/icons-material/Star';
 import SellIcon from '@mui/icons-material/Sell';
 import PaidIcon from '@mui/icons-material/Paid';
 import { TheatersOutlined } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 
-function PromotionCard({ promotion }) {
+function PromotionCard({ promotion, hover }) {
+    const navigate = useNavigate();
     const isSmall = useMediaQuery("(max-width: 670px)");
     const {name, description, type, endTime, rate, points} = promotion;
 
@@ -21,6 +23,12 @@ function PromotionCard({ promotion }) {
           return formattedDate;
     }
 
+    const handleViewPromotion = () => {
+        navigate(`/promotions/${promotion.id}`, { state: { promotion } });
+    };
+
+    const isHover = hover !== undefined ? hover : true;
+
     return (
         <Box sx={{
             padding: "16px",
@@ -31,21 +39,29 @@ function PromotionCard({ promotion }) {
             justifyContent: "space-between", 
             border: 1, 
             borderColor: theme.palette.custom.border,
-            bgcolor: theme.palette.background.paper}}>
+            bgcolor: theme.palette.background.paper,
+            '&:hover': isHover ? { cursor: 'pointer', boxShadow: 4 } :  { cursor: 'default' }
+            }}
+            onClick={handleViewPromotion}
+            >
                 <Box sx={{display: "flex", flexDirection: "column"}}> {/* left side */}
                     <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
-                    {rate && <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                    {rate ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                             <StarIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
                             <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                                +{rate/100}% Boosted Rate
+                                +{rate*100}% Boosted Rate
                             </Typography>
-                    </Box>}
-                    {points && <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                    </Box>) : (
+                            <Box></Box>
+                    )}
+                    {points ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                             <PaidIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
                             <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                                {rate/100} Bonus Points
+                                {points} Bonus Points
                             </Typography>
-                    </Box>}
+                    </Box>) : (
+                        <Box></Box>
+                    )}
                     <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                             <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
                             <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
