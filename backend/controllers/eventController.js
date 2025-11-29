@@ -66,6 +66,18 @@ async function getFilteredEvents(req, res) {
       .json({ error: "cannot specify both started and ended" });
   }
 
+  if (started && started !== "true" && started !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid started value" });
+  }
+
+  if (ended && ended !== "true" && ended !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid ended value" });
+  }
+
   try {
     const filteredEventsData = await EventService.getFilteredEvents(
       search,

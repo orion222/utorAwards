@@ -88,35 +88,44 @@ class EventService {
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
-    if (started === true) {
+    if (started === "true") {
       filterDetails.startTime = { lt: currDate };
-    } else if (started === false) {
-      filterDetails.startTime = { gt: currDate };
+    } 
+    else if (started === "false") {
+      filterDetails.startTime = { gte: currDate };
     }
 
-    if (ended === true) {
-      filterDetails.endTime = { lt: currDate };
-    } else if (ended === false) {
+    if (ended === "true") {
+      filterDetails.endTime = { lte: currDate };
+    } 
+    else if (ended === "false") {
       filterDetails.endTime = { gt: currDate };
     }
 
-    if (published) {
-      filterDetails.published = published === "true";
+    if (published === "true") {
+      filterDetails.published = true;
+    }
+    else if (published === "false") {
+      filterDetails.published = false;
     }
 
-    tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({
-      numGuests: { lt: prisma.event.fields.capacity },
-    });
-
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    }
+    else if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -771,38 +780,44 @@ class EventService {
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
-    if (started === true) {
+    if (started === "true") {
       filterDetails.startTime = { lt: currDate };
-    } else if (started === false) {
-      filterDetails.startTime = { gt: currDate };
+    } 
+    else if (started === "false") {
+      filterDetails.startTime = { gte: currDate };
     }
 
-    if (ended === true) {
-      filterDetails.endTime = { lt: currDate };
-    } else if (ended === false) {
+    if (ended === "true") {
+      filterDetails.endTime = { lte: currDate };
+    } 
+    else if (ended === "false") {
       filterDetails.endTime = { gt: currDate };
     }
 
-    if (published) {
-      filterDetails.published = published === "true";
+    if (published === "true") {
+      filterDetails.published = true;
+    }
+    else if (published === "false") {
+      filterDetails.published = false;
     }
 
-    tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({
-      numGuests: { lt: prisma.event.fields.capacity },
-    });
-
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    }
+    else if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -884,38 +899,44 @@ class EventService {
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
-    if (started === true) {
+    if (started === "true") {
       filterDetails.startTime = { lt: currDate };
-    } else if (started === false) {
-      filterDetails.startTime = { gt: currDate };
+    } 
+    else if (started === "false") {
+      filterDetails.startTime = { gte: currDate };
     }
 
-    if (ended === true) {
-      filterDetails.endTime = { lt: currDate };
-    } else if (ended === false) {
+    if (ended === "true") {
+      filterDetails.endTime = { lte: currDate };
+    } 
+    else if (ended === "false") {
       filterDetails.endTime = { gt: currDate };
     }
 
-    if (published) {
-      filterDetails.published = published === "true";
+    if (published === "true") {
+      filterDetails.published = true;
+    }
+    else if (published === "false") {
+      filterDetails.published = false;
     }
 
-    tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({
-      numGuests: { lt: prisma.event.fields.capacity },
-    });
-
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    }
+    else if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);
