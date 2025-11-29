@@ -33,7 +33,6 @@ function FilterableList({ apiEndpoint, queryKey, filterConfig, orderByConfig, li
             return data.results;
         } catch (error) {
             console.error(error);
-            return [];
         }
     }
 

@@ -13,6 +13,16 @@ function Promotions() {
     },
     started: {
       type: "select",
+      label: "Started",
+      options: ["True", "False"],
+    },
+    ended: {
+      type: "select",
+      label: "Ended",
+      options: ["True", "False"],
+    },
+    type: {
+      type: "select",
       label: "Type",
       options: ["Automatic", "Onetime"],
     }
@@ -46,9 +56,9 @@ function Promotions() {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
-                <Alert>
-                  <AlertTitle>Error</AlertTitle>
-                  Something went wrong while fetching your transactions. Try again later.
+                <Alert severity="error">
+                  <AlertTitle severity="error">Error</AlertTitle>
+                  Something went wrong while fetching your transactions. Your filters may be invalid. Try again later.
                 </Alert>
               </Box>
             )

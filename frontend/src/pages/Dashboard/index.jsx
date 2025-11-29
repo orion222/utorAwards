@@ -33,7 +33,7 @@ function Dashboard() {
                 params: {limit: 3}
             });
 
-            const { data: eventData } = await api.get("/events", {
+            const { data: eventData } = await api.get("/users/me/events/invitations", {
                 params: {limit: 3}
             });
             
