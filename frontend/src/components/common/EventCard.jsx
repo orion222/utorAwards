@@ -11,10 +11,9 @@ import theme from "../../theme.js";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import api from "../../api/api";
 import { useUser } from "../../context/UserContext";
-
 
 import { useState, useEffect } from "react";
 import EventModal from "./EventModal.jsx";
@@ -25,7 +24,12 @@ import EditEventForm from "../../pages/Events/EditEventForm.jsx";
 import useToast from "../../components/common/hooks/useToast.jsx";
 import { useNavigate } from "react-router-dom";
 
-function EventCard({ event, editable = false, detailsPage = true }) {
+function EventCard({
+  event,
+  editable = false,
+  detailsPage = true,
+  refetch = null,
+}) {
   const isSmall = useMediaQuery("(max-width: 670px)");
   const {
     id,
@@ -43,7 +47,6 @@ function EventCard({ event, editable = false, detailsPage = true }) {
   const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
   const [editModal, setEditModal] = useState(false);
   const [rsvp, setRSVP] = useState(false);
-  const { showToast, ToastComponent } = useToast();
   const navigate = useNavigate();
   const { user } = useUser();
 
@@ -51,12 +54,11 @@ function EventCard({ event, editable = false, detailsPage = true }) {
     async function fetchEvent() {
       try {
         const { data: myEvents } = await api.get("users/me/events", {
-            params: {limit: 3}
+          params: { limit: 3 },
         });
 
-        const idList = myEvents.results.map(obj => obj.id);
+        const idList = myEvents.results.map((obj) => obj.id);
         if (idList.includes(event.id)) setRSVP(true);
-
       } catch (error) {
         console.error("Error fetching event:", error);
       }
@@ -65,30 +67,33 @@ function EventCard({ event, editable = false, detailsPage = true }) {
   }, []);
 
   const rsvpForEvent = () => {
-      async function fetchData() {
-          try {
-              const { data: rsvpData } = await api.post(`events/${id}/guests/me`, {});
-              setRsvpSuccess(true);
-              setRSVP(true);
-          } catch (error) {
-            console.error("Error rsvp'ing for event:", error);
-          }
-        }
-        fetchData();
-  }
+    async function fetchData() {
+      try {
+        const { data: rsvpData } = await api.post(`events/${id}/guests/me`, {});
+        setRsvpSuccess(true);
+        setRSVP(true);
+      } catch (error) {
+        console.error("Error rsvp'ing for event:", error);
+      }
+    }
+    fetchData();
+  };
 
   const unRsvpForEvent = () => {
-      async function fetchData() {
-          try {
-              const { data: rsvpData } = await api.delete(`events/${id}/guests/me`, {});
-              setUnRsvpSuccess(true);
-              setRSVP(false);
-          } catch (error) {
-            console.error("Error un-rsvp'ing for event:", error);
-          }
-        }
-        fetchData();
-  }
+    async function fetchData() {
+      try {
+        const { data: rsvpData } = await api.delete(
+          `events/${id}/guests/me`,
+          {},
+        );
+        setUnRsvpSuccess(true);
+        setRSVP(false);
+      } catch (error) {
+        console.error("Error un-rsvp'ing for event:", error);
+      }
+    }
+    fetchData();
+  };
 
   const formatDate = (isoDate) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -111,7 +116,7 @@ function EventCard({ event, editable = false, detailsPage = true }) {
   const hasStarted = new Date(startTime) < new Date();
 
   const handleViewDetails = () => {
-    navigate(`/events/${event.id}`, {state: {event}});
+    navigate(`/events/${event.id}`, { state: { event } });
   };
 
   if (isSmall) {
@@ -201,41 +206,69 @@ function EventCard({ event, editable = false, detailsPage = true }) {
             </Box>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
-            { detailsPage && (
-            <Button
-              variant="contained"
-              sx={{
-                fontSize: 12,
-                padding: "8px",
-                backgroundColor: theme.palette.secondary.main,
-                borderRadius: "8px",
-                width: "fit-content",
-              }}
-              onClick={handleViewDetails}
-            >
-              View Details
-            </Button>
-            )} 
-            {!detailsPage && ( <Box>
-                    {!rsvp && (<Button onClick={rsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
-                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
-                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>RSVP</Typography>
-                    </Button>
-                    )}
-                    {rsvp && (<Button onClick={unRsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
-                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
-                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>Cancel RSVP</Typography>
-                    </Button>
-                    )}
-                </Box>
-              
-              )}
-            <Modal
-                open={rsvpSuccess}
-                onClose={() => setRsvpSuccess(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+            {detailsPage && (
+              <Button
+                variant="contained"
                 sx={{
+                  fontSize: 12,
+                  padding: "8px",
+                  backgroundColor: theme.palette.secondary.main,
+                  borderRadius: "8px",
+                  width: "fit-content",
+                }}
+                onClick={handleViewDetails}
+              >
+                View Details
+              </Button>
+            )}
+            {!detailsPage && (
+              <Box>
+                {!rsvp && (
+                  <Button
+                    onClick={rsvpForEvent}
+                    sx={{
+                      color: "black",
+                      bgcolor: theme.palette.secondary.main,
+                      display: "flex",
+                      flexDirectoin: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ArrowDropDownIcon
+                      sx={{ fontSize: isSmall ? 11 : 14 }}
+                    ></ArrowDropDownIcon>
+                    <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
+                      RSVP
+                    </Typography>
+                  </Button>
+                )}
+                {rsvp && (
+                  <Button
+                    onClick={unRsvpForEvent}
+                    sx={{
+                      color: "black",
+                      bgcolor: theme.palette.secondary.main,
+                      display: "flex",
+                      flexDirectoin: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ArrowDropDownIcon
+                      sx={{ fontSize: isSmall ? 11 : 14 }}
+                    ></ArrowDropDownIcon>
+                    <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
+                      Cancel RSVP
+                    </Typography>
+                  </Button>
+                )}
+              </Box>
+            )}
+            <Modal
+              open={rsvpSuccess}
+              onClose={() => setRsvpSuccess(false)}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+              sx={{
                 position: "fixed",
                 top: 0,
                 left: 0,
@@ -246,19 +279,19 @@ function EventCard({ event, editable = false, detailsPage = true }) {
                 justifyContent: "center",
                 alignItems: "center",
                 zindex: 1300,
-                }}
+              }}
             >
-                <RSVPSuccessModal
+              <RSVPSuccessModal
                 event={event}
                 onClose={() => setRsvpSuccess(false)}
-                ></RSVPSuccessModal>
+              ></RSVPSuccessModal>
             </Modal>
             <Modal
-                open={unRsvpSuccess}
-                onClose={() => setUnRsvpSuccess(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                sx={{
+              open={unRsvpSuccess}
+              onClose={() => setUnRsvpSuccess(false)}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+              sx={{
                 position: "fixed",
                 top: 0,
                 left: 0,
@@ -269,12 +302,12 @@ function EventCard({ event, editable = false, detailsPage = true }) {
                 justifyContent: "center",
                 alignItems: "center",
                 zindex: 1300,
-                }}
+              }}
             >
-                <UnRSVPSuccessModal
+              <UnRSVPSuccessModal
                 event={event}
                 onClose={() => setUnRsvpSuccess(false)}
-                ></UnRSVPSuccessModal>
+              ></UnRSVPSuccessModal>
             </Modal>
 
             {hasStarted ? (
@@ -305,7 +338,7 @@ function EventCard({ event, editable = false, detailsPage = true }) {
               )
             )}
           </Stack>
-         
+
           <Modal
             open={editModal}
             onClose={() => setEditModal(false)}
@@ -336,8 +369,8 @@ function EventCard({ event, editable = false, detailsPage = true }) {
             >
               <EditEventForm
                 event={event}
-                showToast={showToast}
                 onClose={() => setEditModal(false)}
+                refetch={refetch}
               />
             </Box>
           </Modal>
@@ -420,41 +453,69 @@ function EventCard({ event, editable = false, detailsPage = true }) {
             </Typography>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
-          { detailsPage && (
-            <Button
-              variant="contained"
-              sx={{
-                fontSize: 12,
-                padding: "8px",
-                backgroundColor: theme.palette.secondary.main,
-                borderRadius: "8px",
-                width: "fit-content",
-              }}
-              onClick={handleViewDetails}
-            >
-              View Details
-            </Button>
-            )} 
-            {!detailsPage && ( <Box>
-                    {!rsvp && (<Button onClick={rsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
-                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
-                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>RSVP</Typography>
-                    </Button>
-                    )}
-                    {rsvp && (<Button onClick={unRsvpForEvent} sx={{color: "black", bgcolor: theme.palette.secondary.main, display: "flex", flexDirectoin: "row", justifyContent: "space-between"}}>
-                        <ArrowDropDownIcon sx={{fontSize: isSmall ? 11 : 14}}></ArrowDropDownIcon>
-                        <Typography sx={{fontSize: isSmall ? 11 : 14}}>Cancel RSVP</Typography>
-                    </Button>
-                    )}
-                </Box>
-              
-              )}
-            <Modal
-                open={rsvpSuccess}
-                onClose={() => setRsvpSuccess(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
+            {detailsPage && (
+              <Button
+                variant="contained"
                 sx={{
+                  fontSize: 12,
+                  padding: "8px",
+                  backgroundColor: theme.palette.secondary.main,
+                  borderRadius: "8px",
+                  width: "fit-content",
+                }}
+                onClick={handleViewDetails}
+              >
+                View Details
+              </Button>
+            )}
+            {!detailsPage && (
+              <Box>
+                {!rsvp && (
+                  <Button
+                    onClick={rsvpForEvent}
+                    sx={{
+                      color: "black",
+                      bgcolor: theme.palette.secondary.main,
+                      display: "flex",
+                      flexDirectoin: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ArrowDropDownIcon
+                      sx={{ fontSize: isSmall ? 11 : 14 }}
+                    ></ArrowDropDownIcon>
+                    <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
+                      RSVP
+                    </Typography>
+                  </Button>
+                )}
+                {rsvp && (
+                  <Button
+                    onClick={unRsvpForEvent}
+                    sx={{
+                      color: "black",
+                      bgcolor: theme.palette.secondary.main,
+                      display: "flex",
+                      flexDirectoin: "row",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <ArrowDropDownIcon
+                      sx={{ fontSize: isSmall ? 11 : 14 }}
+                    ></ArrowDropDownIcon>
+                    <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
+                      Cancel RSVP
+                    </Typography>
+                  </Button>
+                )}
+              </Box>
+            )}
+            <Modal
+              open={rsvpSuccess}
+              onClose={() => setRsvpSuccess(false)}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+              sx={{
                 position: "fixed",
                 top: 0,
                 left: 0,
@@ -465,19 +526,19 @@ function EventCard({ event, editable = false, detailsPage = true }) {
                 justifyContent: "center",
                 alignItems: "center",
                 zindex: 1300,
-                }}
+              }}
             >
-                <RSVPSuccessModal
+              <RSVPSuccessModal
                 event={event}
                 onClose={() => setRsvpSuccess(false)}
-                ></RSVPSuccessModal>
+              ></RSVPSuccessModal>
             </Modal>
             <Modal
-                open={unRsvpSuccess}
-                onClose={() => setUnRsvpSuccess(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                sx={{
+              open={unRsvpSuccess}
+              onClose={() => setUnRsvpSuccess(false)}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+              sx={{
                 position: "fixed",
                 top: 0,
                 left: 0,
@@ -488,12 +549,12 @@ function EventCard({ event, editable = false, detailsPage = true }) {
                 justifyContent: "center",
                 alignItems: "center",
                 zindex: 1300,
-                }}
+              }}
             >
-                <UnRSVPSuccessModal
+              <UnRSVPSuccessModal
                 event={event}
                 onClose={() => setUnRsvpSuccess(false)}
-                ></UnRSVPSuccessModal>
+              ></UnRSVPSuccessModal>
             </Modal>
             {hasStarted ? (
               <Chip
@@ -523,7 +584,6 @@ function EventCard({ event, editable = false, detailsPage = true }) {
               )
             )}
           </Stack>
-         
           <Modal
             open={editModal}
             onClose={() => setEditModal(false)}
@@ -554,8 +614,8 @@ function EventCard({ event, editable = false, detailsPage = true }) {
             >
               <EditEventForm
                 event={event}
-                showToast={showToast}
                 onClose={() => setEditModal(false)}
+                refetch={refetch}
               />
             </Box>
           </Modal>
@@ -590,7 +650,6 @@ function EventCard({ event, editable = false, detailsPage = true }) {
             </Typography>
           </Box>
         </Box>
-        {ToastComponent}
       </Box>
     );
   }

@@ -1,4 +1,3 @@
-import { useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { editEventSchema as schema } from "./constants.js";
@@ -25,12 +24,13 @@ import {
 import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api.js";
 import PeopleIcon from "@mui/icons-material/People";
-export default function EditEventForm({ event, onClose, showToast }) {
+import { useToast } from "../../context/ToastContext.jsx";
+export default function EditEventForm({ event, onClose, refetch = null }) {
+  const { showToast } = useToast();
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -39,14 +39,34 @@ export default function EditEventForm({ event, onClose, showToast }) {
       startTime: dayjs(event.startTime),
       endTime: dayjs(event.endTime),
       location: event.location,
-      pointsRemain: event.pointsRemain,
+      pointsRemain: event.points,
       numGuests: event.numGuests,
       capacity: event.capacity,
       published: event.published,
     },
   });
 
+  const hasFormChanged = (formData) => {
+    return (
+      formData.name !== event.name ||
+      formData.description !== event.description ||
+      formData.startTime.toISOString() !== event.startTime ||
+      formData.endTime.toISOString() !== event.endTime ||
+      formData.location !== event.location ||
+      Number(formData.pointsRemain) !== event.points ||
+      Number(formData.capacity) !== event.capacity ||
+      formData.published !== event.published
+    );
+  };
+
   const onSubmit = async (data) => {
+    // Check for changes first
+    if (!hasFormChanged(data)) {
+      showToast("No changes made", "info");
+      onClose();
+      return;
+    }
+
     const {
       name,
       description,
@@ -76,6 +96,9 @@ export default function EditEventForm({ event, onClose, showToast }) {
       if (res.status === 200) {
         showToast("Edit successful", "success");
         onClose();
+        if (refetch) {
+          refetch();
+        }
       } else {
         showToast("Edit event failed", "error");
       }
