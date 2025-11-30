@@ -109,6 +109,7 @@ async function getFilteredUsers(req, res) {
       .status(400)
       .json({ error: "Bad Request: page must be at least 1" });
   }
+
   try {
     const filteredUsersData = await UserService.getFilteredUsers(
       id,

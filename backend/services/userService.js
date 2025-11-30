@@ -95,8 +95,8 @@ class UserService {
     else if (activated === "false") {
       filterOptions.lastLogin = null;
     }
-    let organizerIds = [];
-    let guestIds = [];
+    let organizerIds = new Set();
+    let guestIds = new Set();
     if (eventId) {
       const event = await prisma.event.findUnique({
         where: { id: parseInt(eventId, 10) },
