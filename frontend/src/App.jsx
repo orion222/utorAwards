@@ -31,11 +31,16 @@ const Transfer = lazy(() => import("./pages/Wallet/TransferPoints.jsx"));
 const EventEditForm = lazy(() => import("./pages/Events/EditEventForm.jsx"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard/index.jsx"));
 const EventDetails = lazy(() => import("./pages/EventDetails/index.jsx"));
-const PromotionDetails = lazy(() => import("./pages/PromotionDetails/index.jsx"));
-const TransactionDetails = lazy(() => import("./pages/TransactionDetails/index.jsx"));
+const PromotionDetails = lazy(
+  () => import("./pages/PromotionDetails/index.jsx"),
+);
+const TransactionDetails = lazy(
+  () => import("./pages/TransactionDetails/index.jsx"),
+);
 const Admin = lazy(() => import("./pages/Admin/index.jsx"));
 const AllUsers = lazy(() => import("./pages/Admin/AllUsers.jsx"));
 const AllTransactions = lazy(() => import("./pages/Admin/AllTransactions.jsx"));
+import ManageEventUsers from "./pages/events/ManageEventUsers.jsx";
 
 function App() {
   return (
@@ -48,16 +53,26 @@ function App() {
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="unauthorized" element={<Unauthorized />} />
 
+          <Route
+            path="manage-event-users"
+            element={<ManageEventUsers />}
+          ></Route>
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="past-transactions" element={<PastTransactions />} />
-              <Route path="transactions/:transactionId" element={<TransactionDetails />} />
+              <Route
+                path="past-transactions/:transactionId"
+                element={<TransactionDetails />}
+              />
               <Route path="events" element={<Events />} />
               <Route path="/events/:eventId" element={<EventDetails />} />
               <Route path="promotions" element={<Promotions />} />
-              <Route path="promotions/:promotionId" element={<PromotionDetails />} />
+              <Route
+                path="promotions/:promotionId"
+                element={<PromotionDetails />}
+              />
               <Route path="wallet" element={<Wallet />}>
                 <Route path="my-qr-code" element={<QRCode />} />
                 <Route path="redeem" element={<RedeemPoints />} />
@@ -86,7 +101,10 @@ function App() {
               }
             >
               <Route path="create-transaction" element={<CreatePurchase />} />
-              <Route path="redeem-transaction" element={<ProcessRedemption />} />
+              <Route
+                path="redeem-transaction"
+                element={<ProcessRedemption />}
+              />
               <Route path="create-user" element={<CreateUser />} />
             </Route>
 
