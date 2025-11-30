@@ -25,7 +25,12 @@ import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api.js";
 import PeopleIcon from "@mui/icons-material/People";
 import { useToast } from "../../context/ToastContext.jsx";
-export default function EditEventForm({ event, onClose, refetch = null }) {
+export default function EditEventForm({
+  event,
+  openEditEventModal,
+  onClose,
+  refetch = null,
+}) {
   const { showToast } = useToast();
   const {
     control,
@@ -127,7 +132,6 @@ export default function EditEventForm({ event, onClose, refetch = null }) {
       </Box>
     );
   }
-
   return (
     <FormCard
       title={event.name}
@@ -308,6 +312,7 @@ export default function EditEventForm({ event, onClose, refetch = null }) {
                     startIcon={<PeopleIcon />}
                     variant="contained"
                     color="secondary"
+                    onClick={() => openEditEventModal()}
                   >
                     {isSmall ? "Manage users" : "Manage event users"}
                   </Button>
