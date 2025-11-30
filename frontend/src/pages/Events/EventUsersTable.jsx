@@ -12,11 +12,10 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
+import TableActions from "./TableActions.jsx";
 import React from "react";
 
-export default function UsersTable({ data }) {
-  console.log(data);
+export default function UsersTable({ refetch, eventId, data }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // Badge colors that rotate
@@ -56,7 +55,7 @@ export default function UsersTable({ data }) {
         <TableHead>
           <TableRow sx={{ backgroundColor: theme.palette.grey[50] }}>
             <TableCell sx={cellSx}>ID</TableCell>
-            <TableCell sx={cellSx}>USERNAME</TableCell>
+            <TableCell sx={cellSx}>UTORID</TableCell>
             {!isMobile && (
               <>
                 <TableCell sx={cellSx}>NAME</TableCell>
@@ -118,17 +117,14 @@ export default function UsersTable({ data }) {
                   </>
                 )}
                 <TableCell sx={bodyCellSx}>
-                  <IconButton
-                    size="small"
-                    sx={{
-                      color: "#f44336",
-                      "&:hover": {
-                        backgroundColor: "#ffebee",
-                      },
-                    }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
+                  <TableActions
+                    refetch={refetch}
+                    eventId={eventId}
+                    utorid={user.utorid}
+                    userId={user.id}
+                    is_guest={user.event_role === "guest"}
+                    is_organizer={user.event_role === "organizer"}
+                  />
                 </TableCell>
               </TableRow>
             );

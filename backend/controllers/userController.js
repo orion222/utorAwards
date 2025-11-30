@@ -93,7 +93,7 @@ async function getFilteredUsers(req, res) {
 
   let orderByObj = null;
   if (orderBy) {
-    const validFields = ["name", "createdAt", "points", "role"];
+    const validFields = ["name", "createdAt", "points", "role", "email"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
       return res

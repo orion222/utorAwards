@@ -64,7 +64,7 @@ function ManageEventUsers() {
           limit={5}
           initialFilters={{ is_guest: true }}
         >
-          {({ data, isFetching, error, getAppliedFilters }) => {
+          {({ data, isFetching, error, getAppliedFilters, refetch }) => {
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>
@@ -94,7 +94,12 @@ function ManageEventUsers() {
                     </Typography>
                   </Box>
                 ) : (
-                  <EventUsersTable data={data} filters={getAppliedFilters()} />
+                  <EventUsersTable
+                    refetch={refetch}
+                    eventId={event.id}
+                    data={data}
+                    filters={getAppliedFilters()}
+                  />
                 )}
               </>
             );

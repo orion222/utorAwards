@@ -18,22 +18,23 @@ function MyEvents() {
       <Typography variant="h4">My Events</Typography>
       {(user?.isEventOrganizer ||
         user?.role === "manager" ||
-        user?.role === "superuser") && (
-        <Tabs value={tabValue}>
-          <Tab
-            label="Invitations"
-            value="/my-events/invitations"
-            component={Link}
-            to="/my-events/invitations"
-          />
-          <Tab
-            label="Management"
-            value="/my-events/management"
-            component={Link}
-            to="/my-events/management"
-          />
-        </Tabs>
-      )}
+        user?.role === "superuser") &&
+        tabValue && (
+          <Tabs value={tabValue}>
+            <Tab
+              label="Invitations"
+              value="/my-events/invitations"
+              component={Link}
+              to="/my-events/invitations"
+            />
+            <Tab
+              label="Management"
+              value="/my-events/management"
+              component={Link}
+              to="/my-events/management"
+            />
+          </Tabs>
+        )}
       <Box>
         <Outlet />
       </Box>
