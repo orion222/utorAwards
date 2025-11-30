@@ -6,47 +6,26 @@ import {
   AlertTitle,
   CircularProgress,
 } from "@mui/material";
-import DeleteIcon from "@mui/icons-material/Delete";
 import FilterableList from "../../components/common/FilterableList.jsx";
 import EventUsersTable from "./EventUsersTable.jsx";
-// Mock data (can be removed when API is integrated)
-const mockData = [
-  {
-    id: 18,
-    utorid: "ochen0222",
-    name: "ochen",
-    email: "ochenner@gmail.com",
-    verified: false,
-    points: 100,
-  },
-  {
-    id: 19,
-    utorid: "jerm69",
-    name: "jerm",
-    email: "jerm@yopmail.com",
-    verified: false,
-    points: 100,
-  },
-  {
-    id: 20,
-    utorid: "kobe67",
-    name: "kobe",
-    email: "yellowmamba@proton.me",
-    verified: false,
-    points: 100,
-  },
-  {
-    id: 21,
-    utorid: "brady01",
-    name: "brady",
-    email: "brad@hotmail.com",
-    verified: false,
-    points: 100,
-  },
-];
+import { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import api from "../../api/api.js";
 
-function ManageEventUsers({eventId, onClose, refetch}) {
-  console.log("eventId is", eventId);
+function ManageEventUsers() {
+  const { eventId } = useParams();
+  const [event, setEvent] = useState(null);
+  useEffect(() => {
+    async function fetchEvent() {
+      try {
+        const { data } = await api.get(`/events/${parseInt(eventId, 10)}`);
+        setEvent(data);
+      } catch (err) {
+        console.error("Error fetching event:", err);
+      }
+    }
+    fetchEvent();
+  }, []);
   const filterConfig = {
     name: {
       type: "text",
@@ -75,52 +54,55 @@ function ManageEventUsers({eventId, onClose, refetch}) {
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-        Event Users
+        Event users for {event ? event.name : `${eventId}`}
       </Typography>
-      <FilterableList
-        queryKey="all-users"
-        apiEndpoint="/users"
-        filterConfig={filterConfig}
-        orderByConfig={orderByConfig}
-        limit={5}
-      >
-        {({ data, isFetching, error }) => {
-          if (error) {
-            return (
-              <Box display="flex" justifyContent="center" p={4}>
-                <Alert severity="error">
-                  <AlertTitle>Error</AlertTitle>
-                  Something went wrong while fetching users. Showing mock data
-                  instead.
-                </Alert>
-              </Box>
-            );
-          }
-
-          if (isFetching) {
-            return (
-              <Box display="flex" justifyContent="center" p={4}>
-                <CircularProgress />
-              </Box>
-            );
-          }
-
-          const displayData = data && data.length > 0 ? data : mockData;
-          return (
-            <>
-              {displayData.length === 0 ? (
+      {event ? (
+        <FilterableList
+          queryKey="all-users"
+          apiEndpoint="/users"
+          filterConfig={filterConfig}
+          orderByConfig={orderByConfig}
+          limit={5}
+        >
+          {({ data, isFetching, error }) => {
+            if (error) {
+              return (
                 <Box display="flex" justifyContent="center" p={4}>
-                  <Typography variant="body2" color="textSecondary">
-                    No users found
-                  </Typography>
+                  <Alert severity="error">
+                    <AlertTitle>Error</AlertTitle>
+                    Something went wrong while fetching users. Showing mock data
+                    instead.
+                  </Alert>
                 </Box>
-              ) : (
-                <EventUsersTable data={displayData} />
-              )}
-            </>
-          );
-        }}
-      </FilterableList>
+              );
+            }
+
+            if (isFetching) {
+              return (
+                <Box display="flex" justifyContent="center" p={4}>
+                  <CircularProgress />
+                </Box>
+              );
+            }
+
+            return (
+              <>
+                {data.length === 0 ? (
+                  <Box display="flex" justifyContent="center" p={4}>
+                    <Typography variant="body2" color="textSecondary">
+                      No users found
+                    </Typography>
+                  </Box>
+                ) : (
+                  <EventUsersTable data={data} />
+                )}
+              </>
+            );
+          }}
+        </FilterableList>
+      ) : (
+        <Typography>Event not found</Typography>
+      )}
     </Box>
   );
 }

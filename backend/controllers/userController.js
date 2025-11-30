@@ -2,7 +2,10 @@ const { RoleType } = require("@prisma/client");
 const { UserService } = require("../services/userService");
 const { EventService } = require("../services/eventService");
 const { TransactionService } = require("../services/transactionService");
-const { isValidYYYYMMDD, convertOrderByField } = require("../utils/generalHelpers");
+const {
+  isValidYYYYMMDD,
+  convertOrderByField,
+} = require("../utils/generalHelpers");
 const { validRetrieveBody } = require("../utils/userHelpers");
 
 async function registerUser(req, res) {
@@ -32,7 +35,17 @@ async function registerUser(req, res) {
 }
 
 async function getFilteredUsers(req, res) {
-  const { search, name, role, verified, activated, page, limit, orderBy } = req.query;
+  const {
+    search,
+    name,
+    role,
+    verified,
+    activated,
+    page,
+    limit,
+    orderBy,
+    eventId,
+  } = req.query;
   const { id } = req.user;
 
   if (verified && verified !== "true" && verified !== "false") {
@@ -58,12 +71,23 @@ async function getFilteredUsers(req, res) {
     return res.status(400).json({ error: "Bad Request: invalid limit value" });
   }
 
+  if (
+    limit &&
+    (!Number.isInteger(parseInt(eventId, 10)) || parseInt(eventId, 10) <= 0)
+  ) {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid eventId value" });
+  }
+
   let orderByObj = null;
   if (orderBy) {
     const validFields = ["name", "createdAt", "points", "role"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
-      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+      return res
+        .status(400)
+        .json({ error: "Bad Request: invalid orderBy value" });
     }
   }
 
@@ -253,8 +277,16 @@ async function retrieveTransactions(req, res) {
   if (!validRetrieveBody(req))
     return res.status(400).json({ error: "Bad Request" });
 
-  const { promotionId, search, type, relatedId, amount, operator, page, limit } =
-    req.query;
+  const {
+    promotionId,
+    search,
+    type,
+    relatedId,
+    amount,
+    operator,
+    page,
+    limit,
+  } = req.query;
 
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
@@ -289,8 +321,8 @@ async function retrieveTransactions(req, res) {
     const formattedResults = results.map((transaction) => {
       const transactionResObj = {
         ...transaction,
-        promotionIds: transaction.promotions.map(promo => promo.id),
-      }
+        promotionIds: transaction.promotions.map((promo) => promo.id),
+      };
       delete transactionResObj.promotions;
       return transactionResObj;
     });
@@ -305,8 +337,7 @@ async function retrieveEvents(req, res) {
   if (!validRetrieveBody(req))
     return res.status(400).json({ error: "Bad Request" });
 
-  const { name, location, started, ended, page, limit } =
-    req.query;
+  const { name, location, started, ended, page, limit } = req.query;
 
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
@@ -314,8 +345,18 @@ async function retrieveEvents(req, res) {
   const { id } = req.user;
 
   try {
-    const eventData = await EventService.retrieveEvents(id, name, location, started, ended, pageNum, limitNum);
-    res.status(200).json({ count: eventData.count, results: eventData.results });
+    const eventData = await EventService.retrieveEvents(
+      id,
+      name,
+      location,
+      started,
+      ended,
+      pageNum,
+      limitNum,
+    );
+    res
+      .status(200)
+      .json({ count: eventData.count, results: eventData.results });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
@@ -325,8 +366,7 @@ async function retrieveEvents(req, res) {
   if (!validRetrieveBody(req))
     return res.status(400).json({ error: "Bad Request" });
 
-  const { name, location, started, ended, page, limit } =
-    req.query;
+  const { name, location, started, ended, page, limit } = req.query;
 
   const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
@@ -334,8 +374,18 @@ async function retrieveEvents(req, res) {
   const { id } = req.user;
 
   try {
-    const eventData = await EventService.retrieveEvents(id, name, location, started, ended, pageNum, limitNum);
-    res.status(200).json({ count: eventData.count, results: eventData.results });
+    const eventData = await EventService.retrieveEvents(
+      id,
+      name,
+      location,
+      started,
+      ended,
+      pageNum,
+      limitNum,
+    );
+    res
+      .status(200)
+      .json({ count: eventData.count, results: eventData.results });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
@@ -415,7 +465,7 @@ async function updateMyUserInfo(req, res) {
     return res.status(400).json({ error: "Bad Request: Invalid email" });
   if (birthday && !isValidYYYYMMDD(birthday))
     return res.status(400).json({ error: "Bad Request: Invalid birthday" });
-  if (hideUtorid !== undefined && typeof hideUtorid !== "boolean") 
+  if (hideUtorid !== undefined && typeof hideUtorid !== "boolean")
     return res.status(400).json({ error: "Bad Request: Invalid hideUtorid" });
 
   try {
@@ -425,7 +475,7 @@ async function updateMyUserInfo(req, res) {
       email,
       birthday,
       avatar,
-      hideUtorid
+      hideUtorid,
     );
     res.status(200).json(updatedUserInfo);
   } catch (error) {
@@ -468,7 +518,18 @@ async function updateMyPassword(req, res) {
 }
 
 async function retrieveMyEventInvitations(req, res) {
-  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } = req.query;
+  const {
+    search,
+    name,
+    location,
+    started,
+    ended,
+    showFull,
+    page,
+    limit,
+    published,
+    orderBy,
+  } = req.query;
   const { id: userId, role } = req.user;
 
   if (showFull && showFull !== "true" && showFull !== "false") {
@@ -482,7 +543,9 @@ async function retrieveMyEventInvitations(req, res) {
     const validFields = ["startTime", "endTime", "points", "numGuests"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
-      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+      return res
+        .status(400)
+        .json({ error: "Bad Request: invalid orderBy value" });
     }
   }
 
@@ -552,7 +615,18 @@ async function retrieveMyEventInvitations(req, res) {
 }
 
 async function retrieveMyEventManagement(req, res) {
-  const { search, name, location, started, ended, showFull, page, limit, published, orderBy } = req.query;
+  const {
+    search,
+    name,
+    location,
+    started,
+    ended,
+    showFull,
+    page,
+    limit,
+    published,
+    orderBy,
+  } = req.query;
   const { id: userId, role } = req.user;
 
   if (showFull && showFull !== "true" && showFull !== "false") {
@@ -566,7 +640,9 @@ async function retrieveMyEventManagement(req, res) {
     const validFields = ["startTime", "endTime", "points", "numGuests"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
-      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+      return res
+        .status(400)
+        .json({ error: "Bad Request: invalid orderBy value" });
     }
   }
 

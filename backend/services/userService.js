@@ -46,7 +46,18 @@ class UserService {
     };
   }
 
-  static async getFilteredUsers(userId, search, name, role, verified, activated, page, limit, orderBy) {
+  static async getFilteredUsers(
+    userId,
+    search,
+    name,
+    role,
+    verified,
+    activated,
+    eventId,
+    page,
+    limit,
+    orderBy,
+  ) {
     const filterOptions = {};
 
     if (search) {
@@ -62,7 +73,7 @@ class UserService {
     }
 
     if (name) {
-        filterOptions.OR = [{ name }, { utorid: name }];
+      filterOptions.OR = [{ name }, { utorid: name }];
     }
 
     if (role) {
@@ -82,6 +93,24 @@ class UserService {
     else if (activated === "false") {
       filterOptions.lastLogin = null;
     }
+    let event = null;
+    let organizerIds = new Set();
+    let guestIds = new Set();
+    if (eventId) {
+      event = await prisma.event.findUnique({
+        where: { id: eventId },
+        include: {
+          organizers: {
+            select: { id: true },
+          },
+          rsvps: {
+            select: { userId: true },
+          },
+        },
+      });
+      organizerIds = new Set(event.organizers.map((org) => org.id));
+      guestIds = new Set(event.rsvps.map((rsvp) => rsvp.userId));
+    }
 
     const [count, results] = await prisma.$transaction([
       prisma.user.count({ where: filterOptions }),
@@ -89,8 +118,8 @@ class UserService {
         where: {
           ...filterOptions,
           NOT: {
-            id: userId
-          }
+            id: userId,
+          },
         },
         take: limit,
         skip: (page - 1) * limit,
@@ -108,6 +137,13 @@ class UserService {
         orderBy: orderBy ? orderBy : { id: "asc" },
       }),
     ]);
+
+    if (eventId) {
+      for (const user of results) {
+        user.isOrganizer = organizerIds.has(user.id);
+        user.isGuest = guestIds.has(user.id);
+      }
+    }
 
     return { count, results };
   }
@@ -176,7 +212,14 @@ class UserService {
     return updatedUser;
   }
 
-  static async updateMyUserInfo(userId, name, email, birthday, avatar, hideUtorid) {
+  static async updateMyUserInfo(
+    userId,
+    name,
+    email,
+    birthday,
+    avatar,
+    hideUtorid,
+  ) {
     const fieldsToUpdate = {};
 
     if (name) fieldsToUpdate.name = name;

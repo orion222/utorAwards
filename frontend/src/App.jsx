@@ -88,6 +88,10 @@ function App() {
                   path="management"
                   element={<ProtectedOrganizerRoute />}
                 />
+                <Route
+                  path=":eventId/edit-users"
+                  element={<ManageEventUsers />}
+                />
               </Route>
               <Route path="leaderboard" element={<Leaderboard />} />
             </Route>

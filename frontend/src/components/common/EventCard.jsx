@@ -46,7 +46,6 @@ function EventCard({
   const [rsvpSuccess, setRsvpSuccess] = useState(false);
   const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [editEventUsersModal, setEditEventUsersModal] = useState(false);
   const [rsvp, setRSVP] = useState(false);
   const navigate = useNavigate();
   const { user } = useUser();
@@ -361,7 +360,7 @@ function EventCard({
             <FormCard
               width="fit-content"
               showClose={true}
-              onClose={() => setEditEventUsersModal(false)}
+              onClose={() => setEditModal(false)}
               sx={{
                 width: "90%",
                 maxWidth: "600px",
@@ -377,45 +376,10 @@ function EventCard({
                 refetch={refetch}
                 openEditEventModal={() => {
                   setEditModal(false);
-                  setEditEventUsersModal(true);
+                  navigate(`/my-events/${event.id}/edit-users`);
                 }}
               />
             </FormCard>
-          </Modal>
-          <Modal
-            open={editEventUsersModal}
-            onClose={() => setEditEventUsersModal(false)}
-            aria-labelledby="edit-event-users-modal"
-            aria-describedby="edit-event-users-table"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1300,
-            }}
-          >
-            <Box
-              sx={{
-                width: "90%",
-                maxWidth: "800px",
-                maxHeight: "90vh",
-                overflow: "auto",
-                bgcolor: "background.paper",
-                borderRadius: "8px",
-              }}
-            >
-              <ManageEventUsers
-                eventId={id}
-                onClose={() => setEditEventUsersModal(false)}
-                refetch={refetch}
-              />
-            </Box>
           </Modal>
         </Box>
       </Box>
@@ -660,49 +624,11 @@ function EventCard({
                 onClose={() => setEditModal(false)}
                 openEditEventModal={() => {
                   setEditModal(false);
-                  setEditEventUsersModal(true);
+                  navigate(`/my-events/${event.id}/edit-users`);
                 }}
                 refetch={refetch}
               />
             </Box>
-          </Modal>
-          <Modal
-            open={editEventUsersModal}
-            onClose={() => setEditEventUsersModal(false)}
-            aria-labelledby="edit-event-users-modal"
-            aria-describedby="edit-event-users-table"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1300,
-            }}
-          >
-            <FormCard
-              width="fit-content"
-              showClose={true}
-              onClose={() => setEditEventUsersModal(false)}
-              sx={{
-                width: "90%",
-                maxWidth: "800px",
-                maxHeight: "90vh",
-                overflow: "auto",
-                bgcolor: "background.paper",
-                borderRadius: "8px",
-              }}
-            >
-              <ManageEventUsers
-                eventId={id}
-                onClose={() => setEditEventUsersModal(false)}
-                refetch={refetch}
-              />
-            </FormCard>
           </Modal>
         </Box>
         <Box
