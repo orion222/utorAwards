@@ -65,7 +65,6 @@ function ManageEventUsers() {
           initialFilters={{ is_guest: true }}
         >
           {({ data, isFetching, error, getAppliedFilters }) => {
-            console.log(getAppliedFilters());
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>
@@ -95,7 +94,7 @@ function ManageEventUsers() {
                     </Typography>
                   </Box>
                 ) : (
-                  <EventUsersTable data={data} />
+                  <EventUsersTable data={data} filters={getAppliedFilters()} />
                 )}
               </>
             );

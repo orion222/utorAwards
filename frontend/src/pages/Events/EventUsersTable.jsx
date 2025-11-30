@@ -16,18 +16,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 
 export default function UsersTable({ data }) {
+  console.log(data);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // Badge colors that rotate
-  const badgeColors = [
-    { bg: "#e8f5e8", text: "#2e7d32", border: "#4caf50" }, // Green
-    { bg: "#ffebee", text: "#c62828", border: "#f44336" }, // Red
-    { bg: "#e8f5e8", text: "#2e7d32", border: "#4caf50" }, // Green
-    { bg: "#ffebee", text: "#c62828", border: "#f44336" }, // Red
-  ];
+  const badgeColors = {
+    guest: { bg: "#e8f5e8", text: "#2e7d32", border: "#4caf50" }, // Green
+    organizer: { bg: "#e3f2fd", text: "#1565c0", border: "#42a5f5" }, // Blue,
+    other: { bg: "#ffebee", text: "#c62828", border: "#f44336" }, // Red
+  };
 
-  const getBadgeColor = (index) => {
-    return badgeColors[index % badgeColors.length];
+  const getBadgeColor = (role) => {
+    return badgeColors[role];
   };
 
   const cellSx = {
@@ -68,8 +68,8 @@ export default function UsersTable({ data }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {data.map((user, index) => {
-            const badgeColor = getBadgeColor(index);
+          {data.map((user) => {
+            const badgeColor = getBadgeColor(user.event_role);
             return (
               <TableRow
                 key={user.id}
@@ -96,7 +96,7 @@ export default function UsersTable({ data }) {
                       color: badgeColor.text,
                     }}
                   >
-                    #{index + 1}
+                    #{user.id}
                   </Box>
                 </TableCell>
                 <TableCell sx={bodyCellSx}>{user.utorid}</TableCell>

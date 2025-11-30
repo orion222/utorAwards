@@ -95,7 +95,8 @@ class UserService {
     else if (activated === "false") {
       filterOptions.lastLogin = null;
     }
-
+    let organizerIds = [];
+    let guestIds = [];
     if (eventId) {
       const event = await prisma.event.findUnique({
         where: { id: parseInt(eventId, 10) },
@@ -108,10 +109,9 @@ class UserService {
           },
         },
       });
-
       if (event) {
-        const organizerIds = new Set(event.organizers.map((org) => org.id));
-        const guestIds = new Set(event.rsvps.map((rsvp) => rsvp.userId));
+        organizerIds = new Set(event.organizers.map((org) => org.id));
+        guestIds = new Set(event.rsvps.map((rsvp) => rsvp.userId));
         let eventFilter = {};
         if (is_organizer && is_guest) {
           // User wants both organizers AND guests
@@ -155,7 +155,6 @@ class UserService {
       };
     }
 
-    console.log(whereClause);
     let [count, results] = await prisma.$transaction([
       prisma.user.count({ where: whereClause }),
       prisma.user.findMany({
@@ -176,8 +175,19 @@ class UserService {
         orderBy: orderBy ? orderBy : { id: "asc" },
       }),
     ]);
+    const resultsWithRoles = results.map((user) => {
+      let event_role = "other";
+      if (organizerIds.has(user.id)) {
+        event_role = "organizer";
+      } else if (guestIds.has(user.id)) {
+        event_role = "guest";
+      }
+      return { ...user, event_role };
+    });
 
-    return { count, results };
+    if (eventId) {
+      return { count, results: resultsWithRoles };
+    } else return { count, results };
   }
 
   static async getSpecificUser(userId, role) {
