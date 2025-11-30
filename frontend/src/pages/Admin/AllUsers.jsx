@@ -82,7 +82,7 @@ function AllUsers() {
                         sm: 'repeat(2, 1fr)',
                         md: 'repeat(3, 1fr)',
                       },
-                      gap: 1,
+                      gap: 2,
                     }}
                   >
                     {data.map((user) => (
