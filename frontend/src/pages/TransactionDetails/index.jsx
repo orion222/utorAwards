@@ -16,7 +16,7 @@ function TransactionDetails() {
         },
         refetchOnWindowFocus: false,
         staleTime: 30 * 60 * 1000, // 30 minutes
-    })
+    });
 
     if (isFetching) {
         return (

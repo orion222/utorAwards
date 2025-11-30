@@ -63,7 +63,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="past-transactions" element={<PastTransactions />} />
               <Route
-                path="past-transactions/:transactionId"
+                path="transactions/:transactionId"
                 element={<TransactionDetails />}
               />
               <Route path="events" element={<Events />} />
