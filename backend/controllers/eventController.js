@@ -213,6 +213,25 @@ async function getSpecificEvent(req, res) {
   }
 }
 
+async function getSpecificEventUsers(req, res) {
+  const eventId = req.eventId;
+  if (!eventId || !Number.isInteger(eventId)) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  try {
+    const eventData = await EventService.getSpecificEventUsers(
+      eventId,
+      userId,
+      userRole,
+    );
+    res.status(200).json(eventData);
+  } catch (error) {
+    res.status(error.statusCode).json({ error: error.message });
+  }
+}
+
 async function updateEvent(req, res) {
   const role = req.user.role;
   const id = req.eventId;
@@ -409,4 +428,5 @@ module.exports = {
   removeEventOrganizer,
   addEventGuest,
   removeEventGuest,
+  getSpecificEventUsers,
 };

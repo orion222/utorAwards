@@ -12,8 +12,10 @@ const {
   removeEventOrganizer,
   addEventGuest,
   removeEventGuest,
+  getSpecificEventUsers,
 } = require("../controllers/eventController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
+const {getSpecificUser} = require("../controllers/userController");
 
 const eventRouter = express.Router();
 
@@ -67,6 +69,13 @@ eventRouter.get(
   verifyToken,
   checkClearance(["organizer", "regular", "cashier", "manager", "superuser"]),
   getSpecificEvent,
+);
+
+eventRouter.get(
+  "/:eventId/users",
+  verifyToken,
+  checkClearance(["organizer", "regular", "cashier", "manager", "superuser"]),
+  getSpecificEventUsers,
 );
 
 eventRouter.patch(

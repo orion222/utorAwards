@@ -12,6 +12,8 @@ import {
   MenuItem,
   useMediaQuery,
   Typography,
+  Checkbox,
+  FormControlLabel,
 } from "@mui/material";
 import { SearchIcon } from "lucide-react";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -27,39 +29,80 @@ function FilterableList({
   orderByConfig,
   limit = 10,
   children,
+  additionalParams = {},
+  initialFilters = {},
 }) {
   const [searchInput, setSearchInput] = useState("");
   const [showFilters, setShowFilters] = useState(false);
-  const [tempFilters, setTempFilters] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
   const [hasFilters, setHasFilters] = useState(false);
   const appliedFilters = Object.fromEntries(searchParams.entries());
 
-  const [page, setPage] = useState(1);
+  const getAppliedFilters = () => {
+    const params = Object.fromEntries(searchParams.entries());
+    for (const [key, config] of Object.entries(filterConfig)) {
+      if (config.type === "boolean") {
+        if (params[key] === "true") {
+          params[key] = true;
+        } else if (params[key] === "false") {
+          params[key] = false;
+        } else {
+          delete params[key];
+        }
+      }
+    }
+
+    return params;
+  };
+
+  const [tempFilters, setTempFilters] = useState(() => {
+    const applied = getAppliedFilters();
+    return Object.keys(applied).length > 0 ? applied : initialFilters;
+  });
+
+  const [page, setPage] = useState(() => {
+    const pageParam = searchParams.get("page");
+    return pageParam ? Number(pageParam) : 1;
+  });
   const [totalCount, setTotalCount] = useState(0);
 
   const totalPages = Math.ceil(totalCount / limit);
 
   const isMobileWidth = useMediaQuery("(max-width:800px)");
 
+  useEffect(() => {
+    const applied = getAppliedFilters();
+    if (
+      Object.keys(applied).length === 0 &&
+      Object.keys(initialFilters).length > 0
+    ) {
+      setSearchParams(initialFilters, { replace: true });
+    }
+  }, []);
+
   if (!filterConfig || !apiEndpoint || !queryKey) {
     return <Typography>Missing FilterableList props</Typography>;
   }
 
   const fetchData = async () => {
-    const params = new URLSearchParams({ ...appliedFilters, page, limit });
-
+    const params = new URLSearchParams({
+      ...getAppliedFilters(),
+      ...additionalParams,
+      limit,
+      page,
+    });
     try {
       const { data } = await api.get(`${apiEndpoint}?${params}`);
       setTotalCount(data.count);
       return data.results;
     } catch (error) {
       console.error(error);
+      throw error;
     }
   };
 
   const { isFetching, error, data, refetch } = useQuery({
-    queryKey: [queryKey, appliedFilters, page],
+    queryKey: [queryKey, getAppliedFilters(), page],
     queryFn: fetchData,
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -129,7 +172,6 @@ function FilterableList({
       setTempFilters(newTemp);
     }
   };
-
   useEffect(() => {
     Object.entries(filterConfig).forEach(([key, config]) => {
       if (config.dependsOn) {
@@ -145,9 +187,11 @@ function FilterableList({
 
   useEffect(() => {
     const pageParam = searchParams.get("page");
-    if (pageParam && Number(pageParam) !== page) {
-      setPage(Number(pageParam));
+    const newPage = pageParam ? Number(pageParam) : 1;
+    if (newPage !== page) {
+      setPage(newPage);
     }
+    setTempFilters(getAppliedFilters());
   }, [searchParams]);
 
   useEffect(() => {
@@ -156,6 +200,7 @@ function FilterableList({
     );
     setHasFilters(filterKeys.length > 0);
   }, [appliedFilters]);
+
 
   return (
     <Box>
@@ -173,14 +218,12 @@ function FilterableList({
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && applyFilters()}
           placeholder="Search..."
-          slotProps={{
-            input: {
-              endAdornment: (
-                <IconButton size="small" onClick={applyFilters}>
-                  <SearchIcon />
-                </IconButton>
-              ),
-            },
+          InputProps={{
+            endAdornment: (
+              <IconButton size="small" onClick={applyFilters}>
+                <SearchIcon />
+              </IconButton>
+            ),
           }}
           sx={{
             width: isMobileWidth ? "100%" : "50%",
@@ -248,8 +291,8 @@ function FilterableList({
                       onChange={(e) => updateTempFilter(key, e.target.value)}
                       size="small"
                       disabled={isDisabled}
-                      slotProps={{
-                        htmlInput: {
+                      InputProps={{
+                        inputProps: {
                           min: config.min ?? undefined,
                           max: config.max ?? undefined,
                         },
@@ -276,6 +319,24 @@ function FilterableList({
                         ))}
                       </Select>
                     </FormControl>
+                  );
+                }
+
+                if (config.type === "boolean") {
+                  return (
+                    <FormControlLabel
+                      key={key}
+                      control={
+                        <Checkbox
+                          checked={!!tempFilters[key]}
+                          onChange={(e) =>
+                            updateTempFilter(key, e.target.checked)
+                          }
+                          disabled={isDisabled}
+                        />
+                      }
+                      label={config.label}
+                    />
                   );
                 }
 
@@ -321,7 +382,7 @@ function FilterableList({
 
       {/* Small chips for filters */}
       <Box sx={{ mb: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
-        {Object.entries(appliedFilters)
+        {Object.entries(getAppliedFilters())
           .filter(([key]) => key !== "page")
           .map(([key, value]) => (
             <Chip
@@ -334,7 +395,7 @@ function FilterableList({
       </Box>
 
       {/* actual list content */}
-      {children({ data, isFetching, error, refetch, hasFilters })}
+      {children({ data, isFetching, error, refetch, getAppliedFilters })}
 
       {totalPages > 1 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
@@ -343,7 +404,7 @@ function FilterableList({
             page={page}
             onChange={(_e, value) => {
               setPage(value);
-              setSearchParams({ ...appliedFilters, page: value });
+              setSearchParams({ ...getAppliedFilters(), page: value });
             }}
             color="primary"
           />

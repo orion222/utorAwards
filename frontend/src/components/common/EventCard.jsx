@@ -16,13 +16,13 @@ import api from "../../api/api";
 import { useUser } from "../../context/UserContext";
 
 import { useState, useEffect } from "react";
-import EventModal from "./EventModal.jsx";
 import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
 import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
 import { FiEdit } from "react-icons/fi";
 import EditEventForm from "../../pages/Events/EditEventForm.jsx";
-import useToast from "../../components/common/hooks/useToast.jsx";
+import ManageEventUsers from "../../pages/Events/ManageEventUsers.jsx";
 import { useNavigate } from "react-router-dom";
+import FormCard from "./FormCard.jsx";
 
 function EventCard({
   event,
@@ -357,7 +357,10 @@ function EventCard({
               zIndex: 1300,
             }}
           >
-            <Box
+            <FormCard
+              width="fit-content"
+              showClose={true}
+              onClose={() => setEditModal(false)}
               sx={{
                 width: "90%",
                 maxWidth: "600px",
@@ -371,8 +374,12 @@ function EventCard({
                 event={event}
                 onClose={() => setEditModal(false)}
                 refetch={refetch}
+                openEditEventModal={() => {
+                  setEditModal(false);
+                  navigate(`/my-events/${event.id}/edit-users`);
+                }}
               />
-            </Box>
+            </FormCard>
           </Modal>
         </Box>
       </Box>
@@ -615,6 +622,10 @@ function EventCard({
               <EditEventForm
                 event={event}
                 onClose={() => setEditModal(false)}
+                openEditEventModal={() => {
+                  setEditModal(false);
+                  navigate(`/my-events/${event.id}/edit-users`);
+                }}
                 refetch={refetch}
               />
             </Box>
