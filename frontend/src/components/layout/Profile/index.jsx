@@ -47,7 +47,9 @@ export default function Profile() {
 
   return (
     <>
-      <Avatar src={user?.avatarURL} alt="Profile photo" sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen} />
+      <Avatar src={user?.avatarURL} alt="Profile photo" sx={{ width: 32, height: 32, cursor: "pointer" }} onClick={handleOpen}>
+        {user?.utorid.charAt(0).toUpperCase()}
+      </Avatar>
 
       {profileModalOpen && (
         <ProfileModal user={user} open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />

@@ -56,7 +56,6 @@ function Events() {
       <FilterableList queryKey="events" apiEndpoint="/events" filterConfig={filterConfig} orderByConfig={orderByConfig}>
         {({ data, isFetching, error }) => {
           if (error) {
-            {console.log("ferfjreoifjerf")}
             return (
               <Box display="flex" justifyContent="center" p={4}>
                 <Alert severity="error">
