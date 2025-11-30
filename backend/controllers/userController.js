@@ -75,18 +75,22 @@ async function getFilteredUsers(req, res) {
       .json({ error: "Bad Request: page must be at least 1" });
   }
 
-  const filteredUsersData = await UserService.getFilteredUsers(
-    id,
-    search,
-    name,
-    role,
-    verified,
-    activated,
-    pageNum,
-    limitNum,
-    orderByObj
-  );
-  res.status(200).json(filteredUsersData);
+  try {
+    const filteredUsersData = await UserService.getFilteredUsers(
+      id,
+      search,
+      name,
+      role,
+      verified,
+      activated,
+      pageNum,
+      limitNum,
+      orderByObj
+    );
+    res.status(200).json(filteredUsersData);    
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
 async function getSpecificUser(req, res) {
@@ -632,8 +636,25 @@ async function retrieveMyEventManagement(req, res) {
 }
 
 async function retrieveLeaderboard(req, res) {
-  const { limit } = req.query;
+  const { search, name, role, verified, page, limit } = req.query;
+  const { role: userRole } = req.user;
 
+  if (role && userRole !== RoleType.manager && userRole !== RoleType.superuser) {
+    return res.status(403).json({ error: "only managers and superusers can filter by role" });
+  }
+
+  if (verified && verified !== "true" && verified !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid verified value" });
+  }
+
+  if (
+    page &&
+    (!Number.isInteger(parseInt(page, 10)) || parseInt(page, 10) <= 0)
+  ) {
+    return res.status(400).json({ error: "Bad Request: invalid page value" });
+  }
   if (
     limit &&
     (!Number.isInteger(parseInt(limit, 10)) || parseInt(limit, 10) <= 0)
@@ -641,10 +662,17 @@ async function retrieveLeaderboard(req, res) {
     return res.status(400).json({ error: "Bad Request: invalid limit value" });
   }
 
+  const pageNum = page ? parseInt(page, 10) : 1;
   const limitNum = limit ? parseInt(limit, 10) : 10;
 
+  if (pageNum < 1) {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: page must be at least 1" });
+  }
+
   try {
-    const leaderboardData = await UserService.getLeaderboard(limitNum);
+    const leaderboardData = await UserService.getLeaderboard(search, name, role, verified, pageNum, limitNum);
     res.status(200).json(leaderboardData);
   } catch (error) {
     res.status(error.status || 500).json({ error: error.message });

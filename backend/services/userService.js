@@ -4,6 +4,7 @@ const { prisma, RoleType } = require("../prisma/prisma");
 const NotFoundError = require("../utils/errors/notFoundError");
 const ForbiddenError = require("../utils/errors/forbiddenError");
 const BadRequestError = require("../utils/errors/badRequestError");
+const { generateFakeName } = require("../utils/userHelpers");
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -68,13 +69,17 @@ class UserService {
       filterOptions.role = role;
     }
 
-    if (verified) {
-      filterOptions.verified = verified === "true";
+    if (verified === "true") {
+      filterOptions.verified = true;
+    }
+    else if (verified === "false") {
+      filterOptions.verified = false;
     }
 
     if (activated === "true") {
       filterOptions.NOT = { lastLogin: null };
-    } else if (activated === "false") {
+    } 
+    else if (activated === "false") {
       filterOptions.lastLogin = null;
     }
 
@@ -270,32 +275,81 @@ class UserService {
     });
   }
 
-  static async getLeaderboard(topN) {
-    const users = await prisma.user.findMany({
-      orderBy: {
-        grossPoints: 'desc',
-      },
-      take: topN,
-      select: {
-        utorid: true,
-        name: true,
-        points: true,
-        grossPoints: true,
-        hideUtorid: true,
-      },
+  static async getLeaderboard(search, name, role, verified, page, limit) {
+    const filterOptions = {};
+
+    if (search) {
+      filterOptions.AND = [
+        {
+          OR: [
+            { name: { contains: search } },
+            { utorid: { contains: search } },
+            { email: { contains: search } },
+          ],
+        },
+      ];
+    }
+
+    if (name) {
+        filterOptions.OR = [{ name }, { utorid: name }];
+    }
+
+    if (role) {
+      filterOptions.role = role;
+    }
+
+    if (verified === "true") {
+      filterOptions.verified = true;
+    }
+    else if (verified === "false") {
+      filterOptions.verified = false;
+    }
+
+    const [count, results] = await prisma.$transaction([
+      prisma.user.count({ where: filterOptions }),
+      prisma.user.findMany({
+        orderBy: {
+          grossPoints: 'desc',
+        },
+        take: limit,
+        skip: (page - 1) * limit,
+        where: filterOptions,
+        select: {
+          id: true,
+          utorid: true,
+          name: true,
+          points: true,
+          grossPoints: true,
+          hideUtorid: true,
+        },
+      }),
+    ]);
+
+    const globalRanks = await prisma.user.findMany({
+      orderBy: { grossPoints: "desc" },
+      select: { id: true, grossPoints: true },
     });
 
-    const transformedUsers = users.map(user => {
+    const rankMap = new Map();
+    globalRanks.forEach((user, index) => {
+      rankMap.set(user.id, index + 1);
+    });
+
+    const transformedUsers = results.map(user => {
       if (user.hideUtorid) {
         return {
           ...user,
-          utorid: 'Hidden',
+          utorid: generateFakeName(),
+          rank: rankMap.get(user.id),
         };
       }
-      return user;  
-    })
-    
-    return transformedUsers;
+      return {
+        ...user,
+        rank: rankMap.get(user.id),
+      };  
+    });
+
+    return { count, results: transformedUsers };
   }
 }
 

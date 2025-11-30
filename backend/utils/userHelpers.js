@@ -36,4 +36,22 @@ function validRetrieveBody(req) {
     return true;
 }
 
-module.exports = { validRetrieveBody };
+function generateFakeName() {
+  const adjectives = [
+    "Blue", "Red", "Aqua", "Pink", "Grey", "Dark", "Teal", "Gold",
+  ]; 
+
+  const animals = [
+    "Fox", "Cat", "Dog", "Bear", "Hawk", "Lion", "Fish", "Cow",
+  ];
+
+  const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+  const animal = animals[Math.floor(Math.random() * animals.length)];
+  const digit = Math.floor(Math.random() * 10);
+
+  const name = adj + animal + digit;
+
+  return name;
+}
+
+module.exports = { validRetrieveBody, generateFakeName };

@@ -32,6 +32,7 @@ function FilterableList({
   const [showFilters, setShowFilters] = useState(false);
   const [tempFilters, setTempFilters] = useState({});
   const [searchParams, setSearchParams] = useSearchParams();
+  const [hasFilters, setHasFilters] = useState(false);
   const appliedFilters = Object.fromEntries(searchParams.entries());
 
   const [page, setPage] = useState(1);
@@ -61,6 +62,7 @@ function FilterableList({
     queryKey: [queryKey, appliedFilters, page],
     queryFn: fetchData,
     retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
   const applyFilters = () => {
@@ -132,6 +134,13 @@ function FilterableList({
       setPage(Number(pageParam));
     }
   }, [searchParams]);
+
+  useEffect(() => {
+    const filterKeys = Object.keys(appliedFilters).filter(
+      (key) => key !== "page",
+    );
+    setHasFilters(filterKeys.length > 0);
+  }, [appliedFilters]);
 
   return (
     <Box>
@@ -259,7 +268,7 @@ function FilterableList({
               })}
 
               {/* ORDER BY SELECT */}
-              {orderByConfig && (
+              {(orderByConfig && orderByConfig.length > 0) && (
                 <FormControl size="small" sx={{ width: 160 }}>
                   <InputLabel>Order By</InputLabel>
                   <Select
@@ -310,7 +319,7 @@ function FilterableList({
       </Box>
 
       {/* actual list content */}
-      {children({ data, isFetching, error, refetch })}
+      {children({ data, isFetching, error, refetch, hasFilters })}
 
       {totalPages > 1 && (
         <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
