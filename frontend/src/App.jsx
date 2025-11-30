@@ -68,7 +68,6 @@ function App() {
               />
               <Route path="events" element={<Events />} />
               <Route path="/events/:eventId" element={<EventDetails />} />
-              <Route path="promotions" element={<Promotions />} />
               <Route
                 path="promotions/:promotionId"
                 element={<PromotionDetails />}
