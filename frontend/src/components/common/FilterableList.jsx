@@ -27,7 +27,6 @@ function FilterableList({
   orderByConfig,
   limit = 10,
   children,
-  urlPrefix = "",
 }) {
   const [searchInput, setSearchInput] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -85,22 +84,7 @@ function FilterableList({
     if (searchInput.trim()) {
       newFilters.search = searchInput;
     }
-    
-    // Apply prefix to all filter parameters
-    const prefixedFilters = {};
-    Object.entries(newFilters).forEach(([key, value]) => {
-      const prefixedKey = urlPrefix ? `${urlPrefix}_${key}` : key;
-      prefixedFilters[prefixedKey] = value;
-    });
-    
-    const prefixedPageKey = urlPrefix ? `${urlPrefix}_page` : "page";
-    prefixedFilters[prefixedPageKey] = 1;
-    
-    // Preserve existing non-prefixed parameters
-    const currentParams = Object.fromEntries(searchParams.entries());
-    const finalParams = { ...currentParams, ...prefixedFilters };
-    
-    setSearchParams(finalParams);
+    setSearchParams({ ...newFilters, page: 1 });
     setPage(1);
   };
 
@@ -133,13 +117,8 @@ function FilterableList({
 
   const removeFilter = (key) => {
     const newParams = Object.fromEntries(searchParams.entries());
-    const prefixedKey = urlPrefix ? `${urlPrefix}_${key}` : key;
-    delete newParams[prefixedKey];
-    
-    const prefixedPageKey = urlPrefix ? `${urlPrefix}_page` : "page";
-    newParams[prefixedPageKey] = 1;
-    
-    setSearchParams(newParams);
+    delete newParams[key];
+    setSearchParams({ ...newParams, page: 1 });
     setPage(1);
 
     if (key === "search") {
@@ -165,12 +144,11 @@ function FilterableList({
   }, [tempFilters]);
 
   useEffect(() => {
-    const prefixedPageKey = urlPrefix ? `${urlPrefix}_page` : "page";
-    const pageParam = searchParams.get(prefixedPageKey);
+    const pageParam = searchParams.get("page");
     if (pageParam && Number(pageParam) !== page) {
       setPage(Number(pageParam));
     }
-  }, [searchParams, urlPrefix]);
+  }, [searchParams]);
 
   useEffect(() => {
     const filterKeys = Object.keys(appliedFilters).filter(
@@ -365,21 +343,7 @@ function FilterableList({
             page={page}
             onChange={(_e, value) => {
               setPage(value);
-              const currentParams = Object.fromEntries(searchParams.entries());
-              const prefixedPageKey = urlPrefix ? `${urlPrefix}_page` : "page";
-              
-              // Apply prefix to current filters and update page
-              const prefixedFilters = {};
-              Object.entries(appliedFilters).forEach(([key, filterValue]) => {
-                const prefixedKey = urlPrefix ? `${urlPrefix}_${key}` : key;
-                prefixedFilters[prefixedKey] = filterValue;
-              });
-              
-              setSearchParams({ 
-                ...currentParams, 
-                ...prefixedFilters, 
-                [prefixedPageKey]: value 
-              });
+              setSearchParams({ ...appliedFilters, page: value });
             }}
             color="primary"
           />
