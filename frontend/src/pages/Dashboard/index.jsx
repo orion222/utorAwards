@@ -36,32 +36,36 @@ function Dashboard() {
             const { data: transactionData } = await api.get("/users/me/transactions", {
                 params: {limit: 3}
             });
-
-            const { data: eventData } = await api.get("/events", {
-                params: {
-                    orderBy: "startTime_asc",
-                    limit: 3
-                }
-            });
-            
-            const { data: promotionData } = await api.get("/promotions", {
-                params: {limit: 3}
-            });
-
-            const { data: userData } = await api.get("/users", {
-                params: {
-                    orderBy: "lastLogin_desc",
-                    limit: 3
-                }
-            });
-            setPromotions(promotionData.results);
-            setEvents(eventData.results);
             setTransactions(transactionData.results);
-            setUsers(userData.results);
+
+            if (["manager", "superuser"].includes(user.role)) {
+                const { data: eventData } = await api.get("/events", {
+                    params: {
+                        orderBy: "startTime_asc",
+                        limit: 3
+                    }
+                });
+                
+                const { data: promotionData } = await api.get("/promotions", {
+                    params: {limit: 3}
+                });
+
+                const { data: userData } = await api.get("/users", {
+                    params: {
+                        orderBy: "lastLogin_desc",
+                        limit: 3
+                    }
+                });
+                setPromotions(promotionData.results);
+                setEvents(eventData.results);
+                setUsers(userData.results);                
+            }
+
           } catch (error) {
             console.error("Error fetching data:", error);
           }
         }
+        
         fetchData();
     }, []);
    

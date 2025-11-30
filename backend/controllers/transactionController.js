@@ -202,10 +202,11 @@ async function retrieveTransactions(req, res) {
 
 async function retrieveSingleTransaction(req, res) {
   const transactionId = req.transactionId;
+  const { id, role } = req.user;
 
   try {
     const transaction =
-      await TransactionService.retrieveSingleTransaction(transactionId);
+      await TransactionService.retrieveSingleTransaction(transactionId, role, id);
     res.status(200).json(transaction);
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });

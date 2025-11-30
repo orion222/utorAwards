@@ -60,7 +60,7 @@ async function getFilteredUsers(req, res) {
 
   let orderByObj = null;
   if (orderBy) {
-    const validFields = ["name", "createdAt", "points", "role"];
+    const validFields = ["name", "createdAt", "points", "role", "lastLogin"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
       return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
