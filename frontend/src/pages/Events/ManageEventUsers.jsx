@@ -26,19 +26,17 @@ function ManageEventUsers() {
     }
     fetchEvent();
   }, []);
+
   const filterConfig = {
-    name: {
-      type: "text",
-      label: "Username",
+    is_guest: {
+      type: "boolean",
+      label: "Guests",
+      default: true,
     },
-    email: {
-      type: "text",
-      label: "Email",
-    },
-    points: {
-      type: "number",
-      label: "Points",
-      min: 0,
+    is_organizer: {
+      type: "boolean",
+      label: "Organizers",
+      default: false,
     },
   };
 
@@ -62,9 +60,12 @@ function ManageEventUsers() {
           apiEndpoint="/users"
           filterConfig={filterConfig}
           orderByConfig={orderByConfig}
+          additionalParams={{ eventId: eventId }}
           limit={5}
+          initialFilters={{ is_guest: true }}
         >
-          {({ data, isFetching, error }) => {
+          {({ data, isFetching, error, getAppliedFilters }) => {
+            console.log(getAppliedFilters());
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>

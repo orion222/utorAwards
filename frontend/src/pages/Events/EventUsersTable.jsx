@@ -16,7 +16,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import React from "react";
 
 export default function UsersTable({ data }) {
-  console.log(data);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // Badge colors that rotate

@@ -45,13 +45,24 @@ async function getFilteredUsers(req, res) {
     limit,
     orderBy,
     eventId,
+    is_guest,
+    is_organizer,
   } = req.query;
   const { id } = req.user;
-
   if (verified && verified !== "true" && verified !== "false") {
     return res
       .status(400)
       .json({ error: "Bad Request: invalid verified value" });
+  }
+  if (is_guest && is_guest !== "true" && is_guest !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid is_guest value" });
+  }
+  if (is_organizer && is_organizer !== "true" && is_organizer !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid is_organizer value" });
   }
   if (activated && activated !== "true" && activated !== "false") {
     return res
@@ -72,7 +83,7 @@ async function getFilteredUsers(req, res) {
   }
 
   if (
-    limit &&
+    eventId &&
     (!Number.isInteger(parseInt(eventId, 10)) || parseInt(eventId, 10) <= 0)
   ) {
     return res
@@ -98,7 +109,6 @@ async function getFilteredUsers(req, res) {
       .status(400)
       .json({ error: "Bad Request: page must be at least 1" });
   }
-
   try {
     const filteredUsersData = await UserService.getFilteredUsers(
       id,

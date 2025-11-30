@@ -53,10 +53,12 @@ class UserService {
     role,
     verified,
     activated,
-    eventId,
     page,
     limit,
     orderBy,
+    eventId,
+    is_guest = false,
+    is_organizer = false,
   ) {
     const filterOptions = {};
 
@@ -93,12 +95,10 @@ class UserService {
     else if (activated === "false") {
       filterOptions.lastLogin = null;
     }
-    let event = null;
-    let organizerIds = new Set();
-    let guestIds = new Set();
+
     if (eventId) {
-      event = await prisma.event.findUnique({
-        where: { id: eventId },
+      const event = await prisma.event.findUnique({
+        where: { id: parseInt(eventId, 10) },
         include: {
           organizers: {
             select: { id: true },
@@ -108,19 +108,58 @@ class UserService {
           },
         },
       });
-      organizerIds = new Set(event.organizers.map((org) => org.id));
-      guestIds = new Set(event.rsvps.map((rsvp) => rsvp.userId));
+
+      if (event) {
+        const organizerIds = new Set(event.organizers.map((org) => org.id));
+        const guestIds = new Set(event.rsvps.map((rsvp) => rsvp.userId));
+        let eventFilter = {};
+        if (is_organizer && is_guest) {
+          // User wants both organizers AND guests
+          eventFilter = {
+            OR: [
+              { id: { in: Array.from(organizerIds) } },
+              { id: { in: Array.from(guestIds) } },
+            ],
+          };
+        } else if (is_organizer) {
+          // User wants only organizers
+          eventFilter = { id: { in: Array.from(organizerIds) } };
+        } else if (is_guest) {
+          // User wants only guests
+          eventFilter = { id: { in: Array.from(guestIds) } };
+        } else {
+          // User wants neither organizers nor guests (users not associated with the event)
+          eventFilter = {
+            AND: [
+              { id: { notIn: Array.from(organizerIds) } },
+              { id: { notIn: Array.from(guestIds) } },
+            ],
+          };
+        }
+
+        if (!filterOptions.AND) {
+          filterOptions.AND = [];
+        }
+        filterOptions.AND.push(eventFilter);
+      } else {
+        return { count: 0, results: [] };
+      }
+    }
+    let whereClause = {
+      ...filterOptions,
+    };
+    if (!is_organizer) {
+      whereClause.NOT = {
+        ...whereClause.NOT,
+        id: userId,
+      };
     }
 
-    const [count, results] = await prisma.$transaction([
-      prisma.user.count({ where: filterOptions }),
+    console.log(whereClause);
+    let [count, results] = await prisma.$transaction([
+      prisma.user.count({ where: whereClause }),
       prisma.user.findMany({
-        where: {
-          ...filterOptions,
-          NOT: {
-            id: userId,
-          },
-        },
+        where: whereClause,
         take: limit,
         skip: (page - 1) * limit,
         select: {
@@ -137,13 +176,6 @@ class UserService {
         orderBy: orderBy ? orderBy : { id: "asc" },
       }),
     ]);
-
-    if (eventId) {
-      for (const user of results) {
-        user.isOrganizer = organizerIds.has(user.id);
-        user.isGuest = guestIds.has(user.id);
-      }
-    }
 
     return { count, results };
   }
