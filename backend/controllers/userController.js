@@ -119,9 +119,12 @@ async function getFilteredUsers(req, res) {
       activated,
       pageNum,
       limitNum,
-      orderByObj
+      orderByObj,
+      eventId,
+      is_guest === "true",
+      is_organizer === "true",
     );
-    res.status(200).json(filteredUsersData);    
+    res.status(200).json(filteredUsersData);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -725,8 +728,14 @@ async function retrieveLeaderboard(req, res) {
   const { search, name, role, verified, page, limit } = req.query;
   const { role: userRole } = req.user;
 
-  if (role && userRole !== RoleType.manager && userRole !== RoleType.superuser) {
-    return res.status(403).json({ error: "only managers and superusers can filter by role" });
+  if (
+    role &&
+    userRole !== RoleType.manager &&
+    userRole !== RoleType.superuser
+  ) {
+    return res
+      .status(403)
+      .json({ error: "only managers and superusers can filter by role" });
   }
 
   if (verified && verified !== "true" && verified !== "false") {
@@ -758,7 +767,14 @@ async function retrieveLeaderboard(req, res) {
   }
 
   try {
-    const leaderboardData = await UserService.getLeaderboard(search, name, role, verified, pageNum, limitNum);
+    const leaderboardData = await UserService.getLeaderboard(
+      search,
+      name,
+      role,
+      verified,
+      pageNum,
+      limitNum,
+    );
     res.status(200).json(leaderboardData);
   } catch (error) {
     res.status(error.status || 500).json({ error: error.message });

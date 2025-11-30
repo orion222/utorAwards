@@ -42,7 +42,6 @@ export default function TableActions({
     }
   };
   const removeGuestOrOrganizer = async (role, userId, eventId) => {
-    console.log({ userId, eventId });
     try {
       const fetcher =
         role === "guest" ? removeGuestFromEvent : removeOrganizerFromEvent;
