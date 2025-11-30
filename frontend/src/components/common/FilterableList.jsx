@@ -89,15 +89,30 @@ function FilterableList({
   };
 
   const updateTempFilter = (key, value) => {
-    if (value) {
-      setTempFilters((prev) => ({ ...prev, [key]: value }));
-    } else {
-      setTempFilters((prev) => {
-        const newFilters = { ...prev };
+    setTempFilters((prev) => {
+      const newFilters = { ...prev };
+
+      // Remove this key if value is empty
+      if (!value) {
         delete newFilters[key];
         return newFilters;
-      });
-    }
+      }
+
+      // Handle mutually exclusive filters
+      const config = filterConfig[key];
+      if (config?.exclusiveWith) {
+        config.exclusiveWith.forEach((otherKey) => {
+          if (newFilters[otherKey]) {
+            delete newFilters[otherKey];
+          }
+        });
+      }
+
+      // Apply new value
+      newFilters[key] = value;
+
+      return newFilters;
+    });
   };
 
   const removeFilter = (key) => {

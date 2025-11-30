@@ -15,11 +15,13 @@ function Promotions() {
       type: "select",
       label: "Started",
       options: ["True", "False"],
+      exclusiveWith: ["ended"],
     },
     ended: {
       type: "select",
       label: "Ended",
       options: ["True", "False"],
+      exclusiveWith: ["started"],
     },
     type: {
       type: "select",

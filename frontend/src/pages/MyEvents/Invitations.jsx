@@ -19,11 +19,13 @@ function Invitations() {
       type: "select",
       label: "Has Started",
       options: ["True", "False"],
+      exclusiveWith: ["ended"],
     },
     ended: {
       type: "select",
       label: "Has Ended",
       options: ["True", "False"],
+      exclusiveWith: ["started"],
     },
     showFull: {
       type: "select",
