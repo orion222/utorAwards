@@ -411,7 +411,7 @@ function EventCard({
               }}
             >
               <ManageEventUsers
-                event={event}
+                eventId={id}
                 onClose={() => setEditEventUsersModal(false)}
                 refetch={refetch}
               />
@@ -698,7 +698,7 @@ function EventCard({
               }}
             >
               <ManageEventUsers
-                event={event}
+                eventId={id}
                 onClose={() => setEditEventUsersModal(false)}
                 refetch={refetch}
               />

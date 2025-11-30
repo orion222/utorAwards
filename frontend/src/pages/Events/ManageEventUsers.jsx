@@ -45,8 +45,8 @@ const mockData = [
   },
 ];
 
-function ManageEventUsers(event, onClose, refetch) {
-  console.log("rendered");
+function ManageEventUsers({eventId, onClose, refetch}) {
+  console.log("eventId is", eventId);
   const filterConfig = {
     name: {
       type: "text",
@@ -77,13 +77,12 @@ function ManageEventUsers(event, onClose, refetch) {
       <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
         Event Users
       </Typography>
-
       <FilterableList
-        queryKey="event-users"
-        apiEndpoint="/events/users"
+        queryKey="all-users"
+        apiEndpoint="/users"
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
-        limit={10}
+        limit={5}
       >
         {({ data, isFetching, error }) => {
           if (error) {
@@ -106,9 +105,7 @@ function ManageEventUsers(event, onClose, refetch) {
             );
           }
 
-          // Use mock data if no API data available
           const displayData = data && data.length > 0 ? data : mockData;
-
           return (
             <>
               {displayData.length === 0 ? (

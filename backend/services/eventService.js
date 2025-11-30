@@ -219,6 +219,46 @@ class EventService {
     return specificEvent;
   }
 
+  static async getSpecificEventUsers(eventId, userId, role){
+    const userSelectFields = {
+      id: true,
+      name: true,
+      utorid: true,
+      email: true,
+      points: true,
+    };
+
+    const eventData = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+      select: {
+        organizers: {
+          select: userSelectFields,
+        },
+        rsvps: {
+          select: {
+            user: {
+              select: userSelectFields,
+            },
+          },
+        },
+      },
+    });
+
+    if (!eventData) {
+      throw new Error("Event not found");
+    }
+
+    // 3. Transform the data to the desired format
+    // Prisma returns rsvps as [ { user: { ... } }, { user: { ... } } ]
+    // We map over it to extract just the user objects into a flat array.
+    return {
+      organizers: eventData.organizers,
+      guests: eventData.rsvps.map((rsvp) => rsvp.user),
+    };
+  }
+
   static async updateEvent(id, updateParams) {
     const copy = Object.fromEntries(
       Object.keys(updateParams).map((key) => [key, true]),
