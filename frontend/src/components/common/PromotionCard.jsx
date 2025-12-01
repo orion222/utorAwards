@@ -73,9 +73,14 @@ function PromotionCard({ promotion, hover }) {
                     </Typography>
                 </Box>
                 <Box> {/* right side */}
-                    <Box sx={{backgroundColor: theme.palette.custom.border, borderRadius: "8px", padding: "4px"}}>
-                        <Typography sx={{fontSize: 14, fontWeight:"bold"}}> {type.toUpperCase()}</Typography>
-                    </Box>
+                    <Chip 
+                        label={type.toUpperCase()}
+                        size="medium"
+                        sx={{
+                            fontWeight: 600,
+                            fontSize: "0.9rem",
+                        }} 
+                    />
                 </Box>
         </Box>
     )

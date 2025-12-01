@@ -128,6 +128,7 @@ class PromotionService {
         minSpending: true,
         rate: true,
         points: true,
+        description: true,
       };
       const [count, results] = await prisma.$transaction([
         prisma.promotion.count({ where }),
@@ -146,6 +147,7 @@ class PromotionService {
       minSpending: true,
       rate: true,
       points: true,
+      description: true,
     };
 
     const [count, results] = await prisma.$transaction([

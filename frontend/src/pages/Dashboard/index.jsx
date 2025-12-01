@@ -149,7 +149,7 @@ function Dashboard() {
                         <Typography sx={{fontSize: 24}}>
                             Promotions For You
                         </Typography>
-                        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 1 }}>
+                        <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
                             {promotions.length > 0 ? (
                                             promotions.map(promotion => (
                                                 <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
@@ -168,7 +168,7 @@ function Dashboard() {
                         <Typography sx={{fontSize: 24}}>
                             Upcoming Events
                         </Typography>
-                        <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 1 }}>
+                        <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
                                 {events.length > 0 ? (
                                     events.map(event => (
                                             <EventCard event={event} key={event.id} ></EventCard>
@@ -188,7 +188,7 @@ function Dashboard() {
                         <Typography sx={{fontSize: 24}}>
                             Recently Active Users
                         </Typography>
-                        <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 1 }}>
+                        <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
                                 {users.length > 0 ? (
                                     users.map(user => (
                                             <UserCard user={user} key={user.id} />
