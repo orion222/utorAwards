@@ -7,7 +7,7 @@ function TransactionItemCard({ transaction, hover }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
     const theme = useTheme();
     const navigate = useNavigate();
-    const { id, type, spent, amount, earned, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
+    const { id, type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
         "redemption": "#F59B66",
@@ -18,7 +18,7 @@ function TransactionItemCard({ transaction, hover }) {
     
     const isHover = hover !== undefined ? hover : true;
 
-    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
     const handleViewTransaction = () => {
         navigate(`/transactions/${id}`, { state: { transaction } });

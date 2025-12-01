@@ -660,6 +660,7 @@ class TransactionService {
             suspicious: true,
             remark: true,
             relatedId: true,
+            createdAt: true,
           },
           take: limit,
           skip: (page - 1) * limit,

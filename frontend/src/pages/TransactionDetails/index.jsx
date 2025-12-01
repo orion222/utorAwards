@@ -43,7 +43,7 @@ function TransactionDetails() {
         "event": "#7DA4F2",
         "transfer": "#BBA3E5",
     }
-    const dateString = new Date(data.createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+    const dateString = new Date(data.createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
     return (
         <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>

@@ -5,6 +5,7 @@ import api from "../../api/api"
 import { Alert, Box, CircularProgress, Typography, Stack, Chip, useTheme } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import PaidIcon from "@mui/icons-material/Paid";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 function PromotionDetails() {
     const { promotionId } = useParams();
@@ -40,7 +41,11 @@ function PromotionDetails() {
     }
 
     const formatDate = (dateIsoString) => {
-        return new Date(dateIsoString).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+        return new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            day: '2-digit',
+            year: 'numeric'
+        }).format(new Date(dateIsoString));
     }
 
     return (
@@ -49,19 +54,22 @@ function PromotionDetails() {
                 {data.name}
             </Typography>
             <Box>
-                <Typography variant="subtitle1" color="text.secondary">
+                <Typography variant="subtitle1" color="text.secondary" gutterBottom>
                     Promotion ID: {data.id}
                 </Typography>
-                {data.startTime && data.endTime && (
-                    <Typography variant="subtitle1" color="text.secondary">
-                        {`${formatDate(data.startTime)} - ${formatDate(data.endTime)}`}
-                    </Typography>
-                )}
-                {!data.startTime && data.endTime && (
-                    <Typography variant="subtitle1" color="text.secondary">
-                        {`Until ${formatDate(data.endTime)}`}
-                    </Typography>
-                )}
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                    <CalendarTodayIcon sx={{ color: theme.palette.text.secondary}} />
+                    {data.startTime && data.endTime && (
+                        <Typography variant="subtitle1" color="text.secondary">
+                            {`${formatDate(data.startTime)} - ${formatDate(data.endTime)}`}
+                        </Typography>
+                    )}
+                    {!data.startTime && data.endTime && (
+                        <Typography variant="subtitle1" color="text.secondary">
+                            {`Until ${formatDate(data.endTime)}`}
+                        </Typography>
+                    )}                    
+                </Box>
             </Box>
             <Stack direction="row" spacing={1}>
                 <Chip 
