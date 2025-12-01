@@ -46,9 +46,7 @@ export default function UsersTable({
     fontSize: "0.875rem",
     ...(isMobile && { padding: "16px 8px" }),
   };
-  useEffect(() => {
-    setQueriedUserType(filters);
-  }, []);
+  setQueriedUserType(filters);
   return (
     <TableContainer
       component={Paper}

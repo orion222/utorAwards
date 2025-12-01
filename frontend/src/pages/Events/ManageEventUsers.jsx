@@ -50,6 +50,7 @@ function ManageEventUsers() {
     { label: "Points (Lowest)", value: "points_asc" },
   ];
   const handleChangeQueriedUserType = (filters) => {
+    console.log(filters);
     if (filters.is_guest && !filters.is_organizer) {
       setQueriedUserType("Guests");
     } else if (!filters.is_guest && filters.is_organizer) {
