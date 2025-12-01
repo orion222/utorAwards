@@ -15,6 +15,7 @@ import api from "../../api/api.js";
 function ManageEventUsers() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
+  const [queriedUserType, setQueriedUserType] = useState("Guests");
   useEffect(() => {
     async function fetchEvent() {
       try {
@@ -48,11 +49,21 @@ function ManageEventUsers() {
     { label: "Points (Highest)", value: "points_desc" },
     { label: "Points (Lowest)", value: "points_asc" },
   ];
-
+  const handleChangeQueriedUserType = (filters) => {
+    if (filters.is_guest && !filters.is_organizer) {
+      setQueriedUserType("Guests");
+    } else if (!filters.is_guest && filters.is_organizer) {
+      setQueriedUserType("Organizers");
+    } else if (filters.is_guest && filters.is_organizer) {
+      setQueriedUserType("Guests and organizers");
+    } else {
+      setQueriedUserType("Unenrolled users");
+    }
+  };
   return (
     <Box sx={{ p: 2 }}>
       <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-        Event users for {event ? event.name : `${eventId}`}
+        {queriedUserType} for {event ? event.name : `${eventId}`}
       </Typography>
       {event ? (
         <FilterableList
@@ -90,11 +101,12 @@ function ManageEventUsers() {
                 {data.length === 0 ? (
                   <Box display="flex" justifyContent="center" p={4}>
                     <Typography variant="body2" color="textSecondary">
-                      No users found
+                      No {queriedUserType} found
                     </Typography>
                   </Box>
                 ) : (
                   <EventUsersTable
+                    setQueriedUserType={handleChangeQueriedUserType}
                     refetch={refetch}
                     eventId={event.id}
                     data={data}

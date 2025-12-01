@@ -119,6 +119,8 @@ function EventCard({
     navigate(`/events/${event.id}`, { state: { event } });
   };
 
+  const isManagerOrSuperuser =
+    user.role === "manager" || user.role === "superuser";
   if (isSmall) {
     return (
       <Box
@@ -322,7 +324,7 @@ function EventCard({
                 }}
               />
             ) : (
-              editable && (
+              (editable || isManagerOrSuperuser) && (
                 <Button
                   startIcon={<FiEdit color="grey" />}
                   onClick={() => setEditModal(true)}
@@ -575,7 +577,7 @@ function EventCard({
                 }}
               />
             ) : (
-              editable && (
+              (editable || isManagerOrSuperuser) && (
                 <Button
                   startIcon={<FiEdit color="grey" />}
                   onClick={() => setEditModal(true)}

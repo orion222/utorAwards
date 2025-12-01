@@ -25,7 +25,7 @@ function Events() {
       type: "select",
       label: "Has Started",
       options: ["True", "False"],
-      exclusiveWith: ["ended"],  
+      exclusiveWith: ["ended"],
     },
     ended: {
       type: "select",
@@ -67,7 +67,7 @@ function Events() {
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
       >
-        {({ data, isFetching, error }) => {
+        {({ data, isFetching, error, refetch }) => {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
@@ -111,7 +111,7 @@ function Events() {
                   }}
                 >
                   {data.map((event) => (
-                    <EventCard event={event} key={event.id} />
+                    <EventCard refetch={refetch} event={event} key={event.id} />
                   ))}
                 </Box>
               )}

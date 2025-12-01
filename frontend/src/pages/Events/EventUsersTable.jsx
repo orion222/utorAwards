@@ -13,9 +13,15 @@ import {
   useTheme,
 } from "@mui/material";
 import TableActions from "./TableActions.jsx";
-import React from "react";
+import { useEffect } from "react";
 
-export default function UsersTable({ refetch, eventId, data }) {
+export default function UsersTable({
+  setQueriedUserType,
+  filters,
+  refetch,
+  eventId,
+  data,
+}) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   // Badge colors that rotate
@@ -40,7 +46,9 @@ export default function UsersTable({ refetch, eventId, data }) {
     fontSize: "0.875rem",
     ...(isMobile && { padding: "16px 8px" }),
   };
-
+  useEffect(() => {
+    setQueriedUserType(filters);
+  }, []);
   return (
     <TableContainer
       component={Paper}

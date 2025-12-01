@@ -865,6 +865,7 @@ class EventService {
       capacity: true,
       numGuests: true,
       points: true,
+      description: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
