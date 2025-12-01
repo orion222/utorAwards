@@ -2,7 +2,6 @@ import {
   useTheme,
   Box,
   Stack,
-  Button,
   Typography,
   Avatar,
   Card,
@@ -23,7 +22,9 @@ export default function UserCard({ user }) {
         borderRadius: 2,
         border: `1px solid ${theme.palette.custom.border}`,
         p: 1,
+        "&:hover": { cursor: "pointer", boxShadow: 4 },
       }}
+      onClick={() => setDetailsModal(true)}
     >
       <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
         <Stack direction="row" spacing={1.5} alignItems="flex-start">
@@ -92,27 +93,6 @@ export default function UserCard({ user }) {
                 No
               </Typography>
             </Stack>
-
-            <Button
-              variant="contained"
-              size="small"
-              onClick={() => setDetailsModal(true)}
-              sx={{
-                bgcolor: theme.palette.secondary.main,
-                color: theme.palette.text.primary,
-                borderRadius: 1,
-                textTransform: "none",
-                fontWeight: 600,
-                fontSize: "0.75rem",
-                px: 1.5,
-                py: 0.5,
-                "&:hover": {
-                  bgcolor: "#F08A4D",
-                },
-              }}
-            >
-              View Details
-            </Button>
           </Box>
 
           <Stack alignItems="center" spacing={1}>

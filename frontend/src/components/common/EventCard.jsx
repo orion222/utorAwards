@@ -116,6 +116,7 @@ function EventCard({
   const hasStarted = new Date(startTime) < new Date();
 
   const handleViewDetails = () => {
+    if (!detailsPage) return;
     navigate(`/events/${event.id}`, { state: { event } });
   };
 
@@ -134,7 +135,9 @@ function EventCard({
           border: 1,
           borderColor: theme.palette.custom.border,
           bgcolor: theme.palette.background.paper,
+          "&:hover": detailsPage ? { cursor: "pointer", boxShadow: 4 } : {},
         }}
+        onClick={handleViewDetails}
       >
         <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -208,21 +211,6 @@ function EventCard({
             </Box>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
-            {detailsPage && (
-              <Button
-                variant="contained"
-                sx={{
-                  fontSize: 12,
-                  padding: "8px",
-                  backgroundColor: theme.palette.secondary.main,
-                  borderRadius: "8px",
-                  width: "fit-content",
-                }}
-                onClick={handleViewDetails}
-              >
-                View Details
-              </Button>
-            )}
             {!detailsPage && (
               <Box>
                 {!rsvp && (
@@ -333,6 +321,7 @@ function EventCard({
                     color: "grey",
                     borderRadius: "8px",
                     width: "fit-content",
+                    "&:hover": { backgroundColor: theme.palette.action.hover },
                   }}
                 >
                   Edit
@@ -400,7 +389,9 @@ function EventCard({
           borderColor: theme.palette.custom.border,
           bgcolor: theme.palette.background.paper,
           flexShrink: 1,
+          "&:hover": detailsPage ? { cursor: "pointer", boxShadow: 4 } : {},
         }}
+        onClick={handleViewDetails}
       >
         <Box
           sx={{
@@ -462,21 +453,6 @@ function EventCard({
             </Typography>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
-            {detailsPage && (
-              <Button
-                variant="contained"
-                sx={{
-                  fontSize: 12,
-                  padding: "8px",
-                  backgroundColor: theme.palette.secondary.main,
-                  borderRadius: "8px",
-                  width: "fit-content",
-                }}
-                onClick={handleViewDetails}
-              >
-                View Details
-              </Button>
-            )}
             {!detailsPage && (
               <Box>
                 {!rsvp && (
@@ -586,6 +562,7 @@ function EventCard({
                     color: "grey",
                     borderRadius: "8px",
                     width: "fit-content",
+                    "&:hover": { backgroundColor: theme.palette.action.hover },
                   }}
                 >
                   Edit

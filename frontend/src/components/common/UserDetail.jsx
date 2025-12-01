@@ -22,6 +22,7 @@ export default function UserDetail({ user, onClose }) {
     });
   };
 
+  console.log(onClose);
   return (
     <Card
       sx={{
@@ -36,13 +37,16 @@ export default function UserDetail({ user, onClose }) {
       {onClose && (
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
           <IconButton
-            onClick={onClose}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClose();
+            }}
             sx={{
               color: theme.palette.text.secondary,
               transform: "scale(0.8)",
             }}
           >
-            <CloseIcon />
+            <CloseIcon color="error" fontSize="medium" />
           </IconButton>
         </Box>
       )}
