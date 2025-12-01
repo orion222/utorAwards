@@ -9,7 +9,6 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 function PromotionDetails() {
     const { promotionId } = useParams();
-    const { state } = useLocation();
     const theme = useTheme();
 
     const { data, isFetching, error } = useQuery({

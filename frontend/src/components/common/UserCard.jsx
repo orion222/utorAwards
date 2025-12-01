@@ -140,7 +140,7 @@ export default function UserCard({ user }) {
                 textAlign: "center",
               }}
             >
-              {user.points ? `${user.points} Pts` : "Points N/A"}
+              {`${user.points} pts`}
             </Typography>
           </Stack>
         </Stack>
