@@ -15,7 +15,6 @@ import api from "../../api/api.js";
 function ManageEventUsers() {
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
-  const [queriedUserType, setQueriedUserType] = useState("Guests");
   useEffect(() => {
     async function fetchEvent() {
       try {
@@ -50,22 +49,18 @@ function ManageEventUsers() {
     { label: "Points (Lowest)", value: "points_asc" },
   ];
   const handleChangeQueriedUserType = (filters) => {
-    console.log(filters);
     if (filters.is_guest && !filters.is_organizer) {
-      setQueriedUserType("Guests");
+      return "Guests";
     } else if (!filters.is_guest && filters.is_organizer) {
-      setQueriedUserType("Organizers");
+      return "Organizers";
     } else if (filters.is_guest && filters.is_organizer) {
-      setQueriedUserType("Guests and organizers");
+      return "Guests and organizers";
     } else {
-      setQueriedUserType("Unenrolled users");
+      return "Unenrolled users";
     }
   };
   return (
     <Box sx={{ p: 2 }}>
-      <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
-        {queriedUserType} for {event ? event.name : `${eventId}`}
-      </Typography>
       {event ? (
         <FilterableList
           queryKey="all-users"
@@ -77,6 +72,9 @@ function ManageEventUsers() {
           initialFilters={{ is_guest: true }}
         >
           {({ data, isFetching, error, getAppliedFilters, refetch }) => {
+            const queriedUserType = handleChangeQueriedUserType(
+              getAppliedFilters()
+            );
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>
@@ -99,6 +97,9 @@ function ManageEventUsers() {
 
             return (
               <>
+                <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+                  {queriedUserType} for {event ? event.name : `${eventId}`}
+                </Typography>
                 {data.length === 0 ? (
                   <Box display="flex" justifyContent="center" p={4}>
                     <Typography variant="body2" color="textSecondary">

@@ -315,7 +315,10 @@ export default function EditEventForm({
                     startIcon={<PeopleIcon />}
                     variant="contained"
                     color="secondary"
-                    onClick={() => openEditEventModal()}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      openEditEventModal()
+                    }}
                   >
                     {isSmall ? "Manage users" : "Manage event users"}
                   </Button>

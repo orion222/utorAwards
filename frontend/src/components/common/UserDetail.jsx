@@ -22,7 +22,6 @@ export default function UserDetail({ user, onClose }) {
     });
   };
 
-  console.log(onClose);
   return (
     <Card
       sx={{
