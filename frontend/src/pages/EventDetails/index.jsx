@@ -1,10 +1,8 @@
 import { useParams, useLocation } from "react-router-dom";
-import EventCard from "../../components/common/EventCard.jsx";
 import {
   Box,
   Typography,
-  Alert,
-  CircularProgress,
+  LinearProgress,
   useTheme,
   Stack,
   Chip,
@@ -16,8 +14,6 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import { useUser } from "../../context/UserContext.jsx";
 
 function EventDetails() {
-  const { eventId } = useParams();
-  const { state } = useLocation();
   const theme = useTheme();
   const { user } = useUser();
 
@@ -28,18 +24,6 @@ function EventDetails() {
       year: "numeric",
     }).format(new Date(dateIsoString));
   };
-
-  //       const {
-  //     id,
-  //     name,
-  //     description,
-  //     location,
-  //     startTime,
-  //     endTime,
-  //     capacity,
-  //     numGuests,
-  //     points,
-  //   } = event;
 
   return (
     <DetailsTemplate queryKey="event-details" apiEndpoint="/events">
@@ -127,6 +111,25 @@ function EventDetails() {
             <Typography variant="body2" color="text.secondary">
               {data.description}
             </Typography>
+            {(["manager", "superuser"].includes(user.role) || data.organizers.some(organizer => organizer.id === user.id)) && (
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 3 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={(data.pointsAwarded / data.points) * 100}
+                  sx={{ 
+                    width: "35%", 
+                    "& .MuiLinearProgress-bar": {
+                      backgroundColor: theme.palette.custom.accent,
+                    },  
+                    backgroundColor: theme.palette.custom.primaryNeutral
+                   }}
+                />
+
+                <Typography variant="body2" color="text.secondary">
+                  {data.pointsAwarded}/{data.points} points awarded
+                </Typography>
+              </Box>
+            )}
           </Box>
 
           <Box sx={{ textAlign: "center", mt: 1 }}>
