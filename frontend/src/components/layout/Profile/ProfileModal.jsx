@@ -20,8 +20,9 @@ import api from "../../../api/api";
 import { profileSchema as schema } from "./constant";
 import useToast from "../../common/hooks/useToast";
 
-export default function ProfileModal({ user, open, onClose, showToast }) {
-  const [avatarPreview, setAvatarPreview] = useState(user?.avatarURL);
+export default function ProfileModal({ user, setUser, open, onClose, showToast }) {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const [avatarPreview, setAvatarPreview] = useState(user?.avatarUrl ? `${backendURL}/${user.avatarUrl}` : null);
   const [avatarFile, setAvatarFile] = useState(null);
   const {showToast: modalShowToast, ToastComponent} = useToast();
 
@@ -46,7 +47,7 @@ export default function ProfileModal({ user, open, onClose, showToast }) {
         email: user.email || "",
         birthday: user.birthday ? dayjs(user.birthday) : null,
       });
-      setAvatarPreview(user.avatarURL);
+      setAvatarPreview(user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : null);
     }
   }, [user, reset]);
 
@@ -79,6 +80,7 @@ export default function ProfileModal({ user, open, onClose, showToast }) {
           "Content-Type": "multipart/form-data",
         },
       });
+      setUser(response.data);
       showToast("Profile updated successfully!", "success");
       onClose();
     } catch (error) {

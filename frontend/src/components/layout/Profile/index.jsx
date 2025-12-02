@@ -8,9 +8,10 @@ import SettingsModal from "./SettingsModal";
 import useToast from "../../common/hooks/useToast";
 
 export default function Profile() {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const { user, logout } = useUser();
+  const { user, logout, setUser } = useUser();
   const navigate = useNavigate();
   const { showToast, ToastComponent } = useToast();
   const [profileModalOpen, setProfileModalOpen] = useState(false);
@@ -52,7 +53,7 @@ export default function Profile() {
       </Avatar>
 
       {profileModalOpen && (
-        <ProfileModal user={user} open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />
+        <ProfileModal user={user} setUser={setUser} open={profileModalOpen} onClose={() => setProfileModalOpen(false)} showToast={showToast} />
       )}
 
       {settingsModalOpen && (
