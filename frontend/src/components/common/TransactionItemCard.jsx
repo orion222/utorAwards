@@ -1,12 +1,13 @@
-import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider } from "@mui/material";
+import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Link as MUILink } from "@mui/material";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function TransactionItemCard({ transaction, hover }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
+    const theme = useTheme();
     const navigate = useNavigate();
-    const { type, spent, amount, earned, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
+    const { id, type, spent, amount, remark, user, targetUser, processed, suspicious, createdAt, promotionIds } = transaction;
     const typeToColour = {
         "purchase": "#7CD93A",
         "redemption": "#F59B66",
@@ -17,10 +18,10 @@ function TransactionItemCard({ transaction, hover }) {
     
     const isHover = hover !== undefined ? hover : true;
 
-    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
+    const dateString = new Date(createdAt).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
 
     const handleViewTransaction = () => {
-        navigate(`/past-transactions/${transaction.id}`, { state: { transaction } });
+        navigate(`/transactions/${id}`, { state: { transaction } });
     };
 
     if (isSmall) {
@@ -33,7 +34,6 @@ function TransactionItemCard({ transaction, hover }) {
                     flex: 1
                     
                 }}
-                onClick={handleViewTransaction}
             >
                 <Accordion
                     sx={{
@@ -64,9 +64,10 @@ function TransactionItemCard({ transaction, hover }) {
 
                             <Typography
                                 variant="h6"
-                                color={type === "transfer" ? amount > 0 ? "primary" : "error" : earned > 0 ? "primary" : "error"}
-                                fontWeight="bold">
-                                {type === "transfer" ? amount > 0 ? `+${amount}` : amount : earned > 0 ? `+${earned}` : earned} pts
+                                color={amount > 0 ? "primary" : "error"}
+                                fontWeight="bold"
+                            >
+                                {amount > 0 ? `+${amount}` : amount} pts
                             </Typography>
                         </Box>
                     </AccordionSummary>
@@ -108,6 +109,7 @@ function TransactionItemCard({ transaction, hover }) {
                                 </Box>                       
                             </>
                         )}
+                        <MUILink underline='none' sx={{ color: theme.palette.text.disabled, fontSize: 12 }} component={Link} to={`/transactions/${id}`}>See more details...</MUILink>
                     </AccordionDetails>
                 </Accordion>
             </Box>
@@ -199,10 +201,13 @@ function TransactionItemCard({ transaction, hover }) {
                         <Typography
                             variant="h4"
                             color={amount > 0 ? "primary" : "error"}
-                            fontWeight="bold">
+                            fontWeight="bold"
+                        >
                             {amount > 0 ? `+${amount}` : amount} pts
                         </Typography>
-                        {spent !== null && spent !== 0 && <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>}
+                        {spent !== null && spent !== 0 && (
+                            <Typography variant="body2" color="text.secondary">Spent: ${spent.toFixed(2)}</Typography>
+                        )}
                         <Typography variant="body2" color="text.secondary">{dateString}</Typography>
                     </Box>
                 </Box>

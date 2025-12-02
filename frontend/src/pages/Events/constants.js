@@ -2,7 +2,7 @@ import * as yup from "yup";
 
 export const editEventSchema = yup.object({
   name: yup.string().required("Event title is required"),
-  description: yup.string().required("Description is required"),
+  description: yup.string(),
   startTime: yup
     .date()
     .min(new Date(), "Start time must be in the future")

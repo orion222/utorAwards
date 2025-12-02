@@ -49,9 +49,9 @@ function AllUsers() {
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>
-                  <Alert>
-                    <AlertTitle>Error</AlertTitle>
-                    Something went wrong while fetching users. Try again later.
+                  <Alert severity="error">
+                    <AlertTitle severity="error">Error</AlertTitle>
+                    Something went wrong while fetching your transactions. Your filters may be invalid. Try again later.
                   </Alert>
                 </Box>
               )
@@ -82,7 +82,7 @@ function AllUsers() {
                         sm: 'repeat(2, 1fr)',
                         md: 'repeat(3, 1fr)',
                       },
-                      gap: 1,
+                      gap: 2,
                     }}
                   >
                     {data.map((user) => (

@@ -6,38 +6,41 @@ import theme from "./theme";
 
 import ProtectedClearanceRoute from "./components/routes/ProtectedClearanceRoute";
 import AppLayout from "./components/layout/AppLayout";
+import ProtectedAuthRoute from "./components/routes/RootElement.jsx";
+import ProtectedOrganizerRoute from "./components/routes/ProtectedOrganizerRoute.jsx";
+import NotFound from "./pages/NotFound";
+import Unauthorized from "./pages/Unauthorized";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
-// import Dashboard from "./pages/Dashboard";
-import Events from "./pages/Explore/Events.jsx";
-import Promotions from "./pages/Explore/Promotions.jsx";
-import Login from "./pages/Login";
-import ProtectedAuthRoute from "./components/routes/RootElement.jsx";
-import NotFound from "./pages/NotFound";
-import ComponentLibrary from "./components/routes/ComponentLibrary";
-import Wallet from "./pages/Wallet";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import CreatePurchase from "./pages/CreatePurchase";
-import PastTransactions from "./pages/PastTransactions";
-import ProcessRedemption from "./pages/ProcessRedemption";
-import CreateUser from "./pages/CreateUser";
-import Explore from "./pages/Explore";
-import MyEvents from "./pages/MyEvents/index.jsx";
-import Invitations from "./pages/MyEvents/Invitations.jsx";
-import ProtectedOrganizerRoute from "./components/routes/ProtectedOrganizerRoute.jsx";
-import QRCode from "./pages/Wallet/QRCode.jsx";
-import RedeemPoints from "./pages/Wallet/RedeemPoints.jsx";
-import Transfer from "./pages/Wallet/TransferPoints.jsx";
-import EventEditForm from "./pages/Events/EditEventForm.jsx";
-import Unauthorized from "./pages/Unauthorized";
-import Leaderboard from "./pages/Leaderboard/index.jsx";
-import EventDetails from "./pages/EventDetails/index.jsx";
-import PromotionDetails from "./pages/PromotionDetails/index.jsx";
-import TransactionDetails from "./pages/TransactionDetails/index.jsx";
-import Admin from "./pages/Admin/index.jsx";
-import AllUsers from "./pages/Admin/AllUsers.jsx";
-import AllTransactions from "./pages/Admin/AllTransactions.jsx";
+const Events = lazy(() => import("./pages/Explore/Events.jsx"));
+const Promotions = lazy(() => import("./pages/Explore/Promotions.jsx"));
+const Login = lazy(() => import("./pages/Login"));
+const Wallet = lazy(() => import("./pages/Wallet"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const CreatePurchase = lazy(() => import("./pages/CreatePurchase"));
+const PastTransactions = lazy(() => import("./pages/PastTransactions"));
+const ProcessRedemption = lazy(() => import("./pages/ProcessRedemption"));
+const CreateUser = lazy(() => import("./pages/CreateUser"));
+const Explore = lazy(() => import("./pages/Explore"));
+const MyEvents = lazy(() => import("./pages/MyEvents/index.jsx"));
+const Invitations = lazy(() => import("./pages/MyEvents/Invitations.jsx"));
+const QRCode = lazy(() => import("./pages/Wallet/QRCode.jsx"));
+const RedeemPoints = lazy(() => import("./pages/Wallet/RedeemPoints.jsx"));
+const Transfer = lazy(() => import("./pages/Wallet/TransferPoints.jsx"));
+const EventEditForm = lazy(() => import("./pages/Events/EditEventForm.jsx"));
+const Leaderboard = lazy(() => import("./pages/Leaderboard/index.jsx"));
+const EventDetails = lazy(() => import("./pages/EventDetails/index.jsx"));
+const PromotionDetails = lazy(
+  () => import("./pages/PromotionDetails/index.jsx"),
+);
+const TransactionDetails = lazy(
+  () => import("./pages/TransactionDetails/index.jsx"),
+);
+const Admin = lazy(() => import("./pages/Admin/index.jsx"));
+const AllUsers = lazy(() => import("./pages/Admin/AllUsers.jsx"));
+const AllTransactions = lazy(() => import("./pages/Admin/AllTransactions.jsx"));
+import ManageEventUsers from "./pages/events/ManageEventUsers.jsx";
 
 function App() {
   return (
@@ -46,21 +49,29 @@ function App() {
         <Routes>
           <Route index element={<ProtectedAuthRoute />} />
           <Route path="login" element={<Login />} />
-          <Route path="components" element={<ComponentLibrary />}></Route>
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
           <Route path="unauthorized" element={<Unauthorized />} />
 
+          <Route
+            path="manage-event-users"
+            element={<ManageEventUsers />}
+          ></Route>
           <Route element={<AppLayout />}>
             {/* ROUTES FOR REGULAR USERS */}
             <Route element={<ProtectedClearanceRoute />}>
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="past-transactions" element={<PastTransactions />} />
-              <Route path="past-transactions/:transactionId" element={<TransactionDetails />} />
+              <Route
+                path="transactions/:transactionId"
+                element={<TransactionDetails />}
+              />
               <Route path="events" element={<Events />} />
               <Route path="/events/:eventId" element={<EventDetails />} />
-              <Route path="promotions" element={<Promotions />} />
-              <Route path="promotions/:promotionId" element={<PromotionDetails />} />
+              <Route
+                path="promotions/:promotionId"
+                element={<PromotionDetails />}
+              />
               <Route path="wallet" element={<Wallet />}>
                 <Route path="my-qr-code" element={<QRCode />} />
                 <Route path="redeem" element={<RedeemPoints />} />
@@ -76,6 +87,10 @@ function App() {
                   path="management"
                   element={<ProtectedOrganizerRoute />}
                 />
+                <Route
+                  path=":eventId/edit-users"
+                  element={<ManageEventUsers />}
+                />
               </Route>
               <Route path="leaderboard" element={<Leaderboard />} />
             </Route>
@@ -88,9 +103,12 @@ function App() {
                 />
               }
             >
-              <Route path="create" element={<CreatePurchase />} />
-              <Route path="redeem" element={<ProcessRedemption />} />
-              <Route path="createUser" element={<CreateUser />} />
+              <Route path="create-transaction" element={<CreatePurchase />} />
+              <Route
+                path="redeem-transaction"
+                element={<ProcessRedemption />}
+              />
+              <Route path="create-user" element={<CreateUser />} />
             </Route>
 
             {/*ROUTES FOR ORGANIZERS*/}

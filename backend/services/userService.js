@@ -4,6 +4,7 @@ const { prisma, RoleType } = require("../prisma/prisma");
 const NotFoundError = require("../utils/errors/notFoundError");
 const ForbiddenError = require("../utils/errors/forbiddenError");
 const BadRequestError = require("../utils/errors/badRequestError");
+const { generateFakeName } = require("../utils/userHelpers");
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -45,7 +46,20 @@ class UserService {
     };
   }
 
-  static async getFilteredUsers(userId, search, name, role, verified, activated, page, limit, orderBy) {
+  static async getFilteredUsers(
+    userId,
+    search,
+    name,
+    role,
+    verified,
+    activated,
+    page,
+    limit,
+    orderBy,
+    eventId,
+    is_guest = false,
+    is_organizer = false,
+  ) {
     const filterOptions = {};
 
     if (search) {
@@ -61,32 +75,90 @@ class UserService {
     }
 
     if (name) {
-        filterOptions.OR = [{ name }, { utorid: name }];
+      filterOptions.OR = [{ name }, { utorid: name }];
     }
 
     if (role) {
       filterOptions.role = role;
     }
 
-    if (verified) {
-      filterOptions.verified = verified === "true";
+    if (verified === "true") {
+      filterOptions.verified = true;
+    }
+    else if (verified === "false") {
+      filterOptions.verified = false;
     }
 
     if (activated === "true") {
       filterOptions.NOT = { lastLogin: null };
-    } else if (activated === "false") {
+    } 
+    else if (activated === "false") {
       filterOptions.lastLogin = null;
     }
-
-    const [count, results] = await prisma.$transaction([
-      prisma.user.count({ where: filterOptions }),
-      prisma.user.findMany({
-        where: {
-          ...filterOptions,
-          NOT: {
-            id: userId
-          }
+    let organizerIds = new Set();
+    let guestIds = new Set();
+    if (eventId) {
+      const event = await prisma.event.findUnique({
+        where: { id: parseInt(eventId, 10) },
+        include: {
+          organizers: {
+            select: { id: true },
+          },
+          rsvps: {
+            select: { userId: true },
+          },
         },
+      });
+      if (event) {
+        organizerIds = new Set(event.organizers.map((org) => org.id));
+        guestIds = new Set(event.rsvps.map((rsvp) => rsvp.userId));
+        let eventFilter = {};
+        if (is_organizer && is_guest) {
+          // User wants both organizers AND guests
+          eventFilter = {
+            OR: [
+              { id: { in: Array.from(organizerIds) } },
+              { id: { in: Array.from(guestIds) } },
+            ],
+          };
+        } else if (is_organizer) {
+          // User wants only organizers
+          eventFilter = { id: { in: Array.from(organizerIds) } };
+        } else if (is_guest) {
+          // User wants only guests
+          eventFilter = { id: { in: Array.from(guestIds) } };
+        } else {
+          // User wants neither organizers nor guests (users not associated with the event)
+          eventFilter = {
+            AND: [
+              { id: { notIn: Array.from(organizerIds) } },
+              { id: { notIn: Array.from(guestIds) } },
+            ],
+          };
+        }
+
+        if (!filterOptions.AND) {
+          filterOptions.AND = [];
+        }
+        filterOptions.AND.push(eventFilter);
+      } else {
+        return { count: 0, results: [] };
+      }
+    }
+    let whereClause = {
+      ...filterOptions,
+    };
+    if (!is_organizer) {
+      whereClause.NOT = {
+        ...whereClause.NOT,
+        id: userId,
+      };
+    }
+
+    let [count, results] = await prisma.$transaction([
+      prisma.user.count({ where: whereClause }),
+      prisma.user.findMany({
+        where: whereClause,
         take: limit,
         skip: (page - 1) * limit,
         select: {
@@ -103,8 +175,19 @@ class UserService {
         orderBy: orderBy ? orderBy : { id: "asc" },
       }),
     ]);
+    const resultsWithRoles = results.map((user) => {
+      let event_role = "other";
+      if (organizerIds.has(user.id)) {
+        event_role = "organizer";
+      } else if (guestIds.has(user.id)) {
+        event_role = "guest";
+      }
+      return { ...user, event_role };
+    });
 
-    return { count, results };
+    if (eventId) {
+      return { count, results: resultsWithRoles };
+    } else return { count, results };
   }
 
   static async getSpecificUser(userId, role) {
@@ -171,7 +254,14 @@ class UserService {
     return updatedUser;
   }
 
-  static async updateMyUserInfo(userId, name, email, birthday, avatar, hideUtorid) {
+  static async updateMyUserInfo(
+    userId,
+    name,
+    email,
+    birthday,
+    avatar,
+    hideUtorid,
+  ) {
     const fieldsToUpdate = {};
 
     if (name) fieldsToUpdate.name = name;
@@ -270,32 +360,81 @@ class UserService {
     });
   }
 
-  static async getLeaderboard(topN) {
-    const users = await prisma.user.findMany({
-      orderBy: {
-        grossPoints: 'desc',
-      },
-      take: topN,
-      select: {
-        utorid: true,
-        name: true,
-        points: true,
-        grossPoints: true,
-        hideUtorid: true,
-      },
+  static async getLeaderboard(search, name, role, verified, page, limit) {
+    const filterOptions = {};
+
+    if (search) {
+      filterOptions.AND = [
+        {
+          OR: [
+            { name: { contains: search } },
+            { utorid: { contains: search } },
+            { email: { contains: search } },
+          ],
+        },
+      ];
+    }
+
+    if (name) {
+        filterOptions.OR = [{ name }, { utorid: name }];
+    }
+
+    if (role) {
+      filterOptions.role = role;
+    }
+
+    if (verified === "true") {
+      filterOptions.verified = true;
+    }
+    else if (verified === "false") {
+      filterOptions.verified = false;
+    }
+
+    const [count, results] = await prisma.$transaction([
+      prisma.user.count({ where: filterOptions }),
+      prisma.user.findMany({
+        orderBy: {
+          grossPoints: 'desc',
+        },
+        take: limit,
+        skip: (page - 1) * limit,
+        where: filterOptions,
+        select: {
+          id: true,
+          utorid: true,
+          name: true,
+          points: true,
+          grossPoints: true,
+          hideUtorid: true,
+        },
+      }),
+    ]);
+
+    const globalRanks = await prisma.user.findMany({
+      orderBy: { grossPoints: "desc" },
+      select: { id: true, grossPoints: true },
     });
 
-    const transformedUsers = users.map(user => {
+    const rankMap = new Map();
+    globalRanks.forEach((user, index) => {
+      rankMap.set(user.id, index + 1);
+    });
+
+    const transformedUsers = results.map(user => {
       if (user.hideUtorid) {
         return {
           ...user,
-          utorid: 'Hidden',
+          utorid: generateFakeName(),
+          rank: rankMap.get(user.id),
         };
       }
-      return user;  
-    })
-    
-    return transformedUsers;
+      return {
+        ...user,
+        rank: rankMap.get(user.id),
+      };  
+    });
+
+    return { count, results: transformedUsers };
   }
 }
 

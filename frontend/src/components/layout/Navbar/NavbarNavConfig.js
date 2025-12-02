@@ -24,18 +24,17 @@ const REGULAR_ITEMS = [
 ];
 
 const CASHIER_EXTRA = [
-  { label: "Create Transaction", icon: ShoppingCart, path: "/create" },
-  { label: "Process Redemption", icon: Gift, path: "/redeem" },
-  { label: "Create User", icon: UserPlus, path: "/createUser" },
+  { label: "Create Transaction", icon: ShoppingCart, path: "/create-transaction" },
+  { label: "Process Redemption", icon: Gift, path: "/redeem-transaction" },
+  { label: "Create User", icon: UserPlus, path: "/create-user" },
 ];
 
 const MANAGER_EXTRA = [
-  { label: "Promotions", icon: Tag, path: "/promotions" },
   { label: "Admin", icon: ShieldIcon, path: "/admin", children: [ { label: "Users", path: "/admin/users" }, { label: "Transactions", path: "/admin/transactions" } ] },
 ];
 
 const SUPERUSER_EXTRA = [
-  { label: "Manage Users", icon: Users, path: "/manageUsers" },
+  { label: "Manage Users", icon: Users, path: "/manage-users" },
 ];
 
 export function getNavForRole(role, isEventOrganizer) {

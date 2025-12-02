@@ -618,7 +618,10 @@ class TransactionService {
     const whereFields = {};
 
     if (!userId) throw new BadRequestError("Must include user id");
-    whereFields.userId = userId;
+    whereFields.OR = [
+      { userId: userId },
+      { targetUserId: userId }
+    ];
 
     if ((!type && relatedId) || (!amount && operator)) throw new BadRequestError("Dependent fields not fulfilled");
 
@@ -657,6 +660,7 @@ class TransactionService {
             suspicious: true,
             remark: true,
             relatedId: true,
+            createdAt: true,
           },
           take: limit,
           skip: (page - 1) * limit,
@@ -753,7 +757,7 @@ class TransactionService {
     return activePromo;
   }
 
-  static async retrieveSingleTransaction(transactionId) {
+  static async retrieveSingleTransaction(transactionId, role, userId) {
     const transaction = await prisma.transaction.findUnique({
       where: {
         id: transactionId,
@@ -779,16 +783,28 @@ class TransactionService {
       throw new NotFoundError();
     }
 
+    if (transaction.type === TransactionType.transfer && role === RoleType.regular && transaction.user.id !== userId && transaction.targetUser.id !== userId) {
+      throw new ForbiddenError("Forbidden: Insufficient clearance to access this transaction");
+    }
+
+    if ((transaction.type === TransactionType.purchase || transaction.type === TransactionType.adjustment) && role === RoleType.regular && transaction.targetUser.id !== userId) {
+      throw new ForbiddenError("Forbidden: Insufficient clearance to access this transaction");
+    }
+
+    if (transaction.type === TransactionType.redemption && role === RoleType.regular && transaction.user.id !== userId) {
+      throw new ForbiddenError("Forbidden: Insufficient clearance to access this transaction");
+    }
+
     const query = {
       id: transaction.id,
-      utorid: transaction.targetUser.utorid,
+      utorid: transaction.targetUser?.utorid,
       type: transaction.type,
       spent: transaction.spent,
       amount: transaction.amount,
       promotionIds: transaction.promotions.map((promotion) => promotion.id),
       createdAt: transaction.createdAt,
       remark: transaction.remark,
-      createdBy: transaction.user.utorid,
+      createdBy: transaction.user?.utorid,
       relatedId: transaction.relatedId,
       suspicious: transaction.suspicious,
       processed: transaction.processed,

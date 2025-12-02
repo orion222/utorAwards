@@ -12,7 +12,7 @@ function ProtectedClearanceRoute({ requiredClearance = [] }) {
   }
 
   if (requiredClearance.length > 0 && !requiredClearance.includes(user.role)) {
-    return <Navigate to="/dashboard" />; // TODO: replace with either a unauthorized page or something else
+    return <Navigate to="/dashboard" />;
   }
 
   return <Outlet />;

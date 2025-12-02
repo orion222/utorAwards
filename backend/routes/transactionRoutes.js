@@ -44,7 +44,6 @@ transactionRouter.get(
 transactionRouter.get(
   "/:transactionId",
   verifyToken,
-  checkClearance(["cashier", "manager", "superuser"]),
   retrieveSingleTransaction,
 );
 

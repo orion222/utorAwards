@@ -66,6 +66,18 @@ async function getFilteredEvents(req, res) {
       .json({ error: "cannot specify both started and ended" });
   }
 
+  if (started && started !== "true" && started !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid started value" });
+  }
+
+  if (ended && ended !== "true" && ended !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid ended value" });
+  }
+
   try {
     const filteredEventsData = await EventService.getFilteredEvents(
       search,
@@ -191,6 +203,25 @@ async function getSpecificEvent(req, res) {
   const userRole = req.user.role;
   try {
     const eventData = await EventService.getSpecificEvent(
+      eventId,
+      userId,
+      userRole,
+    );
+    res.status(200).json(eventData);
+  } catch (error) {
+    res.status(error.statusCode).json({ error: error.message });
+  }
+}
+
+async function getSpecificEventUsers(req, res) {
+  const eventId = req.eventId;
+  if (!eventId || !Number.isInteger(eventId)) {
+    return res.status(400).json({ error: "Bad Request" });
+  }
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  try {
+    const eventData = await EventService.getSpecificEventUsers(
       eventId,
       userId,
       userRole,
@@ -397,4 +428,5 @@ module.exports = {
   removeEventOrganizer,
   addEventGuest,
   removeEventGuest,
+  getSpecificEventUsers,
 };

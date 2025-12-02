@@ -168,13 +168,11 @@ async function retrievePromotion(req, res) {
   }
 
   var startedBool =
-    started === "true" || req.user.role === RoleType.regular ? true : false;
+    started === "true" ? true : started === "false" ? false : null;
   var endedBool =
-    ended === "false" || req.user.role === RoleType.regular ? false : true;
+    ended === "true" ? true : ended === "false" ? false : null;
 
-  var availableBool = null;
-  if (available)
-    availableBool = available === "true" || req.user.role === RoleType.regular ? true : false;
+  var availableBool = available === "true" ? true : available === "false" ? false : null;
 
   try {
     const promotionData = await PromotionService.retrievePromotions(

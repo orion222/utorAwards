@@ -88,35 +88,40 @@ class EventService {
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
-    if (started === true) {
+    if (started === "true") {
       filterDetails.startTime = { lt: currDate };
-    } else if (started === false) {
-      filterDetails.startTime = { gt: currDate };
+    } else if (started === "false") {
+      filterDetails.startTime = { gte: currDate };
     }
 
-    if (ended === true) {
-      filterDetails.endTime = { lt: currDate };
-    } else if (ended === false) {
+    if (ended === "true") {
+      filterDetails.endTime = { lte: currDate };
+    } else if (ended === "false") {
       filterDetails.endTime = { gt: currDate };
     }
 
-    if (published) {
-      filterDetails.published = published === "true";
+    if (published === "true") {
+      filterDetails.published = true;
+    } else if (published === "false") {
+      filterDetails.published = false;
     }
 
-    tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({
-      numGuests: { lt: prisma.event.fields.capacity },
-    });
-
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    } else if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -146,7 +151,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
-        orderBy: orderBy ? orderBy : {},
+        orderBy: orderBy || undefined,
       }),
     ]);
 
@@ -208,6 +213,46 @@ class EventService {
     }
 
     return specificEvent;
+  }
+
+  static async getSpecificEventUsers(eventId, userId, role) {
+    const userSelectFields = {
+      id: true,
+      name: true,
+      utorid: true,
+      email: true,
+      points: true,
+    };
+
+    const eventData = await prisma.event.findUnique({
+      where: {
+        id: eventId,
+      },
+      select: {
+        organizers: {
+          select: userSelectFields,
+        },
+        rsvps: {
+          select: {
+            user: {
+              select: userSelectFields,
+            },
+          },
+        },
+      },
+    });
+
+    if (!eventData) {
+      throw new Error("Event not found");
+    }
+
+    // 3. Transform the data to the desired format
+    // Prisma returns rsvps as [ { user: { ... } }, { user: { ... } } ]
+    // We map over it to extract just the user objects into a flat array.
+    return {
+      organizers: eventData.organizers,
+      guests: eventData.rsvps.map((rsvp) => rsvp.user),
+    };
   }
 
   static async updateEvent(id, updateParams) {
@@ -499,7 +544,7 @@ class EventService {
   }
 
   static async removeEventOrganizer(eventId, userId) {
-    let event = await prisma.event.findUnique({
+    const event = await prisma.event.findUnique({
       where: {
         id: eventId,
       },
@@ -511,8 +556,9 @@ class EventService {
     });
     if (!event) throw new NotFoundError("Event not found!");
     if (!user) throw new NotFoundError("User not found!");
-    const updatedEvent = prisma.$transaction(async (tx) => {
-      const event = await tx.event.update({
+
+    const updatedEvent = await prisma.$transaction(async (tx) => {
+      const updatedEventData = await tx.event.update({
         where: { id: eventId },
         data: {
           organizers: {
@@ -521,11 +567,11 @@ class EventService {
         },
       });
 
-      const organizedEventsCount = await tx.events.count({
+      const organizedEventsCount = await tx.event.count({
         where: {
           organizers: {
             some: {
-              utorid,
+              id: userId,
             },
           },
         },
@@ -533,14 +579,14 @@ class EventService {
 
       if (organizedEventsCount === 0) {
         await tx.user.update({
-          where: { utorid },
+          where: { id: userId },
           data: {
             isEventOrganizer: false,
           },
         });
       }
 
-      return event;
+      return updatedEventData;
     });
 
     return updatedEvent;
@@ -671,6 +717,7 @@ class EventService {
     ended,
     page,
     limit,
+    orderBy,
   ) {
     const filters = {};
 
@@ -771,38 +818,40 @@ class EventService {
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
-    if (started === true) {
+    if (started === "true") {
       filterDetails.startTime = { lt: currDate };
-    } else if (started === false) {
-      filterDetails.startTime = { gt: currDate };
+    } else if (started === "false") {
+      filterDetails.startTime = { gte: currDate };
     }
 
-    if (ended === true) {
-      filterDetails.endTime = { lt: currDate };
-    } else if (ended === false) {
+    if (ended === "true") {
+      filterDetails.endTime = { lte: currDate };
+    } else if (ended === "false") {
       filterDetails.endTime = { gt: currDate };
     }
 
-    if (published) {
-      filterDetails.published = published === "true";
+    if (published === "true") {
+      filterDetails.published = true;
+    } else if (published === "false") {
+      filterDetails.published = false;
     }
 
-    tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({
-      numGuests: { lt: prisma.event.fields.capacity },
-    });
-
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    } else if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);
@@ -816,6 +865,7 @@ class EventService {
       capacity: true,
       numGuests: true,
       points: true,
+      description: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -884,38 +934,40 @@ class EventService {
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
-    if (started === true) {
+    if (started === "true") {
       filterDetails.startTime = { lt: currDate };
-    } else if (started === false) {
-      filterDetails.startTime = { gt: currDate };
+    } else if (started === "false") {
+      filterDetails.startTime = { gte: currDate };
     }
 
-    if (ended === true) {
-      filterDetails.endTime = { lt: currDate };
-    } else if (ended === false) {
+    if (ended === "true") {
+      filterDetails.endTime = { lte: currDate };
+    } else if (ended === "false") {
       filterDetails.endTime = { gt: currDate };
     }
 
-    if (published) {
-      filterDetails.published = published === "true";
+    if (published === "true") {
+      filterDetails.published = true;
+    } else if (published === "false") {
+      filterDetails.published = false;
     }
 
-    tempFilterDetail.OR.push({ capacity: null });
-    tempFilterDetail.OR.push({
-      numGuests: { lt: prisma.event.fields.capacity },
-    });
-
     if (showFull === "true") {
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    } else if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
     }
 
     if (role === RoleType.regular || role === RoleType.cashier) {
       filterDetails.published = true;
-      tempFilterDetail.OR = tempFilterDetail.OR.filter(
-        (obj) => !("numGuests" in obj),
-      );
+      tempFilterDetail.OR = [];
+      filterDetails.NOT = { capacity: null };
+      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);

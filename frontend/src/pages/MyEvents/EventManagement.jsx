@@ -25,11 +25,13 @@ function EventManagement() {
       type: "select",
       label: "Has Started",
       options: ["True", "False"],
+      exclusiveWith: ["ended"],
     },
     ended: {
       type: "select",
       label: "Has Ended",
       options: ["True", "False"],
+      exclusiveWith: ["started"],
     },
     showFull: {
       type: "select",
@@ -65,14 +67,13 @@ function EventManagement() {
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
       >
-        {({ data, isFetching, error }) => {
+        {({ data, isFetching, error, refetch }) => {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
-                <Alert>
-                  <AlertTitle>Error</AlertTitle>
-                  Something went wrong while fetching your transactions. Try
-                  again later.
+                <Alert severity="error">
+                  <AlertTitle severity="error">Error</AlertTitle>
+                  Something went wrong while fetching your transactions. Your filters may be invalid. Try again later.
                 </Alert>
               </Box>
             );
@@ -105,11 +106,16 @@ function EventManagement() {
                       sm: "repeat(2, 1fr)",
                       md: "repeat(3, 1fr)",
                     },
-                    gap: 1,
+                    gap: 2,
                   }}
                 >
                   {data.map((event) => (
-                    <EventCard event={event} key={event.id} editable={true} />
+                    <EventCard
+                      event={event}
+                      key={event.id}
+                      editable={true}
+                      refetch={refetch}
+                    />
                   ))}
                 </Box>
               )}

@@ -68,9 +68,9 @@ function AllTransactions() {
             if (error) {
               return (
                 <Box display="flex" justifyContent="center" p={4}>
-                  <Alert>
-                    <AlertTitle>Error</AlertTitle>
-                    Something went wrong while fetching all transactions. Try again later.
+                  <Alert severity="error">
+                    <AlertTitle severity="error">Error</AlertTitle>
+                    Something went wrong while fetching your transactions. Your filters may be invalid. Try again later.
                   </Alert>
                 </Box>
               )

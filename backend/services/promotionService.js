@@ -88,19 +88,19 @@ class PromotionService {
       where.type = type;
     }
 
-    if (role === RoleType.regular || role === RoleType.cashier) {
-      const now = new Date();
-      if (typeof started === "boolean" && started) {
-        where.startTime = { lt: now };
-      } else {
-        where.startTime = { gte: now };
-      }
+    const now = new Date();
+    if (typeof started === "boolean" && started) {
+      where.startTime = { lte: now };
+    } 
+    else if (typeof started === "boolean" && !started) {
+      where.startTime = { gt: now };
+    }
 
-      if (typeof ended === "boolean" && ended) {
-        where.endTime = { lt: now };
-      } else {
-        where.endTime = { gte: now };
-      }
+    if (typeof ended === "boolean" && ended) {
+      where.endTime = { lte: now };
+    } 
+    else if (typeof ended === "boolean" && !ended) {
+      where.endTime = { gt: now };
     }
 
     if (available === true || role === RoleType.regular || role === RoleType.cashier) {
@@ -128,6 +128,7 @@ class PromotionService {
         minSpending: true,
         rate: true,
         points: true,
+        description: true,
       };
       const [count, results] = await prisma.$transaction([
         prisma.promotion.count({ where }),
@@ -146,6 +147,7 @@ class PromotionService {
       minSpending: true,
       rate: true,
       points: true,
+      description: true,
     };
 
     const [count, results] = await prisma.$transaction([

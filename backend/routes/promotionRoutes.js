@@ -35,7 +35,6 @@ promotionRouter.post(
 promotionRouter.get(
   "/",
   verifyToken,
-  checkClearance(["regular", "cashier", "manager", "superuser"]),
   retrievePromotion,
 );
 

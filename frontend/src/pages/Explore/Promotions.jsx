@@ -13,6 +13,18 @@ function Promotions() {
     },
     started: {
       type: "select",
+      label: "Started",
+      options: ["True", "False"],
+      exclusiveWith: ["ended"],
+    },
+    ended: {
+      type: "select",
+      label: "Ended",
+      options: ["True", "False"],
+      exclusiveWith: ["started"],
+    },
+    type: {
+      type: "select",
       label: "Type",
       options: ["Automatic", "Onetime"],
     }
@@ -46,9 +58,9 @@ function Promotions() {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
-                <Alert>
-                  <AlertTitle>Error</AlertTitle>
-                  Something went wrong while fetching your transactions. Try again later.
+                <Alert severity="error">
+                  <AlertTitle severity="error">Error</AlertTitle>
+                  Something went wrong while fetching your transactions. Your filters may be invalid. Try again later.
                 </Alert>
               </Box>
             )
@@ -79,7 +91,7 @@ function Promotions() {
                       sm: 'repeat(2, 1fr)',
                       md: 'repeat(3, 1fr)',
                     },
-                    gap: 1,
+                    gap: 2,
                   }}
                 >
                   {data.map(promo => (

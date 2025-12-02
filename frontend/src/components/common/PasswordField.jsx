@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
-function PasswordField({ value, onChange, error, label = "Password", id = "password" }) {
+function PasswordField({ value, register, error, label = "Password", id = "password" }) {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -21,7 +21,7 @@ function PasswordField({ value, onChange, error, label = "Password", id = "passw
                 label={label}
                 type={showPassword ? "text" : "password"}
                 value={value}
-                onChange={onChange}
+                {...register}
                 endAdornment={
                     <InputAdornment position="end">
                         <IconButton

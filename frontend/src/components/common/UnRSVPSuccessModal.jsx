@@ -26,7 +26,7 @@ function UnRSVPSuccessModal({ event, onClose }) {
     }
 
     return (
-    <Box sx={{backgroundColor: "#fff", borderRadius: "8px", boxShadow: 3, width: isSmall ? "90%" : "25%", height: "auto", backgroundColor: theme.palette.background.paper,
+    <Box sx={{borderRadius: "8px", boxShadow: 3, width: isSmall ? "90%" : "25%", height: "auto", backgroundColor: theme.palette.background.paper,
         display: "flex", flexDirection: "column", gap: "8px", padding: "16px"}}>
         
             <Typography sx={{fontSize: 20}}>We're sad you couldn't make it</Typography>
