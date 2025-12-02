@@ -34,6 +34,8 @@ app.use(
 
 app.use(express.json());
 
+app.use("/uploads", express.static("uploads"));
+
 // ADD YOUR WORK HERE
 const userRouter = require("./routes/userRoutes");
 const transactionRouter = require("./routes/transactionRoutes");

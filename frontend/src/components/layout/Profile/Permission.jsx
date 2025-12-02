@@ -10,7 +10,8 @@ import api from "../../../api/api";
 
 export default function Permission({ showToast }) {
   const { user } = useUser();
-  const [isPublic, setIsPublic] = useState(!user?.hideUtorid || true);
+  const [isPublic, setIsPublic] = useState(!user?.hideUtorid);
+  console.log("User permission:", user?.hideUtorid);
 
   const handleToggle = async (event) => {
     const newIsPublic = event.target.checked;
