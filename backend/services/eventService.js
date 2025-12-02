@@ -176,6 +176,7 @@ class EventService {
       published: true,
       organizers: {
         select: {
+          id: true,
           utorid: true
         }
       },
@@ -194,7 +195,7 @@ class EventService {
 
       const rsvp = await tx.rsvp.findMany({
         where: { eventId: eventId },
-        select: { user: { select: { utorid: true } } },
+        select: { user: { select: { id: true, utorid: true } } },
       });
 
       return { ...event, guests: rsvp };

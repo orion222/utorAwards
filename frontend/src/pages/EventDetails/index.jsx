@@ -6,6 +6,7 @@ import {
   useTheme,
   Stack,
   Chip,
+  Button,
 } from "@mui/material";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
@@ -56,8 +57,8 @@ function EventDetails() {
               </Typography>
             </Box>
           </Box>
-          <Stack direction="row" gap={1}>
-            {new Date(data.endTime) < new Date() && (
+          <Stack direction="row" gap={1} alignItems="center">
+            {new Date(data.endTime) < new Date() ? (
               <Chip
                 label="ENDED"
                 size="medium"
@@ -66,8 +67,7 @@ function EventDetails() {
                   fontSize: "0.9rem",
                 }}
               />
-            )}
-            {new Date(data.endTime) >= new Date() && new Date(data.startTime) < new Date() && (
+            ) : new Date(data.startTime) <= new Date() ? (
               <Chip
                 label="LIVE"
                 size="medium"
@@ -78,8 +78,33 @@ function EventDetails() {
                   fontSize: "0.9rem",
                 }}
               />
+            ) : (
+              <>
+                {["manager", "superuser"].includes(user.role) && (
+                  <Button
+                    startIcon={<FiEdit color="grey" />}
+                    onClick={(e) => {
+                      console.log("hi, i dont do anything")
+                    }}
+                    sx={{
+                      fontSize: 12,
+                      color: "grey",
+                      borderRadius: "8px",
+                      width: "fit-content",
+                      "&:hover": { backgroundColor: theme.palette.action.hover },
+                    }}
+                  >
+                    Edit
+                  </Button>
+                )}     
+                {!data.organizers.some(organizer => organizer.id === user.id) && (
+                  <Button variant="contained" color="secondary">RSVP</Button>
+                )}                  
+              </>
+
             )}
           </Stack>
+
           <Box
             sx={{
               p: 2,
