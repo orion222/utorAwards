@@ -10,11 +10,13 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import UserDetail from "./UserDetail";
+import { useNavigate } from "react-router-dom";
 
 export default function UserCard({ user }) {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const theme = useTheme();
   const [detailsModal, setDetailsModal] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <Card
@@ -25,7 +27,7 @@ export default function UserCard({ user }) {
         p: 1,
         "&:hover": { cursor: "pointer", boxShadow: 4 },
       }}
-      onClick={() => setDetailsModal(true)}
+      onClick={() => navigate(`/users/${user.id}`)}
     >
       <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
         <Stack direction="row" spacing={1.5} alignItems="flex-start">

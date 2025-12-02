@@ -41,6 +41,7 @@ const Admin = lazy(() => import("./pages/Admin/index.jsx"));
 const AllUsers = lazy(() => import("./pages/Admin/AllUsers.jsx"));
 const AllTransactions = lazy(() => import("./pages/Admin/AllTransactions.jsx"));
 import ManageEventUsers from "./pages/events/ManageEventUsers.jsx";
+import UserDetails from "./pages/UserDetails/index.jsx";
 
 function App() {
   return (
@@ -109,6 +110,7 @@ function App() {
                 element={<ProcessRedemption />}
               />
               <Route path="create-user" element={<CreateUser />} />
+              <Route path="users/:id" element={<UserDetails />} />
             </Route>
 
             {/*ROUTES FOR ORGANIZERS*/}
