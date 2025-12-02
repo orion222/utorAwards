@@ -130,10 +130,6 @@ export default function CreateUser() {
                                 )}
                             />
                         </LabeledField>
-                        
-                        <Typography variant="body2" color="error" sx={{ display: "flex", gap: 1, justifyContent: "flex-end", alignItems: "center", }}>
-                            * Required
-                        </Typography>
 
                         {/* Submit */}
                         <Button
