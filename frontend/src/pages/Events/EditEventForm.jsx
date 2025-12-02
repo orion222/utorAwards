@@ -137,7 +137,10 @@ export default function EditEventForm({
       title={event.name}
       width="50%"
       showClose={true}
-      onClose={onClose}
+      onClose={(e) => {
+        e.stopPropagation();
+        onClose();
+      }}
       fullWidth={!!onClose}
       keepForm={true}
       children={

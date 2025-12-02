@@ -315,7 +315,10 @@ function EventCard({
               (editable || isManagerOrSuperuser) && (
                 <Button
                   startIcon={<FiEdit color="grey" />}
-                  onClick={() => setEditModal(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditModal(true)
+                  }}
                   sx={{
                     fontSize: 12,
                     color: "grey",
@@ -332,7 +335,10 @@ function EventCard({
 
           <Modal
             open={editModal}
-            onClose={() => setEditModal(false)}
+            onClose={(e) => {
+              e.stopPropagation();
+              setEditModal(false)
+            }}
             aria-labelledby="edit-event-modal"
             aria-describedby="edit-event-form"
             sx={{
@@ -556,7 +562,10 @@ function EventCard({
               (editable || isManagerOrSuperuser) && (
                 <Button
                   startIcon={<FiEdit color="grey" />}
-                  onClick={() => setEditModal(true)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditModal(true)
+                  }}
                   sx={{
                     fontSize: 12,
                     color: "grey",
@@ -572,7 +581,10 @@ function EventCard({
           </Stack>
           <Modal
             open={editModal}
-            onClose={() => setEditModal(false)}
+            onClose={(e) => {
+              e.stopPropagation();
+              setEditModal(false)
+            }}
             aria-labelledby="edit-event-modal"
             aria-describedby="edit-event-form"
             sx={{
