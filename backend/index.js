@@ -19,6 +19,7 @@ const port = (() => {
 })();
 
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -34,7 +35,7 @@ app.use(
 
 app.use(express.json());
 
-app.use("/uploads", express.static("uploads"));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ADD YOUR WORK HERE
 const userRouter = require("./routes/userRoutes");
