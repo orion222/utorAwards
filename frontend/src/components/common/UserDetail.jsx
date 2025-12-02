@@ -8,6 +8,7 @@ import {
   Card,
   CardContent,
   IconButton,
+  useMediaQuery,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
@@ -23,6 +24,7 @@ export default function UserDetail({ user, onClose }) {
     });
   };
 
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'));
   return (
     <Card
       sx={{
@@ -52,7 +54,7 @@ export default function UserDetail({ user, onClose }) {
       )}
 
       <CardContent sx={{ p: 1.33, "&:last-child": { pb: 1.33 } }}>
-        <Stack direction="row" spacing={2} alignItems="flex-start">
+        <Stack direction="row" spacing={isSmall ? 2 : 20} alignItems="flex-start">
           <Box sx={{ flex: 1 }}>
             <Typography
               variant="h5"
@@ -146,88 +148,6 @@ export default function UserDetail({ user, onClose }) {
                 {user.suspicious ? "Yes" : "No"}
               </Typography>
             </Stack>
-
-            <Stack direction="row" spacing={0.67} flexWrap="wrap">
-              <Button
-                variant="contained"
-                size="small"
-                sx={{
-                  bgcolor: theme.palette.secondary.main,
-                  color: theme.palette.text.primary,
-                  borderRadius: 1.33,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  px: 1.33,
-                  py: 0.5,
-                  "&:hover": {
-                    bgcolor: "#F08A4D",
-                  },
-                }}
-              >
-                Edit User
-              </Button>
-
-              <Button
-                variant="contained"
-                size="small"
-                sx={{
-                  bgcolor: theme.palette.secondary.main,
-                  color: theme.palette.text.primary,
-                  borderRadius: 1.33,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  px: 1.33,
-                  py: 0.5,
-                  "&:hover": {
-                    bgcolor: "#F08A4D",
-                  },
-                }}
-              >
-                Promote
-              </Button>
-
-              <Button
-                variant="contained"
-                size="small"
-                sx={{
-                  bgcolor: theme.palette.secondary.main,
-                  color: theme.palette.text.primary,
-                  borderRadius: 1.33,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  px: 1.33,
-                  py: 0.5,
-                  "&:hover": {
-                    bgcolor: "#F08A4D",
-                  },
-                }}
-              >
-                Transactions
-              </Button>
-
-              <Button
-                variant="contained"
-                size="small"
-                sx={{
-                  bgcolor: theme.palette.secondary.main,
-                  color: theme.palette.text.primary,
-                  borderRadius: 1.33,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  fontSize: "0.7rem",
-                  px: 1.33,
-                  py: 0.5,
-                  "&:hover": {
-                    bgcolor: "#F08A4D",
-                  },
-                }}
-              >
-                Events
-              </Button>
-            </Stack>
           </Box>
 
           <Stack alignItems="center" spacing={1.33}>
@@ -267,6 +187,87 @@ export default function UserDetail({ user, onClose }) {
               Change Photo
             </Button>
           </Stack>
+        </Stack>
+        <Stack direction="row" spacing={0.67} flexWrap="wrap">
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              bgcolor: theme.palette.secondary.main,
+              color: theme.palette.text.primary,
+              borderRadius: 1.33,
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: "0.7rem",
+              px: 1.33,
+              py: 0.5,
+              "&:hover": {
+                bgcolor: "#F08A4D",
+              },
+            }}
+          >
+            Edit User
+          </Button>
+
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              bgcolor: theme.palette.secondary.main,
+              color: theme.palette.text.primary,
+              borderRadius: 1.33,
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: "0.7rem",
+              px: 1.33,
+              py: 0.5,
+              "&:hover": {
+                bgcolor: "#F08A4D",
+              },
+            }}
+          >
+            Promote
+          </Button>
+
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              bgcolor: theme.palette.secondary.main,
+              color: theme.palette.text.primary,
+              borderRadius: 1.33,
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: "0.7rem",
+              px: 1.33,
+              py: 0.5,
+              "&:hover": {
+                bgcolor: "#F08A4D",
+              },
+            }}
+          >
+            Transactions
+          </Button>
+
+          <Button
+            variant="contained"
+            size="small"
+            sx={{
+              bgcolor: theme.palette.secondary.main,
+              color: theme.palette.text.primary,
+              borderRadius: 1.33,
+              textTransform: "none",
+              fontWeight: 600,
+              fontSize: "0.7rem",
+              px: 1.33,
+              py: 0.5,
+              "&:hover": {
+                bgcolor: "#F08A4D",
+              },
+            }}
+          >
+            Events
+          </Button>
         </Stack>
       </CardContent>
     </Card>
