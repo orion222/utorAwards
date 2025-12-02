@@ -114,6 +114,7 @@ function EventCard({
   }
 
   const hasStarted = new Date(startTime) < new Date();
+  const hasEnded = new Date(endTime) < new Date();
 
   const handleViewDetails = () => {
     if (!detailsPage) return;
@@ -299,8 +300,16 @@ function EventCard({
                 onClose={() => setUnRsvpSuccess(false)}
               ></UnRSVPSuccessModal>
             </Modal>
-
-            {hasStarted ? (
+            {hasEnded ? (
+              <Chip
+                label="ENDED"
+                size="small"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: 10,
+                }}
+              />
+            ) : hasStarted ? (
               <Chip
                 label="LIVE"
                 size="small"
@@ -547,7 +556,16 @@ function EventCard({
                 onClose={() => setUnRsvpSuccess(false)}
               ></UnRSVPSuccessModal>
             </Modal>
-            {hasStarted ? (
+            {hasEnded ? (
+              <Chip
+                label="ENDED"
+                size="small"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: 10,
+                }}
+              />
+            ) : hasStarted ? (
               <Chip
                 label="LIVE"
                 size="small"

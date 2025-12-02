@@ -63,13 +63,13 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="past-transactions" element={<PastTransactions />} />
               <Route
-                path="transactions/:transactionId"
+                path="transactions/:id"
                 element={<TransactionDetails />}
               />
               <Route path="events" element={<Events />} />
-              <Route path="/events/:eventId" element={<EventDetails />} />
+              <Route path="/events/:id" element={<EventDetails />} />
               <Route
-                path="promotions/:promotionId"
+                path="promotions/:id"
                 element={<PromotionDetails />}
               />
               <Route path="wallet" element={<Wallet />}>

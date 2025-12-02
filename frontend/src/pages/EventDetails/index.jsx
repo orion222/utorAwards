@@ -9,25 +9,17 @@ import {
   Stack,
   Chip,
 } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import api from "../../api/api";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
+import DetailsTemplate from "../../components/common/DetailsTemplate.jsx";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import { useUser } from "../../context/UserContext.jsx";
 
 function EventDetails() {
   const { eventId } = useParams();
   const { state } = useLocation();
   const theme = useTheme();
-
-  const { data, isFetching, error } = useQuery({
-    queryKey: ["event-details", eventId],
-    queryFn: async () => {
-      const response = await api.get(`/events/${eventId}`);
-      return response.data;
-    },
-    refetchOnWindowFocus: false,
-    staleTime: 30 * 60 * 1000, // 30 minutes
-  });
+  const { user } = useUser();
 
   const formatDate = (dateIsoString) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -36,38 +28,6 @@ function EventDetails() {
       year: "numeric",
     }).format(new Date(dateIsoString));
   };
-
-  if (isFetching) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50%",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (error) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          height: "50%",
-        }}
-      >
-        <Alert severity="error">
-          An error occurred while fetching promotion details. Server error
-        </Alert>
-      </Box>
-    );
-  }
 
   //       const {
   //     id,
@@ -82,70 +42,106 @@ function EventDetails() {
   //   } = event;
 
   return (
-    <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
-      <Typography variant="h4" fontWeight="bold">
-        {data.name}
-      </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          gap: { xs: 1, sm: 3 },
-          flexWrap: "wrap",
-        }}
-      >
-        <Typography variant="subtitle1" color="text.secondary">
-          Event ID: {data.id}
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <CalendarTodayIcon sx={{ color: theme.palette.text.secondary }} />
-          <Typography variant="subtitle1" color="text.secondary">
-            {`${formatDate(data.startTime)} - ${formatDate(data.endTime)}`}
+    <DetailsTemplate queryKey="event-details" apiEndpoint="/events">
+      {data => (
+        <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
+          <Typography variant="h4" fontWeight="bold">
+            {data.name}
           </Typography>
-        </Box>
-        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <LocationPinIcon sx={{ color: theme.palette.text.secondary }} />
-          <Typography variant="subtitle1" color="text.secondary">
-            {data.location}
-          </Typography>
-        </Box>
-      </Box>
-      <Stack direction="row">
-        {new Date(data.startTime) < new Date() && (
-          <Chip
-            label="LIVE"
-            size="medium"
+          <Box
             sx={{
-              backgroundColor: "#ff4444",
-              color: "white",
-              fontWeight: 600,
-              fontSize: "0.9rem",
+              display: "flex",
+              flexDirection: "row",
+              gap: { xs: 1, sm: 3 },
+              flexWrap: "wrap",
             }}
-          />
-        )}
-      </Stack>
-      <Typography variant="h6" fontWeight="bold">
-        Description
-      </Typography>
-      <Box
-        sx={{
-          p: 2,
-          borderRadius: 2,
-          bgcolor: "background.paper",
-          border: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Typography variant="body2" color="text.secondary">
-          {data.description}
-        </Typography>
-      </Box>
-      <EventCard
-        event={state.event}
-        key={eventId}
-        detailsPage={false}
-      ></EventCard>
-    </Box>
+          >
+            <Typography variant="subtitle1" color="text.secondary">
+              Event ID: {data.id}
+            </Typography>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <CalendarTodayIcon sx={{ color: theme.palette.text.secondary }} />
+              <Typography variant="subtitle1" color="text.secondary">
+                {`${formatDate(data.startTime)} - ${formatDate(data.endTime)}`}
+              </Typography>
+            </Box>
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <LocationPinIcon sx={{ color: theme.palette.text.secondary }} />
+              <Typography variant="subtitle1" color="text.secondary">
+                {data.location}
+              </Typography>
+            </Box>
+          </Box>
+          <Stack direction="row" gap={1}>
+            {new Date(data.endTime) < new Date() && (
+              <Chip
+                label="ENDED"
+                size="medium"
+                sx={{
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                }}
+              />
+            )}
+            {new Date(data.endTime) >= new Date() && new Date(data.startTime) < new Date() && (
+              <Chip
+                label="LIVE"
+                size="medium"
+                sx={{
+                  backgroundColor: "#ff4444",
+                  color: "white",
+                  fontWeight: 600,
+                  fontSize: "0.9rem",
+                }}
+              />
+            )}
+          </Stack>
+          <Box
+            sx={{
+              p: 2,
+              borderRadius: 2,
+              bgcolor: "background.paper",
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <Typography variant="h6" fontWeight="bold">
+              Description
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: "8px",
+                alignItems: "center",
+                mb: 1
+              }}
+            >
+              <PeopleAltIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
+              <Typography variant="body2" color="text.secondary">
+                {data.capacity === null
+                  ? `${data.numGuests}`
+                  : `${data.numGuests}/${data.capacity}`}
+              </Typography>
+            </Box>
+            <Typography variant="body2" color="text.secondary">
+              {data.description}
+            </Typography>
+          </Box>
+
+          <Box sx={{ textAlign: "center", mt: 1 }}>
+              <Typography
+                  variant="h3"
+                  fontWeight="bold"
+                  sx={{ color: "primary" }}
+              >
+                {data.points} pts
+              </Typography>
+          </Box>
+        </Box>        
+      )}
+    </DetailsTemplate>
+
   );
 }
 

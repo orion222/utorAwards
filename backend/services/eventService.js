@@ -208,8 +208,6 @@ class EventService {
       delete specificEvent.pointsAwarded;
       delete specificEvent.published;
       delete specificEvent.guests;
-    } else {
-      delete specificEvent.numGuests;
     }
 
     return specificEvent;
