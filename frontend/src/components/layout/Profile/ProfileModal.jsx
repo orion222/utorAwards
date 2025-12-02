@@ -67,8 +67,11 @@ export default function ProfileModal({ user, setUser, open, onClose, showToast }
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);
-    const birthdayString = dayjs(data.birthday).format("YYYY-MM-DD");
-    formData.append("birthday", birthdayString);
+    
+    if (data.birthday) {
+      const birthdayString = dayjs(data.birthday).format("YYYY-MM-DD");
+      formData.append("birthday", birthdayString);
+    }
 
     if (avatarFile) {
       formData.append("avatar", avatarFile);
