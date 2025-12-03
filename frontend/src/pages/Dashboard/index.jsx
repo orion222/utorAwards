@@ -13,6 +13,7 @@ import TransactionItemCard from "../../components/common/TransactionItemCard.jsx
 import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import RedeemIcon from '@mui/icons-material/Redeem';
 import UserCard from "../../components/common/UserCard.jsx";
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import { TheatersOutlined } from "@mui/icons-material";
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
@@ -68,10 +69,6 @@ function Dashboard() {
         
         fetchData();
     }, []);
-   
-    const viewWallet = () => {
-        navigate("/wallet");
-    };
 
     const viewPromotions = (e) => {
         e.preventDefault();
@@ -104,7 +101,7 @@ function Dashboard() {
                 {user.points} points
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: isSmall ? 'column' : 'row', gap: 1, mt: 2 }}>
-                <Button variant="contained" onClick={viewWallet} sx={{fontSize: 12, p: 1 }}>
+                <Button variant="contained" component={Link} to="/wallet/my-qr-code" sx={{fontSize: 12, p: 1 }}>
                     <WalletIcon sx={{fontSize: 16, mr: 1 }} />
                     View My Wallet
                 </Button>
@@ -120,6 +117,14 @@ function Dashboard() {
                         </Button>
                     </>
                 )}
+                {["manager", "superuser"].includes(user.role) && (
+                    <>
+                        <Button variant="contained" color="secondary" component={Link} to="/admin/users" sx={{fontSize: 12, p: 1 }}>
+                            <ManageAccountsIcon sx={{fontSize: 16, mr: 1 }} />
+                            Manage users
+                        </Button>
+                    </>
+                )}
             </Box>
 
         </Box>
@@ -130,12 +135,12 @@ function Dashboard() {
                 </Typography>
                 <Box>
                     {transactions.length > 0 ? (
-                                transactions.map(transaction => (
-                                    <TransactionItemCard transaction={transaction} key={transaction.id} onClick={() => setTransactionItem(transaction)}></TransactionItemCard>
-                                ))
-                            ) : (
-                                <Typography>No transactions found.</Typography>
-                            )}
+                        transactions.map(transaction => (
+                            <TransactionItemCard transaction={transaction} key={transaction.id} onClick={() => setTransactionItem(transaction)}></TransactionItemCard>
+                        ))
+                    ) : (
+                        <Typography>No transactions found.</Typography>
+                    )}
                 </Box>
                 <MUILink href="/transactions" onClick={viewTransactions} underline='none' sx={{color: theme.palette.text.disabled}}>
                     (View all transactions)
@@ -151,12 +156,12 @@ function Dashboard() {
                         </Typography>
                         <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
                             {promotions.length > 0 ? (
-                                            promotions.map(promotion => (
-                                                <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
-                                            ))
-                                        ) : (
-                                            <Typography>No promotions found.</Typography>
-                                        )}
+                                promotions.map(promotion => (
+                                    <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
+                                ))
+                            ) : (
+                                <Typography>No promotions found.</Typography>
+                            )}
                         </Box>
                         <MUILink href="promotions" onClick={viewPromotions} underline='none' sx={{color: theme.palette.text.disabled, fontSize: 15}}>
                             (View all promotions)

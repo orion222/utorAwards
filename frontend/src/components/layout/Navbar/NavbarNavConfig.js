@@ -33,9 +33,7 @@ const MANAGER_EXTRA = [
   { label: "Admin", icon: ShieldIcon, path: "/admin", children: [ { label: "Users", path: "/admin/users" }, { label: "Transactions", path: "/admin/transactions" } ] },
 ];
 
-const SUPERUSER_EXTRA = [
-  { label: "Manage Users", icon: Users, path: "/manage-users" },
-];
+const SUPERUSER_EXTRA = [];
 
 export function getNavForRole(role, isEventOrganizer) {
   const items = [...REGULAR_ITEMS];

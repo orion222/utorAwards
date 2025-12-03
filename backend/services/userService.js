@@ -171,6 +171,7 @@ class UserService {
           points: true,
           createdAt: true,
           suspicious: true,
+          verified: true,
         },
         orderBy: orderBy ? orderBy : { id: "asc" },
       }),

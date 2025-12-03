@@ -1,5 +1,5 @@
 import DetailsTemplate from "../../components/common/DetailsTemplate";
-import { Box, Typography, Avatar, Alert, Stack, Chip, Button } from "@mui/material";
+import { Box, Typography, Avatar, Alert, Stack, Chip, Button, Divider } from "@mui/material";
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SavingsIcon from "@mui/icons-material/Savings";
 import CakeIcon from "@mui/icons-material/Cake";
@@ -7,6 +7,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LoginIcon from "@mui/icons-material/Login";
 import { useUser } from "../../context/UserContext";
+import PromotionCard from "../../components/common/PromotionCard";
 
 function UserDetails() {
     const { user } = useUser();
@@ -61,7 +62,6 @@ function UserDetails() {
                         </>
                     )}
 
-
                     <Box
                         sx={{
                             p: 3,
@@ -115,6 +115,18 @@ function UserDetails() {
                             </>
                         )}
                     </Box>
+
+                    {data.promotions.length > 0 && (
+                        <>
+                            <Divider />
+                            <Typography variant="h6" fontWeight="bold">Used Promotions</Typography>
+                            <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
+                                {data.promotions.map(promotion => (
+                                    <PromotionCard promotion={promotion} key={promotion.id} />
+                                ))}
+                            </Box>                        
+                        </>
+                    )}
                 </Box>
             )}
         </DetailsTemplate>

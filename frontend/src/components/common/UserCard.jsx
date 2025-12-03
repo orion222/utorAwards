@@ -7,10 +7,12 @@ import {
   Card,
   CardContent,
   Modal,
+  Chip
 } from "@mui/material";
 import { useState } from "react";
 import UserDetail from "./UserDetail";
 import { useNavigate } from "react-router-dom";
+import VerifiedIcon from "@mui/icons-material/Verified";
 
 export default function UserCard({ user }) {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -30,19 +32,22 @@ export default function UserCard({ user }) {
       onClick={() => navigate(`/users/${user.id}`)}
     >
       <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
-        <Stack direction="row" spacing={1.5} alignItems="flex-start">
+        <Stack direction="row" gap={1.5}>
           <Box sx={{ flex: 1 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: "bold",
-                color: theme.palette.text.primary,
-                mb: 0.5,
-              }}
-            >
-              {user.name}
-            </Typography>
-
+            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontWeight: "bold",
+                  color: theme.palette.text.primary,
+                }}
+              >
+                {user.name}
+              </Typography>
+              {user.verified && (
+                <VerifiedIcon />
+              )}
+            </Box>
             <Typography
               variant="body2"
               sx={{
@@ -63,7 +68,7 @@ export default function UserCard({ user }) {
               {user.email}
             </Typography>
 
-            <Stack spacing={0.25} sx={{ mb: 1.5 }}>
+            <Stack spacing={2} justifyContent="center">
               <Typography
                 variant="caption"
                 sx={{ color: theme.palette.text.secondary }}
@@ -75,26 +80,15 @@ export default function UserCard({ user }) {
                   ? "Superuser"
                   : user.role || "Regular"}
               </Typography>
-
-              <Typography
-                variant="caption"
-                sx={{ color: theme.palette.text.secondary }}
-              >
-                <strong style={{ color: theme.palette.text.primary }}>
-                  Verified:
-                </strong>{" "}
-                {user.verified ? "Yes" : "No"}
-              </Typography>
-
-              <Typography
-                variant="caption"
-                sx={{ color: theme.palette.text.secondary }}
-              >
-                <strong style={{ color: theme.palette.text.primary }}>
-                  Suspicious:
-                </strong>{" "}
-                No
-              </Typography>
+              
+              {user.suspicious && (
+                <Chip 
+                    label="SUSPICIOUS" 
+                    color="error" 
+                    size="small" 
+                    sx={{ width: "max-content" }}
+                />    
+              )}
             </Stack>
           </Box>
 

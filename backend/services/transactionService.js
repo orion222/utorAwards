@@ -770,12 +770,30 @@ class TransactionService {
         promotions: true,
         suspicious: true,
         remark: true,
-        user: true,
-        targetUser: true,
+        user: {
+          select: {
+            name: true,
+            utorid: true,
+            avatarUrl: true, 
+          }
+        },
+        targetUser: {
+          select: {
+            name: true,
+            utorid: true,
+            avatarUrl: true, 
+          }
+        },
         relatedId: true,
         createdAt: true,
         processed: true,
-        processedByUser: true
+        processedByUser: {
+          select: {
+            name: true,
+            utorid: true,
+            avatarUrl: true,            
+          }
+        }
       },
     });
 
@@ -801,13 +819,15 @@ class TransactionService {
       type: transaction.type,
       spent: transaction.spent,
       amount: transaction.amount,
-      promotionIds: transaction.promotions.map((promotion) => promotion.id),
+      promotions: transaction.promotions,
       createdAt: transaction.createdAt,
       remark: transaction.remark,
       createdBy: transaction.user?.utorid,
       relatedId: transaction.relatedId,
       suspicious: transaction.suspicious,
       processed: transaction.processed,
+      user: transaction.user,
+      targetUser: transaction.targetUser,
     }
 
     return transaction.processed ? {

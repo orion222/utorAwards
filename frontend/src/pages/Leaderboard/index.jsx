@@ -14,6 +14,7 @@ import FilterableList from "../../components/common/FilterableList";
 import { useUser } from "../../context/UserContext.jsx";
 
 function Leaderboard() {
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const { user } = useUser();
 
   const filterConfig = {
@@ -96,7 +97,7 @@ function Leaderboard() {
                           mb: 1,
                           bgcolor: "#C0C0C0"
                         }}
-                        src={second?.avatarURL}
+                        src={second.avatarUrl ? `${backendURL}/${second.avatarUrl}` : undefined}
                       >
                         {second?.utorid.charAt(0).toUpperCase()}
                       </Avatar>
@@ -140,7 +141,7 @@ function Leaderboard() {
                           mb: 1,
                           bgcolor: "#E6B800"
                         }}
-                        src={first?.avatarURL}
+                        src={first.avatarUrl ? `${backendURL}/${first.avatarUrl}` : undefined}
                       >
                         {first?.utorid.charAt(0).toUpperCase()}
                       </Avatar>
@@ -177,7 +178,7 @@ function Leaderboard() {
                           mb: 1,
                           bgcolor: "#CD7F32"
                         }}
-                        src={third?.avatarURL}
+                        src={third.avatarUrl ? `${backendURL}/${third.avatarUrl}` : undefined}
                       >
                         {third?.utorid.charAt(0).toUpperCase()}
                       </Avatar>
@@ -223,7 +224,7 @@ function Leaderboard() {
                       </Typography>
 
                       <ListItemAvatar>
-                        <Avatar src={user.avatarURL} alt="Profile Picture">
+                        <Avatar src={user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} alt="Profile Picture">
                           {user.utorid.charAt(0).toUpperCase()}
                         </Avatar> 
                       </ListItemAvatar>

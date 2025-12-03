@@ -1,8 +1,10 @@
-import { Box, Typography, Stack, Chip, Divider } from "@mui/material";
+import { Box, Typography, Stack, Chip, Divider, ListItem, ListItemText, ListItemAvatar, Avatar, List } from "@mui/material";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import DetailsTemplate from "../../components/common/DetailsTemplate.jsx";
+import PromotionCard from "../../components/common/PromotionCard.jsx";
 
 function TransactionDetails() {
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
     const typeToColour = {
         "purchase": "#7CD93A",
         "redemption": "#F59B66",
@@ -20,9 +22,20 @@ function TransactionDetails() {
             {data  => (
                 <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
                     <Box>
-                        <Typography variant="h4" fontWeight="bold">
-                            {data.type.charAt(0).toUpperCase() + data.type.slice(1)}
-                        </Typography>
+                        <Box sx={{ display: "flex", gap: 2 }}> 
+                            <Typography variant="h4" fontWeight="bold">
+                                {data.type.charAt(0).toUpperCase() + data.type.slice(1)}
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                fontWeight="bold"
+                                sx={{
+                                    color: data.amount > 0 ? "primary.main" : "error.main",
+                                }}
+                            >
+                                ({data.amount > 0 ? `+${data.amount}` : data.amount} pts)
+                            </Typography>
+                        </Box>
 
                         <Box
                             sx={{
@@ -99,39 +112,60 @@ function TransactionDetails() {
                         )}
                     </Box>
 
-                    {data.promotionIds && data.promotionIds.length > 0 && (
-                        <Box>
-                            <Divider sx={{ mb: 2 }} />
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                    flexWrap: "wrap",
-                                }}
-                            >
+                    {(data.user || data.targetUser) && (
+                        <>
+                            <Divider />
+                            <Typography variant="h6" fontWeight="bold">Related Users</Typography>
+                            <List sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }, gap: 2 }}>
+                                {data.user && (
+                                    <ListItem                       
+                                        sx={{
+                                            bgcolor: "background.paper",
+                                            mb: 1,
+                                            borderRadius: 2,
+                                            border: "1px solid",
+                                            borderColor: "divider"
+                                        }} 
+                                    >
+                                        <ListItemAvatar><Avatar src={data.user.avatarUrl ? `${backendURL}/${data.user.avatarUrl}` : undefined} /></ListItemAvatar>
+                                        <ListItemText primary={data.user.name} secondary={data.user.utorid} />
+                                    </ListItem>
+                                )}
+                                {data.targetUser && data.targetUser.utorid !== data.user?.utorid && (
+                                    <ListItem                       
+                                        sx={{
+                                            bgcolor: "background.paper",
+                                            mb: 1,
+                                            borderRadius: 2,
+                                            border: "1px solid",
+                                            borderColor: "divider"
+                                        }} 
+                                    >
+                                        <ListItemAvatar><Avatar src={data.targetUser.avatarUrl ? `${backendURL}/${data.targetUser.avatarUrl}` : undefined} /></ListItemAvatar>
+                                        <ListItemText primary={data.targetUser.name} secondary={data.targetUser.utorid} />
+                                    </ListItem> 
+                                )}                                
+                            </List>
+                        </>
+                    )}
+                    
+                    {data.promotions.length > 0 && (
+                        <>
+                            <Divider />
+                            <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
                                 <LocalOfferIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-                                <Typography sx={{ fontSize: "0.9rem", fontWeight: 500 }}>
-                                    Promotions Applied:
-                                </Typography>
-                                <Typography sx={{ fontSize: "0.9rem", color: "text.secondary" }}>
-                                    {data.promotionIds.map((id) => `Promo #${id}`).join(", ")}
+                                <Typography variant="h6" fontWeight="bold">
+                                    Applied Promotions
                                 </Typography>
                             </Box>
-                        </Box>
-                    )}
 
-                    <Box sx={{ textAlign: "center", mt: 1 }}>
-                        <Typography
-                            variant="h3"
-                            fontWeight="bold"
-                            sx={{
-                                color: data.amount > 0 ? "primary.main" : "error.main",
-                            }}
-                        >
-                            {data.amount > 0 ? `+${data.amount}` : data.amount} pts
-                        </Typography>
-                    </Box> 
+                            <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
+                                {data.promotions.map(promotion => (
+                                    <PromotionCard promotion={promotion} key={promotion.id} />
+                                ))}
+                            </Box>                        
+                        </>
+                    )}
                 </Box>                  
             )}
         </DetailsTemplate>
