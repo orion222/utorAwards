@@ -40,7 +40,7 @@ const TransactionDetails = lazy(
 const Admin = lazy(() => import("./pages/Admin/index.jsx"));
 const AllUsers = lazy(() => import("./pages/Admin/AllUsers.jsx"));
 const AllTransactions = lazy(() => import("./pages/Admin/AllTransactions.jsx"));
-import ManageEventUsers from "./pages/events/ManageEventUsers.jsx";
+import ManageEventUsers from "./pages/Events/ManageEventUsers.jsx";
 import UserDetails from "./pages/UserDetails/index.jsx";
 
 function App() {

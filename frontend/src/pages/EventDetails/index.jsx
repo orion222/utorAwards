@@ -23,7 +23,7 @@ import { FiEdit } from "react-icons/fi";
 
 import DetailsTemplate from "../../components/common/DetailsTemplate.jsx";
 import FormCard from "../../components/common/FormCard";
-import EditEventForm from "../../pages/events/EditEventForm.jsx";
+import EditEventForm from "../../pages/Events/EditEventForm.jsx";
 import RSVPSuccessModal from "../../components/common/RSVPSuccessModal";
 import UnRSVPSuccessModal from "../../components/common/UnRSVPSuccessModal";
 import { useUser } from "../../context/UserContext.jsx";
