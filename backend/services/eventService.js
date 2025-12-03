@@ -121,7 +121,7 @@ class EventService {
       filterDetails.published = true;
       tempFilterDetail.OR = [];
       filterDetails.NOT = { capacity: null };
-      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+      filterDetails.numGuests = { lt: prisma.event.fields.capacity };
     }
 
     filterDetails.AND.push(tempFilterDetail);
