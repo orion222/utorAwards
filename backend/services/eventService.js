@@ -214,7 +214,6 @@ class EventService {
       delete specificEvent.pointsRemain;
       delete specificEvent.pointsAwarded;
       delete specificEvent.published;
-      delete specificEvent.guests;
     }
 
     return specificEvent;
