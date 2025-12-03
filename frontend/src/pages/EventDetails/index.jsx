@@ -40,7 +40,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
   const navigate = useNavigate();
 
   const [editModal, setEditModal] = useState(false);
-  const [rsvp, setRSVP] = useState(data?.guests.some((item) => item.user.id === user.id));
+  const [rsvp, setRSVP] = useState(data?.guests?.some((item) => item.user.id === user.id));
 
   const formatDate = (dateIsoString) => {
     return new Intl.DateTimeFormat("en-US", {

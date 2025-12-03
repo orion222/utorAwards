@@ -36,23 +36,6 @@ function EventCard({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const { data: myEvents } = await api.get("users/me/events", {
-          params: { limit: 3 },
-        });
-
-        const idList = myEvents.results.map((obj) => obj.id);
-        if (idList.includes(event.id)) setRSVP(true);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    }
-    fetchEvent();
-  }, []);
-
-
 
   const formatDate = (isoDate) => {
     return new Intl.DateTimeFormat("en-US", {
