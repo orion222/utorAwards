@@ -3,7 +3,6 @@ import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
 import { useNavigate, Link } from "react-router-dom";
 import { Container, Typography, Box, useMediaQuery, FormControl, InputLabel, OutlinedInput, FormHelperText, IconButton, Button, Alert, Link as MUILink } from "@mui/material";
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import WalletIcon from '@mui/icons-material/Wallet';
 import WavingHandIcon from '@mui/icons-material/WavingHand';
 import theme from '../../theme.js';
@@ -14,17 +13,11 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import RedeemIcon from '@mui/icons-material/Redeem';
 import UserCard from "../../components/common/UserCard.jsx";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import { TheatersOutlined } from "@mui/icons-material";
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
-import LocationPinIcon from '@mui/icons-material/LocationPin';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import { set } from "react-hook-form";
 // import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
 // import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
 
 function Dashboard() {
     const { user } = useUser();
-    const navigate = useNavigate();
     const [transactions, setTransactions] = useState([]);
     const [promotions, setPromotions] = useState([]);
     const [events, setEvents] = useState([]);
@@ -69,21 +62,6 @@ function Dashboard() {
         
         fetchData();
     }, []);
-
-    const viewPromotions = (e) => {
-        e.preventDefault();
-        navigate("/explore/promotions");
-    };
-
-    const viewTransactions = (e) => {
-        e.preventDefault();
-        navigate("/past-transactions");
-    };
-
-    const viewEvents = (e) => {
-        e.preventDefault();
-        navigate("/explore/events");
-    };
 
     const isSmall = useMediaQuery("(max-width: 670px)");
 
@@ -142,7 +120,7 @@ function Dashboard() {
                         <Typography>No transactions found.</Typography>
                     )}
                 </Box>
-                <MUILink href="/transactions" onClick={viewTransactions} underline='none' sx={{color: theme.palette.text.disabled}}>
+                <MUILink component={Link} to="/past-transactions" underline='none' sx={{color: theme.palette.text.disabled}}>
                     (View all transactions)
                 </MUILink>
             </Box>
@@ -163,7 +141,7 @@ function Dashboard() {
                                 <Typography>No promotions found.</Typography>
                             )}
                         </Box>
-                        <MUILink href="promotions" onClick={viewPromotions} underline='none' sx={{color: theme.palette.text.disabled, fontSize: 15}}>
+                        <MUILink component={Link} to="/explore/promotions" underline='none' sx={{color: theme.palette.text.disabled, fontSize: 15}}>
                             (View all promotions)
                         </MUILink>
                     </Box>
@@ -183,7 +161,7 @@ function Dashboard() {
                                 )}        
                         </Box>
                     
-                        <MUILink href="events" onClick={viewEvents} underline='none' sx={{color: theme.palette.text.disabled}}>
+                        <MUILink component={Link} to="/explore/events" underline='none' sx={{color: theme.palette.text.disabled}}>
                             (View all events)
                         </MUILink>
                     </Box>
@@ -203,7 +181,7 @@ function Dashboard() {
                                 )}        
                         </Box>
                     
-                        <MUILink href="users" component={Link} to="/admin/users" underline='none' sx={{color: theme.palette.text.disabled}}>
+                        <MUILink component={Link} to="/admin/users" underline='none' sx={{color: theme.palette.text.disabled}}>
                             (View all users)
                         </MUILink>
                     </Box>
