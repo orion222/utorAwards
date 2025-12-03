@@ -57,7 +57,7 @@ export default function Profile() {
       )}
 
       {settingsModalOpen && (
-        <SettingsModal open={settingsModalOpen} onClose={() => setSettingsModalOpen(false)} showToast={showToast} />
+        <SettingsModal open={settingsModalOpen} onClose={() => setSettingsModalOpen(false)}/>
       )}
 
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}

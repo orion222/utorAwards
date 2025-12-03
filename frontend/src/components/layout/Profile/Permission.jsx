@@ -8,7 +8,8 @@ import {
 import { useUser } from "../../../context/UserContext";
 import api from "../../../api/api";
 
-export default function Permission({ showToast }) {
+export default function Permission() {
+
   const { user } = useUser();
   const [isPublic, setIsPublic] = useState(!user?.hideUtorid);
   console.log("User permission:", user?.hideUtorid);
@@ -21,7 +22,6 @@ export default function Permission({ showToast }) {
       await api.patch('/users/me', { hideUtorid: !newIsPublic });
     } catch (error) {
       const message = error.response?.data?.error || "Failed to update permission";
-      showToast(message, "error");
       setIsPublic(!newIsPublic);
     }
   };
