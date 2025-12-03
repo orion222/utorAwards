@@ -63,6 +63,6 @@ createEvent("Charity Run", "5K run to support local charities", "High Park", "20
 // 3 promotions
 createPromotion("Holiday Discount", "20% off on all items", PromotionType.automatic, "2025-11-26T20:16:00.000Z", "2025-12-26T20:00:00.000Z", 100, 0.20, 0).finally(() => prisma.$disconnect());
 createPromotion("Double Points Weekend", "Earn double loyalty points", PromotionType.onetime, "2025-11-26T20:16:00.000Z", "2025-11-30T20:00:00.000Z", 0, 0, 2).finally(() => prisma.$disconnect());
-createPromotion("Free Shipping Promo", "Free shipping on orders above $50", PromotionType.automatic, "2025-11-26T20:16:00.000Z", "2025-12-10T20:00:00.000Z", 50, 0, 0).finally(() => prisma.$disconnect());
-createPromotion("Black Friday Sale", "30% off on electronics", PromotionType.onetime, "2025-11-26T20:16:00.000Z", "2025-11-29T20:00:00.000Z", 200, 0.30, 0).finally(() => prisma.$disconnect());
+createPromotion("Free Shipping Promo", "Free shipping on orders above $50", PromotionType.automatic, "2025-12-26T20:16:00.000Z", "2025-12-29T20:00:00.000Z", 50, 0, 0).finally(() => prisma.$disconnect());
+createPromotion("Black Friday Sale", "30% off on electronics", PromotionType.onetime, "2025-12-22T20:16:00.000Z", "2025-12-29T20:00:00.000Z", 200, 0.30, 0).finally(() => prisma.$disconnect());
 

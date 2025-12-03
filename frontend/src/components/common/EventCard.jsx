@@ -51,23 +51,6 @@ function EventCard({
   const navigate = useNavigate();
   const { user } = useUser();
 
-  useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const { data: myEvents } = await api.get("users/me/events", {
-          params: { limit: 3 },
-        });
-
-        const idList = myEvents.results.map((obj) => obj.id);
-        if (idList.includes(event.id)) setRSVP(true);
-      } catch (error) {
-        console.error("Error fetching event:", error);
-      }
-    }
-    fetchEvent();
-  }, []);
-
-
   const formatDate = (isoDate) => {
     return new Intl.DateTimeFormat("en-US", {
       month: "short",
@@ -184,6 +167,94 @@ function EventCard({
               </Typography>
             </Box>
           </Box>
+          <Stack direction="row" spacing={1} alignItems="center">
+            {hasEnded ? (
+              <Chip
+                label="ENDED"
+                size="small"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: 10,
+                }}
+              />
+            ) : hasStarted ? (
+              <Chip
+                label="LIVE"
+                size="small"
+                sx={{
+                  backgroundColor: "#ff4444",
+                  color: "white",
+                  fontWeight: "bold",
+                  fontSize: 10,
+                }}
+              />
+            ) : (
+              (editable || isManagerOrSuperuser) && (
+                <Button
+                  startIcon={<FiEdit color="grey" />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setEditModal(true)
+                  }}
+                  sx={{
+                    fontSize: 12,
+                    color: "grey",
+                    borderRadius: "8px",
+                    width: "fit-content",
+                    "&:hover": { backgroundColor: theme.palette.action.hover },
+                  }}
+                >
+                  Edit
+                </Button>
+              )
+            )}
+          </Stack>
+
+          <Modal
+            open={editModal}
+            onClose={(e) => {
+              e.stopPropagation();
+              setEditModal(false)
+            }}
+            aria-labelledby="edit-event-modal"
+            aria-describedby="edit-event-form"
+            sx={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              zIndex: 1300,
+            }}
+          >
+            <FormCard
+              width="fit-content"
+              showClose={true}
+              onClose={() => setEditModal(false)}
+              sx={{
+                width: "90%",
+                maxWidth: "600px",
+                maxHeight: "90vh",
+                overflow: "auto",
+                display: "flex",
+                flexDirection: "column",
+              }}
+            >
+              <EditEventForm
+                event={event}
+                onClose={() => setEditModal(false)}
+                refetch={refetch}
+                openEditEventModal={() => {
+                  setEditModal(false);
+                  navigate(`/my-events/${event.id}/edit-users`);
+                }}
+              />
+            </FormCard>
+          </Modal>
         </Box>
       </Box>
     );
@@ -265,61 +336,6 @@ function EventCard({
             </Typography>
           </Box>
           <Stack direction="row" spacing={1} alignItems="center">
-            {!detailsPage && (
-              <Box>
-                <RsvpButtons
-                  rsvp={rsvp}
-                  onAccept={rsvpForEvent}
-                  onDecline={cancelRsvpForEvent}
-              ></RsvpButtons>
-              </Box>
-            )}
-            <Modal
-              open={acceptRsvp}
-              onClose={() => setAcceptRsvp(false)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zindex: 1300,
-              }}
-            >
-              <AcceptRsvpModal
-                event={event}
-                onClose={() => setAcceptRsvp(false)}
-              ></AcceptRsvpModal>
-            </Modal>
-            <Modal
-              open={declineRsvp}
-              onClose={() => setDeclineRsvp(false)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zindex: 1300,
-              }}
-            >
-              <DeclineRsvpModal
-                event={event}
-                onClose={() => setDeclineRsvp(false)}
-              ></DeclineRsvpModal>
-            </Modal>
             {hasEnded ? (
               <Chip
                 label="ENDED"
