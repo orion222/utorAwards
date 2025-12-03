@@ -80,7 +80,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
 
   const isSmall = useMediaQuery("(max-width: 670px)");
   const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
-  const isOrganizer = (data) => data.organizers.some((organizer) => organizer.id === user.id);
+  const isOrganizer = data.organizers.some((organizer) => organizer.id === user.id);
 
   if (!data) return null;
   const { startTime, endTime } = data;
@@ -130,25 +130,26 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
             }}
           />
         ) : (
-          <Button
-            startIcon={<FiEdit color="grey" />}
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditModal(true);
-            }}
-            sx={{
-              fontSize: 12,
-              color: "grey",
-              borderRadius: "8px",
-              width: "fit-content",
-              "&:hover": { backgroundColor: theme.palette.action.hover },
-            }}
-          >
-            Edit
-          </Button>
+          (isOrganizer || isManagerOrSuperuser) ? (
+            <Button
+              startIcon={<FiEdit color="grey" />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditModal(true);
+              }}
+              sx={{
+                fontSize: 12,
+                color: "grey",
+                borderRadius: "8px",
+                width: "fit-content",
+                "&:hover": { backgroundColor: theme.palette.action.hover },
+              }}
+            >
+              Edit
+            </Button>
+          ) : null
         )}
-
-        {!isOrganizer(data) && (
+        {!isOrganizer && (
           <Box>
             {!rsvp ? (
               <Button
@@ -210,7 +211,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
         <Typography variant="body2" color="text.secondary">
           {data.description}
         </Typography>
-        {(isManagerOrSuperuser || isOrganizer(data)) && (
+        {(isManagerOrSuperuser || isOrganizer) && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 3 }}>
             <LinearProgress
               variant="determinate"
@@ -252,7 +253,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
         ))}
       </List>
 
-      {(isOrganizer(data) || isManagerOrSuperuser) && (
+      {(isOrganizer || isManagerOrSuperuser) && (
         <>
           <Divider />
           <Typography variant="h6" fontWeight="bold">Guest List</Typography>
