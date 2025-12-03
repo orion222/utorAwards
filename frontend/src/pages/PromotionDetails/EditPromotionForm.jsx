@@ -26,6 +26,8 @@ import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api.js";
 import PeopleIcon from "@mui/icons-material/People";
 import { useToast } from "../../context/ToastContext.jsx";
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 export default function EditPromotionForm({
   promotion,
   onClose,
@@ -63,6 +65,24 @@ export default function EditPromotionForm({
     );
   };
 
+  const queryClient = useQueryClient();
+  
+  const updatePromotionMutation = useMutation({
+    mutationFn: async (payload) => {
+        const res = await api.patch(`/promotions/${promotion.id}`, payload);
+        return res.data;
+    },
+    onSuccess: () => {
+        showToast("Edit successful", "success");
+        console.log("eidtpromotionid", String(promotion.id));
+        queryClient.invalidateQueries({ queryKey: ['promotion-details', String(promotion.id)] });
+        onClose();
+    },
+    onError: (error) => {
+        showToast(`Error: ${error.message || 'Failed to update promotion'}`, "error");
+    }
+    });
+
   const onSubmit = async (data) => {
     // Check for changes first
     if (!hasFormChanged(data)) {
@@ -92,26 +112,10 @@ export default function EditPromotionForm({
       points: Number(points),
     };
 
-    try {
-      const res = await api.patch(`/promotions/${promotion.id}`, payload);
+    updatePromotionMutation.mutate(payload);
 
-      if (res.status === 200) {
-        showToast("Edit successful", "success");
-        onClose();
-        if (refetch) {
-          refetch();
-        }
-      } else {
-        showToast("Edit event failed", "error");
-      }
-    } catch (error) {
-      const msg =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Edit promotion failed";
-      showToast(msg, "error");
-    }
   };
+  
   const isSmall = useMediaQuery("(max-width: 1170px)");
   const DateTimePickerComponent = isSmall
     ? MobileDateTimePicker
