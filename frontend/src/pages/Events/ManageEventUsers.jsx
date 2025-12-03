@@ -11,14 +11,26 @@ import EventUsersTable from "./EventUsersTable.jsx";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api/api.js";
+import { useNavigate } from "react-router-dom";
+import { useUser } from '../../context/UserContext.jsx'
 
 function ManageEventUsers() {
+  const navigate = useNavigate();
+  const { user } = useUser();
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
   useEffect(() => {
     async function fetchEvent() {
       try {
         const { data } = await api.get(`/events/${parseInt(eventId, 10)}`);
+
+        const isManagerOrSuperuser = ['manager', 'superuser'].includes(user.role);
+        const isOrganizerOfEvent = data.organizers?.some((org) => org.id === user.id);
+        if (!isManagerOrSuperuser && !isOrganizerOfEvent) {
+          console.error("Unauthorized access to event users management");
+          navigate("/unauthorized");
+          return;
+        }
         setEvent(data);
       } catch (err) {
         console.error("Error fetching event:", err);

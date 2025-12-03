@@ -47,7 +47,7 @@ userRouter.post(
 userRouter.get(
   "/",
   verifyToken,
-  checkClearance(["manager", "superuser"]),
+  checkClearance(["regular", "cashier", "manager", "superuser"]),
   getFilteredUsers,
 );
 

@@ -23,6 +23,7 @@ export default function TableActions({
   const { showToast } = useToast();
 
   const { user } = useUser();
+  const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
   const unenrolledUser = is_guest === false && is_organizer === false;
 
   const addAsGuestOrOrganizer = async (role, utorid, eventId) => {
@@ -71,22 +72,27 @@ export default function TableActions({
         >
           <PersonAddIcon fontSize="medium" />
         </IconButton>
-        <IconButton
-          size="medium"
-          sx={{
-            color: "#1565c0",
-            "&:hover": {
-              backgroundColor: "#ade8f4",
-            },
-          }}
-          onClick={() => addAsGuestOrOrganizer("organizer", utorid, eventId)}
-        >
-          <SupervisorAccountIcon fontSize="medium" />
-        </IconButton>
+        {
+          isManagerOrSuperuser && (
+            <IconButton
+              size="medium"
+              sx={{
+                color: "#1565c0",
+                "&:hover": {
+                  backgroundColor: "#ade8f4",
+                },
+              }}
+              onClick={() => addAsGuestOrOrganizer("organizer", utorid, eventId)}
+            >
+              <SupervisorAccountIcon fontSize="medium" />
+            </IconButton>
+          )
+        }
       </>
     );
   };
   const organizerOrGuestActions = () => {
+    if (!isManagerOrSuperuser && is_organizer) return null;
     if (userId === user.id) {
       return (
         <Chip
