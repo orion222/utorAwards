@@ -6,7 +6,7 @@ import api from "../../api/api";
 function DetailsTemplate({ queryKey, apiEndpoint, children }) {
     const { id } = useParams();
     
-    const { data, isFetching, error } = useQuery({
+    const { data, isFetching, error, refetch } = useQuery({
         queryKey: [queryKey, id],
         queryFn: async () => {
             const response = await api.get(`${apiEndpoint}/${id}`);
@@ -34,9 +34,7 @@ function DetailsTemplate({ queryKey, apiEndpoint, children }) {
         );
     }
 
-    console.log(data)
-
-    return children(data);
+    return children(data, refetch);
 }
 
 export default DetailsTemplate;

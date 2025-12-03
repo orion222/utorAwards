@@ -133,17 +133,6 @@ export default function EditEventForm({
     );
   }
   return (
-    <FormCard
-      title={event.name}
-      width="50%"
-      showClose={true}
-      onClose={(e) => {
-        e.stopPropagation();
-        onClose();
-      }}
-      fullWidth={!!onClose}
-      keepForm={true}
-      children={
         <Box>
           <Typography variant="h5" fontWeight="bold">
             Editing {event.name}
@@ -335,7 +324,6 @@ export default function EditEventForm({
             </LocalizationProvider>
           </form>
         </Box>
-      }
-    />
+
   );
 }

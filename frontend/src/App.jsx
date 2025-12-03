@@ -84,6 +84,8 @@ function App() {
               </Route>
               <Route path="my-events" element={<MyEvents />}>
                 <Route path="invitations" element={<Invitations />} />
+
+                {/* ORGANIZER ROUTES */}
                 <Route
                   path="management"
                   element={<ProtectedOrganizerRoute />}
@@ -113,14 +115,6 @@ function App() {
               <Route path="users/:id" element={<UserDetails />} />
             </Route>
 
-            {/*ROUTES FOR ORGANIZERS*/}
-            <Route
-              element={
-                <ProtectedClearanceRoute requiredClearance={["organizer"]} />
-              }
-            >
-              <Route path="events/:eventId/edit" element={<EventEditForm />} />
-            </Route>
             {/* ROUTES FOR MANAGERS */}
             <Route
               element={
