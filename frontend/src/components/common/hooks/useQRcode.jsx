@@ -69,7 +69,7 @@ export default function useQRCode(data, options = {}) {
 
   useEffect(() => {
     generateQRCode();
-  }, [JSON.stringify(data)]);
+  }, [JSON.stringify(data), JSON.stringify(defaultOptions)]);
 
   return {
     canvasRef,

@@ -15,7 +15,7 @@ export default function QRCode() {
   const canvasSize = useMemo(() => {
     if (isMobile) return 160;
     if (isTablet) return 200;
-    return 240; // desktop
+    return 240;
   }, [isMobile, isTablet, isDesktop]);
   const qrData = useMemo(
     () => ({
@@ -68,7 +68,7 @@ export default function QRCode() {
     }
   };
   return (
-    <FormCard>
+    <FormCard width={500}>
       <Stack direction="column" alignItems="center" spacing={3}>
         <Typography variant="body1" textAlign="center">
           Show this to a cashier to earn or spend points
@@ -84,9 +84,6 @@ export default function QRCode() {
         >
           <canvas
             ref={canvasRef}
-            width={canvasSize}
-            height={canvasSize}
-            style={{ width: canvasSize, height: canvasSize }}
           />
         </Box>
 

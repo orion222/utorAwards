@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { useParams, useNavigate } from "react-router-dom";
@@ -28,17 +28,19 @@ import RSVPSuccessModal from "../../components/common/RSVPSuccessModal";
 import UnRSVPSuccessModal from "../../components/common/UnRSVPSuccessModal";
 import { useUser } from "../../context/UserContext.jsx";
 import api from "../../api/api";
+import { useToast } from "../../context/ToastContext.jsx";
 
-
-function EventDetails() {
+// Define the content component in the same file
+function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsvpSuccess, setUnRsvpSuccess }) {
+  const { showToast } = useToast();
   const theme = useTheme();
   const { user } = useUser();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const { id } = useParams();
+  const navigate = useNavigate();
 
-  const [rsvpSuccess, setRsvpSuccess] = useState(false);
-  const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
   const [editModal, setEditModal] = useState(false);
-  const [rsvp, setRSVP] = useState(false);
+  const [rsvp, setRSVP] = useState(data?.guests.some((item) => item.user.id === user.id));
 
   const formatDate = (dateIsoString) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -48,337 +50,352 @@ function EventDetails() {
     }).format(new Date(dateIsoString));
   };
 
-  const { id } = useParams();
-  const rsvpForEvent = () => {
-    async function fetchData() {
-      try {
-        await api.post(`events/${id}/guests/me`, {});
+  const rsvpForEvent = async () => {
+    try {
+      const res = await api.post(`events/${id}/guests/me`, {});
+      if (res.status === 201) {
         setRsvpSuccess(true);
         setRSVP(true);
-      } catch (error) {
-        console.error("Error rsvp'ing for event:", error);
+        refetch();
       }
+    } catch (error) {
+      showToast(error.response?.data?.error || "An unknown error occurred.", "error");
+      console.error("Error rsvp'ing for event:", error);
     }
-    fetchData();
   };
 
-  const unRsvpForEvent = () => {
-    async function fetchData() {
-      try {
-        await api.delete(`events/${id}/guests/me`, {});
+  const unRsvpForEvent = async () => {
+    try {
+      const res = await api.delete(`events/${id}/guests/me`, {});
+      if (res.status === 204) {
         setUnRsvpSuccess(true);
         setRSVP(false);
-      } catch (error) {
-        console.error("Error un-rsvp'ing for event:", error);
+        refetch();
       }
+    } catch (error) {
+      showToast(error.response?.data?.error || "An unknown error occurred.", "error");
+      console.error("Error un-rsvp'ing for event:", error);
     }
-    fetchData();
   };
 
   const isSmall = useMediaQuery("(max-width: 670px)");
   const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
-  const isOrganizer = (data) => data.organizers.some(organizer => organizer.id === user.id);
-  const navigate = useNavigate();
+  const isOrganizer = (data) => data.organizers.some((organizer) => organizer.id === user.id);
+
+  if (!data) return null;
+  const { startTime, endTime } = data;
+  const hasStarted = new Date(startTime) <= new Date();
+  const hasEnded = new Date(endTime) < new Date();
 
   return (
-    <DetailsTemplate queryKey="event-details" apiEndpoint="/events">
-      {(data, refetch) => {
-        if (!data) return null;
-        const { startTime, endTime } = data;
-        const hasStarted = new Date(startTime) <= new Date();
-        const hasEnded = new Date(endTime) < new Date();
+    <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
+      <Typography variant="h4" fontWeight="bold">
+        {data.name}
+      </Typography>
 
-        return (
-          <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
-            <Typography variant="h4" fontWeight="bold">
-              {data.name}
-            </Typography>
+      <Box sx={{ display: "flex", flexDirection: "row", gap: { xs: 1, sm: 3 }, flexWrap: "wrap" }}>
+        <Typography variant="subtitle1" color="text.secondary">
+          Event ID: {data.id}
+        </Typography>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          <CalendarTodayIcon sx={{ color: theme.palette.text.secondary }} />
+          <Typography variant="subtitle1" color="text.secondary">
+            {`${formatDate(data.startTime)} - ${formatDate(data.endTime)}`}
+          </Typography>
+        </Box>
+        <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+          <LocationPinIcon sx={{ color: theme.palette.text.secondary }} />
+          <Typography variant="subtitle1" color="text.secondary">
+            {data.location}
+          </Typography>
+        </Box>
+      </Box>
 
-            <Box sx={{ display: "flex", flexDirection: "row", gap: { xs: 1, sm: 3 }, flexWrap: "wrap" }}>
-              <Typography variant="subtitle1" color="text.secondary">
-                Event ID: {data.id}
-              </Typography>
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <CalendarTodayIcon sx={{ color: theme.palette.text.secondary }} />
-                <Typography variant="subtitle1" color="text.secondary">
-                  {`${formatDate(data.startTime)} - ${formatDate(data.endTime)}`}
-                </Typography>
-              </Box>
-              <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                <LocationPinIcon sx={{ color: theme.palette.text.secondary }} />
-                <Typography variant="subtitle1" color="text.secondary">
-                  {data.location}
-                </Typography>
-              </Box>
-            </Box>
+      <Stack direction="row" gap={1} alignItems="center">
+        {hasEnded ? (
+          <Chip
+            label="ENDED"
+            size="medium"
+            sx={{ fontWeight: 600, fontSize: "0.9rem" }}
+          />
+        ) : hasStarted ? (
+          <Chip
+            label="LIVE"
+            size="medium"
+            sx={{
+              backgroundColor: "#ff4444",
+              color: "white",
+              fontWeight: 600,
+              fontSize: "0.9rem",
+            }}
+          />
+        ) : (
+          <Button
+            startIcon={<FiEdit color="grey" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditModal(true);
+            }}
+            sx={{
+              fontSize: 12,
+              color: "grey",
+              borderRadius: "8px",
+              width: "fit-content",
+              "&:hover": { backgroundColor: theme.palette.action.hover },
+            }}
+          >
+            Edit
+          </Button>
+        )}
 
-            <Stack direction="row" gap={1} alignItems="center">
-              {hasEnded ? (
-                <Chip
-                  label="ENDED"
-                  size="medium"
-                  sx={{ fontWeight: 600, fontSize: "0.9rem" }}
-                />
-              ) : hasStarted ? (
-                <Chip
-                  label="LIVE"
-                  size="medium"
-                  sx={{
-                    backgroundColor: "#ff4444",
-                    color: "white",
-                    fontWeight: 600,
-                    fontSize: "0.9rem",
-                  }}
-                />
-              ) : (
-                <Button
-                  startIcon={<FiEdit color="grey" />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditModal(true);
-                  }}
-                  sx={{
-                    fontSize: 12,
-                    color: "grey",
-                    borderRadius: "8px",
-                    width: "fit-content",
-                    "&:hover": { backgroundColor: theme.palette.action.hover },
-                  }}
-                >
-                  Edit
-                </Button>
-              )}
-
-              {!isOrganizer(data) && (
-                <Box>
-                  {!rsvp ? (
-                    <Button
-                      onClick={rsvpForEvent}
-                      sx={{
-                        color: "black",
-                        bgcolor: theme.palette.secondary.main,
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <ArrowDropDownIcon sx={{ fontSize: isSmall ? 11 : 14 }} />
-                      <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
-                        RSVP
-                      </Typography>
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={unRsvpForEvent}
-                      sx={{
-                        color: "black",
-                        bgcolor: theme.palette.secondary.main,
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                      }}
-                    >
-                      <ArrowDropDownIcon sx={{ fontSize: isSmall ? 11 : 14 }} />
-                      <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
-                        Cancel RSVP
-                      </Typography>
-                    </Button>
-                  )}
-                </Box>
-              )}
-            </Stack>
-
-            <Box
-              sx={{
-                p: 2,
-                borderRadius: 2,
-                bgcolor: "background.paper",
-                border: "1px solid",
-                borderColor: "divider",
-              }}
-            >
-              <Typography variant="h6" fontWeight="bold">
-                Description
-              </Typography>
-              <Box sx={{ display: "flex", flexDirection: "row", gap: "8px", alignItems: "center", mb: 1 }}>
-                <PeopleAltIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
-                <Typography variant="body2" color="text.secondary">
-                  {data.capacity === null
-                    ? `${data.numGuests}`
-                    : `${data.numGuests}/${data.capacity}`}
-                </Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                {data.description}
-              </Typography>
-              {(isManagerOrSuperuser || isOrganizer(data)) && (
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 3 }}>
-                  <LinearProgress
-                    variant="determinate"
-                    value={data.points ? (data.pointsAwarded / data.points) * 100 : 0}
-                    sx={{
-                      width: "35%",
-                      "& .MuiLinearProgress-bar": {
-                        backgroundColor: theme.palette.custom.accent,
-                      },
-                      backgroundColor: theme.palette.custom.primaryNeutral,
-                    }}
-                  />
-                  <Typography variant="body2" color="text.secondary">
-                    {data.pointsAwarded}/{data.points} points awarded
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-
-            <Divider />
-            <Typography variant="h6" fontWeight="bold">Organizers</Typography>
-            <List sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }, gap: 2 }}>
-              {data.organizers.map((user, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    bgcolor: "background.paper",
-                    mb: 1,
-                    borderRadius: 2,
-                    border: "1px solid",
-                    borderColor: "divider",
-                  }}
-                >
-                  <ListItemAvatar>
-                    <Avatar src={user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} />
-                  </ListItemAvatar>
-                  <ListItemText primary={user.name} secondary={user.utorid} />
-                </ListItem>
-              ))}
-            </List>
-
-            {(isOrganizer(data) || isManagerOrSuperuser) && (
-              <>
-                <Divider />
-                <Typography variant="h6" fontWeight="bold">Guest List</Typography>
-                <List sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }, gap: 2 }}>
-                  {data.guests.map((item, index) => (
-                    <ListItem
-                      key={index}
-                      sx={{
-                        bgcolor: "background.paper",
-                        mb: 1,
-                        borderRadius: 2,
-                        border: "1px solid",
-                        borderColor: "divider",
-                      }}
-                    >
-                      <ListItemAvatar>
-                        <Avatar src={item.user.avatarUrl ? `${backendURL}/${item.user.avatarUrl}` : undefined} />
-                      </ListItemAvatar>
-                      <ListItemText primary={item.user.name} secondary={item.user.utorid} />
-                    </ListItem>
-                  ))}
-                </List>
-              </>
-            )}
-
-            <Modal
-              open={rsvpSuccess}
-              onClose={() => setRsvpSuccess(false)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1300,
-              }}
-            >
-              <RSVPSuccessModal
-                event={data}
-                onClose={() => setRsvpSuccess(false)}
-              />
-            </Modal>
-            <Modal
-              open={unRsvpSuccess}
-              onClose={() => setUnRsvpSuccess(false)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1300,
-              }}
-            >
-              <UnRSVPSuccessModal
-                event={data}
-                onClose={() => setUnRsvpSuccess(false)}
-              />
-            </Modal>
-            <Modal
-              open={editModal}
-              onClose={(e) => {
-                e.stopPropagation();
-                setEditModal(false);
-              }}
-              aria-labelledby="edit-event-modal"
-              aria-describedby="edit-event-form"
-              sx={{
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zIndex: 1300,
-                padding: 0,
-              }}
-            >
-              <FormCard
-                width="fit-content"
-                showClose={true}
-                onClose={() => setEditModal(false)}
+        {!isOrganizer(data) && (
+          <Box>
+            {!rsvp ? (
+              <Button
+                onClick={rsvpForEvent}
                 sx={{
-                  width: "90%",
-                  maxWidth: "600px",
-                  maxHeight: "90vh",
-                  overflow: "auto",
+                  color: "black",
+                  bgcolor: theme.palette.secondary.main,
                   display: "flex",
-                  flexDirection: "column",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
                 }}
-                keepForm={true}
               >
-                <EditEventForm
-                  event={data}
-                  onClose={() => setEditModal(false)}
-                  refetch={refetch}
-                  openEditEventModal={() => {
-                    setEditModal(false);
-                    navigate(`/my-events/${data.id}/edit-users`);
-                  }}
-                />
-              </FormCard>
-            </Modal>
-            <Box sx={{ textAlign: "center", mt: 1 }}>
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                sx={{ color: "primary" }}
+                <ArrowDropDownIcon sx={{ fontSize: isSmall ? 11 : 14 }} />
+                <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
+                  RSVP
+                </Typography>
+              </Button>
+            ) : (
+              <Button
+                onClick={unRsvpForEvent}
+                sx={{
+                  color: "black",
+                  bgcolor: theme.palette.secondary.main,
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                }}
               >
-                {data.points} pts
-              </Typography>
-            </Box>
+                <ArrowDropDownIcon sx={{ fontSize: isSmall ? 11 : 14 }} />
+                <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
+                  Cancel RSVP
+                </Typography>
+              </Button>
+            )}
           </Box>
-        );
-      }}
+        )}
+      </Stack>
+
+      <Box
+        sx={{
+          p: 2,
+          borderRadius: 2,
+          bgcolor: "background.paper",
+          border: "1px solid",
+          borderColor: "divider",
+        }}
+      >
+        <Typography variant="h6" fontWeight="bold">
+          Description
+        </Typography>
+        <Box sx={{ display: "flex", flexDirection: "row", gap: "8px", alignItems: "center", mb: 1 }}>
+          <PeopleAltIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
+          <Typography variant="body2" color="text.secondary">
+            {data.capacity === null
+              ? `${data.numGuests}`
+              : `${data.numGuests}/${data.capacity}`}
+          </Typography>
+        </Box>
+        <Typography variant="body2" color="text.secondary">
+          {data.description}
+        </Typography>
+        {(isManagerOrSuperuser || isOrganizer(data)) && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mt: 3 }}>
+            <LinearProgress
+              variant="determinate"
+              value={data.points ? (data.pointsAwarded / data.points) * 100 : 0}
+              sx={{
+                width: "35%",
+                "& .MuiLinearProgress-bar": {
+                  backgroundColor: theme.palette.custom.accent,
+                },
+                backgroundColor: theme.palette.custom.primaryNeutral,
+              }}
+            />
+            <Typography variant="body2" color="text.secondary">
+              {data.pointsAwarded}/{data.points} points awarded
+            </Typography>
+          </Box>
+        )}
+      </Box>
+
+      <Divider />
+      <Typography variant="h6" fontWeight="bold">Organizers</Typography>
+      <List sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }, gap: 2 }}>
+        {data.organizers.map((user, index) => (
+          <ListItem
+            key={index}
+            sx={{
+              bgcolor: "background.paper",
+              mb: 1,
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <ListItemAvatar>
+              <Avatar src={user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} />
+            </ListItemAvatar>
+            <ListItemText primary={user.name} secondary={user.utorid} />
+          </ListItem>
+        ))}
+      </List>
+
+      {(isOrganizer(data) || isManagerOrSuperuser) && (
+        <>
+          <Divider />
+          <Typography variant="h6" fontWeight="bold">Guest List</Typography>
+          <List sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(3, 1fr)", md: "repeat(4, 1fr)" }, gap: 2 }}>
+            {data.guests.map((item, index) => (
+              <ListItem
+                key={index}
+                sx={{
+                  bgcolor: "background.paper",
+                  mb: 1,
+                  borderRadius: 2,
+                  border: "1px solid",
+                  borderColor: "divider",
+                }}
+              >
+                <ListItemAvatar>
+                  <Avatar src={item.user.avatarUrl ? `${backendURL}/${item.user.avatarUrl}` : undefined} />
+                </ListItemAvatar>
+                <ListItemText primary={item.user.name} secondary={item.user.utorid} />
+              </ListItem>
+            ))}
+          </List>
+        </>
+      )}
+
+      <Modal
+        open={rsvpSuccess}
+        onClose={() => setRsvpSuccess(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1300,
+        }}
+      >
+        <RSVPSuccessModal
+          event={data}
+          onClose={() => setRsvpSuccess(false)}
+        />
+      </Modal>
+      <Modal
+        open={unRsvpSuccess}
+        onClose={() => setUnRsvpSuccess(false)}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1300,
+        }}
+      >
+        <UnRSVPSuccessModal
+          event={data}
+          onClose={() => setUnRsvpSuccess(false)}
+        />
+      </Modal>
+      <Modal
+        open={editModal}
+        onClose={(e) => {
+          e.stopPropagation();
+          setEditModal(false);
+        }}
+        aria-labelledby="edit-event-modal"
+        aria-describedby="edit-event-form"
+        sx={{
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1300,
+          padding: 0,
+        }}
+      >
+        <FormCard
+          width="fit-content"
+          showClose={true}
+          onClose={() => setEditModal(false)}
+          sx={{
+            width: "90%",
+            maxWidth: "600px",
+            maxHeight: "90vh",
+            overflow: "auto",
+            display: "flex",
+            flexDirection: "column",
+          }}
+          keepForm={true}
+        >
+          <EditEventForm
+            event={data}
+            onClose={() => setEditModal(false)}
+            refetch={refetch}
+            openEditEventModal={() => {
+              setEditModal(false);
+              navigate(`/my-events/${data.id}/edit-users`);
+            }}
+          />
+        </FormCard>
+      </Modal>
+      <Box sx={{ textAlign: "center", mt: 1 }}>
+        <Typography
+          variant="h3"
+          fontWeight="bold"
+          sx={{ color: "primary" }}
+        >
+          {data.points} pts
+        </Typography>
+      </Box>
+    </Box>
+  );
+}
+
+function EventDetails() {
+  const { id } = useParams();
+  const [rsvpSuccess, setRsvpSuccess] = useState(false);
+  const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
+
+  return (
+    <DetailsTemplate queryKey="event-details" apiEndpoint={`/events`}>
+      {(data, refetch) => (
+        <EventDetailsContent
+          data={data}
+          refetch={refetch}
+          rsvpSuccess={rsvpSuccess}
+          setRsvpSuccess={setRsvpSuccess}
+          unRsvpSuccess={unRsvpSuccess}
+          setUnRsvpSuccess={setUnRsvpSuccess}
+        />
+      )}
     </DetailsTemplate>
   );
 }

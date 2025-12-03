@@ -16,19 +16,11 @@ import api from "../../api/api";
 import { useUser } from "../../context/UserContext";
 
 import { useState, useEffect } from "react";
-import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
-import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
-import { FiEdit } from "react-icons/fi";
-import EditEventForm from "../../pages/Events/EditEventForm.jsx";
-import ManageEventUsers from "../../pages/Events/ManageEventUsers.jsx";
 import { useNavigate } from "react-router-dom";
-import FormCard from "./FormCard.jsx";
 
 function EventCard({
   event,
-  editable = false,
   detailsPage = true,
-  refetch = null,
 }) {
   const isSmall = useMediaQuery("(max-width: 670px)");
   const {
@@ -42,12 +34,7 @@ function EventCard({
     points,
   } = event;
 
-  const [rsvpSuccess, setRsvpSuccess] = useState(false);
-  const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
-  const [editModal, setEditModal] = useState(false);
-  const [rsvp, setRSVP] = useState(false);
   const navigate = useNavigate();
-  const { user } = useUser();
 
   useEffect(() => {
     async function fetchEvent() {
@@ -92,9 +79,6 @@ function EventCard({
     if (!detailsPage) return;
     navigate(`/events/${event.id}`, { state: { event } });
   };
-
-  const isManagerOrSuperuser =
-    user.role === "manager" || user.role === "superuser";
   if (isSmall) {
     return (
       <Box
@@ -263,53 +247,6 @@ function EventCard({
               {truncateStr(description)}
             </Typography>
           </Box>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Modal
-              open={rsvpSuccess}
-              onClose={() => setRsvpSuccess(false)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zindex: 1300,
-              }}
-            >
-              <RSVPSuccessModal
-                event={event}
-                onClose={() => setRsvpSuccess(false)}
-              ></RSVPSuccessModal>
-            </Modal>
-            <Modal
-              open={unRsvpSuccess}
-              onClose={() => setUnRsvpSuccess(false)}
-              aria-labelledby="modal-modal-title"
-              aria-describedby="modal-modal-description"
-              sx={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: "rgba(0,0,0,0.5)",
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                zindex: 1300,
-              }}
-            >
-              <UnRSVPSuccessModal
-                event={event}
-                onClose={() => setUnRsvpSuccess(false)}
-              ></UnRSVPSuccessModal>
-            </Modal>
             {hasEnded ? (
               <Chip
                 label="ENDED"
@@ -330,69 +267,7 @@ function EventCard({
                   fontSize: 10,
                 }}
               />
-            ) : (
-              (editable || isManagerOrSuperuser) && (
-                <Button
-                  startIcon={<FiEdit color="grey" />}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setEditModal(true)
-                  }}
-                  sx={{
-                    fontSize: 12,
-                    color: "grey",
-                    borderRadius: "8px",
-                    width: "fit-content",
-                    "&:hover": { backgroundColor: theme.palette.action.hover },
-                  }}
-                >
-                  Edit
-                </Button>
-              )
-            )}
-          </Stack>
-          <Modal
-            open={editModal}
-            onClose={(e) => {
-              e.stopPropagation();
-              setEditModal(false)
-            }}
-            aria-labelledby="edit-event-modal"
-            aria-describedby="edit-event-form"
-            sx={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.5)",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              zIndex: 1300,
-            }}
-          >
-            <Box
-              sx={{
-                width: "90%",
-                maxWidth: "600px",
-                maxHeight: "90vh",
-                overflow: "auto",
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <EditEventForm
-                event={event}
-                onClose={() => setEditModal(false)}
-                openEditEventModal={() => {
-                  setEditModal(false);
-                  navigate(`/my-events/${event.id}/edit-users`);
-                }}
-                refetch={refetch}
-              />
-            </Box>
-          </Modal>
+            ) : null}
         </Box>
         <Box
           sx={{
