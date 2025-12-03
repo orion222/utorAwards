@@ -21,7 +21,7 @@ export default function TableActions({
   is_organizer,
 }) {
   const { showToast } = useToast();
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const { user } = useUser();
   const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
   const unenrolledUser = is_guest === false && is_organizer === false;
@@ -98,7 +98,7 @@ export default function TableActions({
         <Chip
           avatar={
             user.avatarUrl ? (
-              <Avatar src={user.avatarUrl} />
+              <Avatar src={`${backendURL}/${user.avatarUrl}`} />
             ) : (
               <Avatar>{user.name.charAt(0).toUpperCase()}</Avatar>
             )
