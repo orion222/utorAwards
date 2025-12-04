@@ -82,9 +82,6 @@ function ManageEventUsers() {
   const [pointChanges, setPointChanges] = useState({});
   const [originalPoints, setOriginalPoints] = useState({});
   const [isSaving, setIsSaving] = useState(false);
-
-  console.log(pointChanges);
-
   const handlePointChange = (utorid, userId, newPoints, originalValue) => {
     if (!(utorid in originalPoints)) {
       setOriginalPoints(prev => ({
@@ -156,7 +153,7 @@ function ManageEventUsers() {
     setOriginalPoints({});
     showToast("Changes cancelled", "info");
   };
-  const handleAwardAll = (awardAmount, userData) => {
+  const handleAwardAll = (awardAmount) => {
     // Create changes for all users
     if (event.guests === undefined || event.guests.length === 0) {
       return;
@@ -193,7 +190,7 @@ function ManageEventUsers() {
     <Box sx={{ p: 2 }}>
       {event ? (
         <FilterableList
-          queryKey="all-users"
+          queryKey={`all-users-for-event-${eventId}`}
           apiEndpoint="/users"
           filterConfig={filterConfig}
           orderByConfig={orderByConfig}

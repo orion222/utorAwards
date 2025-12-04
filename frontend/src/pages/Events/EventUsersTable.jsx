@@ -178,6 +178,7 @@ export default function UsersTable({
                           backgroundColor: theme.palette.grey[300],
                           color: theme.palette.text.primary,
                           fontWeight: 500,
+                          minWidth: '4rem',
                           fontSize: "1rem",
                         }}
                       />
