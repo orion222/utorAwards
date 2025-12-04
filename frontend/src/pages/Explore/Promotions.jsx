@@ -70,6 +70,7 @@ function Promotions() {
                   color: "grey",
                   borderRadius: "8px",
                   width: "fit-content",
+                  padding: "16px",
                   "&:hover": { backgroundColor: theme.palette.action.hover },
               }}
               startIcon={<AddCircleOutlineIcon sx={{color:"grey",fontSize:12}} />}
