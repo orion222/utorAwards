@@ -18,7 +18,7 @@ export default function AwardAllButton({ onAwardAll, numGuests, isSaving }) {
   const handleConfirmAward = () => {
     const amount = parseInt(awardAmount);
     if (!isNaN(amount) && amount !== 0 && numGuests > 0) {
-      onAwardAll(amount, numGuests);
+      onAwardAll(amount);
       setAwardAmount('');
       setShowInput(false);
     }
