@@ -10,11 +10,13 @@ import { useUser } from "../../context/UserContext";
 import { useState } from "react";
 import PromotionCard from "../../components/common/PromotionCard";
 import PromoteUserForm from "./PromoteUserForm.jsx";
+import EditUserForm from "./EditUserForm.jsx";
 
 function UserDetails() {
     const { user } = useUser();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
     const [showPromoteModal, setShowPromoteModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
     const [userData, setUserData] = useState(null);
 
     const formatDate = (isoString) => {
@@ -26,9 +28,26 @@ function UserDetails() {
         setShowPromoteModal(true);
     };
 
-    const handleCloseModal = () => {
+    const handleEditClick = (data) => {
+        setUserData(data);
+        setShowEditModal(true);
+    };
+
+    const handleClosePromoteModal = () => {
         setShowPromoteModal(false);
         setUserData(null);
+    };
+
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
+        setUserData(null);
+    };
+
+    const handleEditSubmit = async (values) => {
+        // TODO: Implement API call to update user
+        console.log('Edit user data:', values);
+        // After successful API call:
+        handleCloseEditModal();
     };
 
     return (
@@ -70,7 +89,13 @@ function UserDetails() {
                                 </Stack>                                
                             )}
                             <Stack direction="row" gap={1}>
-                                <Button variant="contained" color="secondary">Edit User</Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => handleEditClick(data)}
+                                >
+                                    Edit User
+                                </Button>
                                 <Button
                                     variant="contained"
                                     color="secondary"
@@ -151,7 +176,7 @@ function UserDetails() {
                     {/* Promote User Modal */}
                     <Modal
                         open={showPromoteModal}
-                        onClose={handleCloseModal}
+                        onClose={handleClosePromoteModal}
                         aria-labelledby="promote-user-modal"
                         sx={{
                             display: 'flex',
@@ -163,7 +188,27 @@ function UserDetails() {
                             {userData && (
                                 <PromoteUserForm
                                     user={userData}
-                                    onClose={handleCloseModal}
+                                    onClose={handleClosePromoteModal}
+                                />
+                            )}
+                        </Box>
+                    </Modal>
+                   <Modal
+                        open={showEditModal}
+                        onClose={handleCloseEditModal}
+                        aria-labelledby="edit-user-modal"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Box>
+                            {userData && (
+                                <EditUserForm
+                                    user={userData}
+                                    onClose={handleCloseEditModal}
+                                    onSubmit={handleEditSubmit}
                                 />
                             )}
                         </Box>
