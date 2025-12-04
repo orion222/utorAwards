@@ -407,6 +407,7 @@ class UserService {
           points: true,
           grossPoints: true,
           hideUtorid: true,
+          avatarUrl: true,
         },
       }),
     ]);

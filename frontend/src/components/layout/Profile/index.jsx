@@ -30,11 +30,6 @@ export default function Profile() {
     handleClose();
   };
 
-  const handleNotifications = () => {
-    // e.g. navigate("/notifications");
-    handleClose();
-  };
-
   const handleSettings = () => {
     setSettingsModalOpen(true);
     handleClose();
@@ -69,13 +64,6 @@ export default function Profile() {
             <User size={18} />
           </ListItemIcon>
           <ListItemText primary="Profile" />
-        </MenuItem>
-
-        <MenuItem onClick={handleNotifications}>
-          <ListItemIcon>
-            <Bell size={18} />
-          </ListItemIcon>
-          <ListItemText primary="Notifications" />
         </MenuItem>
 
         <MenuItem onClick={handleSettings}>

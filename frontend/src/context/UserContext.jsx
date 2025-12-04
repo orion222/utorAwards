@@ -1,68 +1,57 @@
 import {
   useContext,
-  useState,
   useEffect,
   createContext,
   useCallback,
 } from "react";
-import { useCookies } from "react-cookie";
 import { jwtDecode } from "jwt-decode";
 import api from "../api/api";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [cookies, setCookie, removeCookie] = useCookies(["token"]);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      const token = cookies.token;
-
-      setLoading(true);
+  const { data: user, isFetching: loading } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const token = localStorage.getItem("token");
 
       if (!token) {
-        setUser(null);
-        setLoading(false);
-        return;
+        return null;
       }
 
-      try {
-        const decoded = jwtDecode(token);
+      const decoded = jwtDecode(token);
 
-        if (decoded.exp * 1000 < Date.now()) {
-          logout();
-          setLoading(false);
-          return;
-        }
-
-        const res = await api.get("/users/me");
-        setUser(res.data);
-      } catch (error) {
-        console.warn("Invalid Token");
-        logout();
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem("token");
+        return null;
       }
 
-      setLoading(false);
-    };
+      const res = await api.get("/users/me");
+      return res.data;
+    },
+    onError: (error) => {
+      console.log(error);
+      logout();
+      return null;
+    },
+    retry: false,
+    staleTime: 0,
+    refetchOnWindowFocus: false,
+  });
 
-    checkUserLoggedIn();
-  }, []);
-
-  const login = (tokenValue, user) => {
-    setCookie("token", tokenValue, {
-      path: "/",
-      secure: false,
-      sameSite: "strict",
-    });
-    setUser(user);
+  const login = (tokenValue) => {
+    localStorage.setItem("token", tokenValue);
+    queryClient.invalidateQueries(["user"]);
   };
 
   const logout = useCallback(() => {
-    removeCookie("token", { path: "/" });
-    setUser(null);
-  }, []);
+    localStorage.removeItem("token");
+    queryClient.setQueryData(["user"], null);
+    queryClient.invalidateQueries(["user"]);
+  }, [queryClient]);
 
   // intercept invalid tokens as responses and auto-logout user
   useEffect(() => {
@@ -86,7 +75,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, login, logout, cookies, setCookie, removeCookie, loading }}
+      value={{ user, login, logout, loading }}
     >
       {children}
     </UserContext.Provider>

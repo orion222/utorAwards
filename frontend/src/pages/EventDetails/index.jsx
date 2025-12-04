@@ -90,7 +90,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
   return (
     <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
       <Typography variant="h4" fontWeight="bold">
-        {data.name}
+        {data.name} ({data.points} pts)
       </Typography>
 
       <Box sx={{ display: "flex", flexDirection: "row", gap: { xs: 1, sm: 3 }, flexWrap: "wrap" }}>
@@ -367,15 +367,6 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
           />
         </FormCard>
       </Modal>
-      <Box sx={{ textAlign: "center", mt: 1 }}>
-        <Typography
-          variant="h3"
-          fontWeight="bold"
-          sx={{ color: "primary" }}
-        >
-          {data.points} pts
-        </Typography>
-      </Box>
     </Box>
   );
 }

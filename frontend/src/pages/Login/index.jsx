@@ -45,13 +45,7 @@ function Login() {
         password: values.password
       });
 
-      const { data: userData } = await api.get("/users/me", {
-        headers: {
-          Authorization: `Bearer ${authData.token}`
-        }
-      });
-
-      login(authData.token, userData);
+      login(authData.token);
       navigate("/dashboard");
       reset();
     } catch (error) {

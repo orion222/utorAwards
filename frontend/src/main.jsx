@@ -2,7 +2,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import { CookiesProvider } from "react-cookie";
 import { UserProvider } from "./context/UserContext.jsx";
 import { WalletProvider } from "./context/WalletContext.jsx";
 import { ToastProvider } from "./context/ToastContext.jsx";
@@ -12,16 +11,14 @@ const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <CookiesProvider>
-      <QueryClientProvider client={queryClient}>
-        <UserProvider>
-          <WalletProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </WalletProvider>
-        </UserProvider>
-      </QueryClientProvider>
-    </CookiesProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <WalletProvider>
+          <ToastProvider>
+            <App />
+          </ToastProvider>
+        </WalletProvider>
+      </UserProvider>
+    </QueryClientProvider>
   </StrictMode>,
 );
