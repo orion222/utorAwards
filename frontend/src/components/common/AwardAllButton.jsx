@@ -7,7 +7,7 @@ import {
   useMediaQuery,
 } from '@mui/material';
 
-export default function AwardAllButton({ onAwardAll, data, isSaving }) {
+export default function AwardAllButton({ onAwardAll, numGuests, isSaving }) {
   const [awardAmount, setAwardAmount] = useState('');
   const [showInput, setShowInput] = useState(false);
   const isSmall = useMediaQuery('(max-width: 500px)');
@@ -17,8 +17,8 @@ export default function AwardAllButton({ onAwardAll, data, isSaving }) {
 
   const handleConfirmAward = () => {
     const amount = parseInt(awardAmount);
-    if (!isNaN(amount) && amount !== 0 && data.length > 0) {
-      onAwardAll(amount, data);
+    if (!isNaN(amount) && amount !== 0 && numGuests > 0) {
+      onAwardAll(amount, numGuests);
       setAwardAmount('');
       setShowInput(false);
     }
@@ -35,10 +35,10 @@ export default function AwardAllButton({ onAwardAll, data, isSaving }) {
         <Button
           variant="contained"
           onClick={handleAwardClick}
-          disabled={isSaving || data.length === 0}
+          disabled={isSaving || numGuests === 0}
           size="small"
         >
-          Award All ({data.length} guests)
+          Award All ({numGuests} guests)
         </Button>
       </Stack>
     );

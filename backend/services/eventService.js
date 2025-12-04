@@ -197,7 +197,7 @@ class EventService {
 
       const rsvp = await tx.rsvp.findMany({
         where: { eventId: eventId },
-        select: { user: { select: { id: true, utorid: true, name: true, avatarUrl: true } } },
+        select: { user: { select: { id: true, utorid: true, name: true, avatarUrl: true, points: true } } },
       });
 
       return { ...event, guests: rsvp };

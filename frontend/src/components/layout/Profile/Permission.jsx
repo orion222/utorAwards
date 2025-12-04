@@ -12,7 +12,6 @@ export default function Permission() {
 
   const { user } = useUser();
   const [isPublic, setIsPublic] = useState(!user?.hideUtorid);
-  console.log("User permission:", user?.hideUtorid);
 
   const handleToggle = async (event) => {
     const newIsPublic = event.target.checked;

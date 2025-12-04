@@ -156,13 +156,16 @@ function ManageEventUsers() {
     setOriginalPoints({});
     showToast("Changes cancelled", "info");
   };
-
   const handleAwardAll = (awardAmount, userData) => {
     // Create changes for all users
+    if (event.guests === undefined || event.guests.length === 0) {
+      return;
+    }
     const newPointChanges = {};
     const newOriginalPoints = {};
 
-    userData.forEach(user => {
+    event?.guests?.forEach(obj => {
+      const user = obj.user;
       const newPoints = user.points + awardAmount;
 
       // Store original points if not already stored
@@ -183,7 +186,7 @@ function ManageEventUsers() {
     setOriginalPoints(prev => ({ ...prev, ...newOriginalPoints }));
     setPointChanges(prev => ({ ...prev, ...newPointChanges }));
 
-    showToast(`Awarded ${awardAmount} points to ${userData.length} guests`, "info");
+    showToast(`Awarded ${awardAmount} points to ${event.numGuests} guests`, "info");
   };
 
   return (
@@ -245,6 +248,7 @@ function ManageEventUsers() {
                     onSaveChanges={() => handleSaveChanges(refetch)}
                     onCancelChanges={handleCancelChanges}
                     onAwardAll={handleAwardAll}
+                    numGuests = {event.numGuests}
                     isSaving={isSaving}
                   />
                 )}

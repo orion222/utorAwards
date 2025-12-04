@@ -1,5 +1,6 @@
 import {
   Box,
+  Chip,
   Paper,
   Table,
   TableBody,
@@ -14,6 +15,7 @@ import {
 import TableActions from "./TableActions.jsx";
 import SaveCancelButtons from "../../components/common/SaveCancelButtons.jsx";
 import AwardAllButton from "../../components/common/AwardAllButton.jsx";
+import {useMemo} from "react";
 export default function UsersTable({
   refetch,
   eventId,
@@ -23,6 +25,7 @@ export default function UsersTable({
   onSaveChanges,
   onCancelChanges,
   onAwardAll,
+  numGuests,
   isSaving = false,
 }) {
   const theme = useTheme();
@@ -77,7 +80,7 @@ export default function UsersTable({
       ) : (
         <AwardAllButton
           onAwardAll={onAwardAll}
-          data={data}
+          numGuests={numGuests}
           isSaving={isSaving}
         />
       )}
@@ -145,25 +148,41 @@ export default function UsersTable({
                   </>
                 )}
                 <TableCell sx={bodyCellSx}>
-                  <TextField
-                    value={getCurrentPointValue(user)}
-                    onChange={(e) => handlePointFieldChange(user.utorid, user.id, e.target.value, user.points)}
-                    size="small"
-                    disabled={isSaving}
-                    sx={{
-                      width: 64,
-                      backgroundColor: hasChanges(user.utorid)
-                        ? theme.palette.warning.light
-                        : theme.palette.grey[300],
-                      color: theme.palette.text.primary,
-                      fontWeight: 500,
-                      borderRadius: 2,
-                      "& .MuiInputBase-input": {
-                        textAlign: "center",
-                        padding: "6px 8px"
-                      },
-                    }}
-                  />
+                  {
+                    user.event_role === "guest" ? (
+                      <TextField
+                        value={getCurrentPointValue(user)}
+                        onChange={(e) => handlePointFieldChange(user.utorid, user.id, e.target.value, user.points)}
+                        size="small"
+                        disabled={isSaving}
+                        sx={{
+                          width: 64,
+                          backgroundColor: hasChanges(user.utorid)
+                            ? theme.palette.warning.light
+                            : "FFFFFF",
+                          color: theme.palette.text.primary,
+                          fontWeight: 500,
+                          borderRadius: 2,
+                          "& .MuiInputBase-input": {
+                            textAlign: "center",
+                            padding: "6px 8px"
+                          },
+                        }}
+                      />
+                    ) : (
+                      <Chip
+                        label={user.points}
+                        size="large"
+                        variant="outlined"
+                        sx={{
+                          backgroundColor: theme.palette.grey[300],
+                          color: theme.palette.text.primary,
+                          fontWeight: 500,
+                          fontSize: "1rem",
+                        }}
+                      />
+                    )
+                  }
                 </TableCell>
                 <TableCell sx={bodyCellSx}>
                   <TableActions
