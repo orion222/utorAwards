@@ -45,7 +45,7 @@ export default function UserCard({ user }) {
                 {user.name}
               </Typography>
               {user.verified && (
-                <VerifiedIcon />
+                <VerifiedIcon sx = {{color: '#1591EA'}} />
               )}
             </Box>
             <Typography
