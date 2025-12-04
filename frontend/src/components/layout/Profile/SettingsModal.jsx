@@ -16,7 +16,7 @@ export default function SettingsModal({ open, onClose }) {
         <DialogTitle>Settings</DialogTitle>
         <DialogContent>
             <Stack spacing={4} sx={{ mt: 1 }}>
-            <Permission />
+            <Permission onClose = {onClose}/>
             <Divider />
             <ChangePassword onClose = {onClose}/>
             </Stack>
