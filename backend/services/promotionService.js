@@ -108,7 +108,9 @@ class PromotionService {
         users: {
           some: { id: userId },
         }
-      }
+      },
+      where.startTime = { lte: now },
+      where.endTime = { gte: now }
     }
     else if (typeof available === "boolean" && available === false) {
       where.users = {
