@@ -16,7 +16,6 @@ import { useUser } from "../../context/UserContext.jsx";
 function Leaderboard() {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const { user } = useUser();
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
 
   const filterConfig = {
     name: {
