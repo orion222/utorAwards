@@ -1,10 +1,16 @@
-import {Alert, AlertTitle, Box, CircularProgress, Typography} from "@mui/material";
+import {Alert, AlertTitle, Box, CircularProgress, Typography, Button, useTheme, Modal, useMediaQuery} from "@mui/material";
 import FilterableList from "../../components/common/FilterableList.jsx";
 import PromotionCard from "../../components/common/PromotionCard.jsx";
 import { useUser } from "../../context/UserContext.jsx";
+import CreatePromotionForm from "./CreatePromotionForm.jsx";
+import { useState, useEffect } from "react";
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 
 function Promotions() {
+  const theme = useTheme();
   const { user } = useUser();
+  const [ createModal, setCreateModal ] = useState(false);
+  const isSmall = useMediaQuery("(max-width: 670px)");
 
   const filterConfig = {
     name: {
@@ -53,6 +59,50 @@ function Promotions() {
 
   return (
     <Box sx={{ my: 2 }}>
+       {["manager", "superuser"].includes(user.role) && (
+          <Button
+              onClick={(e) => {
+                  e.stopPropagation();
+                  setCreateModal(true)
+              }}
+              sx={{
+                  fontSize: 12,
+                  color: "grey",
+                  borderRadius: "8px",
+                  width: "fit-content",
+                  "&:hover": { backgroundColor: theme.palette.action.hover },
+              }}
+              startIcon={<AddCircleOutlineIcon sx={{color:"grey",fontSize:12}} />}
+          >
+              Create Promotion 
+              
+          </Button>                           
+      )}
+      <Modal
+        open={createModal}
+        onClose={(e) => {
+            e.stopPropagation();
+            setCreateModal(false)
+        }}
+        sx={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1300,
+        }}
+    >
+        <Box sx={{width: isSmall ? "100%":"50%"}}>
+            <CreatePromotionForm
+                onClose={() => setCreateModal(false)}      
+            />
+        </Box>
+      </Modal>
       <FilterableList queryKey="promotions" apiEndpoint="/promotions" filterConfig={filterConfig} orderByConfig={orderByConfig}>
         {({ data, isFetching, error }) => {
           if (error) {
