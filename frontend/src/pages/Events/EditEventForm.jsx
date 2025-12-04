@@ -9,6 +9,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 
+
 import {
   Stack,
   Box,
@@ -21,15 +22,28 @@ import {
   CircularProgress,
 } from "@mui/material";
 
-import FormCard from "../../components/common/FormCard.jsx";
 import api from "../../api/api.js";
 import PeopleIcon from "@mui/icons-material/People";
 import { useToast } from "../../context/ToastContext.jsx";
+
+const defaultValues = {
+  name: "",
+  description: "",
+  startTime: null,
+  endTime: null,
+  location: "",
+  pointsRemain: 0,
+  numGuests: 0,
+  capacity: 0,
+  published: false,
+}
 export default function EditEventForm({
-  event,
+  event = defaultValues,
   openEditEventModal,
   onClose,
   refetch = null,
+  hideManageUsers = false,
+  createMode = false,
 }) {
   const { showToast } = useToast();
   const {
@@ -65,7 +79,6 @@ export default function EditEventForm({
   };
 
   const onSubmit = async (data) => {
-    // Check for changes first
     if (!hasFormChanged(data)) {
       showToast("No changes made", "info");
       onClose();
@@ -95,24 +108,36 @@ export default function EditEventForm({
       payload["published"] = published;
     }
 
+    let action = '';
     try {
-      const res = await api.patch(`/events/${event.id}`, payload);
+      let res;
+      let successStatus = createMode ? 201 : 200;
+      if (createMode) {
+        res = await api.post(`/events`, payload);
+        action = 'Create';
+      }
+      else {
+        res = await api.patch(`/events/${event.id}`, payload);
+        action = 'Edit'
+      }
 
-      if (res.status === 200) {
-        showToast("Edit successful", "success");
+      if (res.status === successStatus) {
+        showToast(`${action} successful`, "success");
         onClose();
         if (refetch) {
           refetch();
         }
       } else {
-        showToast("Edit event failed", "error");
+        showToast(`${action} event failed`, "error");
+        console.log(res);
       }
     } catch (error) {
       const msg =
         error.response?.data?.error ||
         error.response?.data?.message ||
-        "Edit event failed";
+        `${action} event failed`;
       showToast(msg, "error");
+      console.log(error);
     }
   };
   const isSmall = useMediaQuery("(max-width: 1170px)");
@@ -135,7 +160,7 @@ export default function EditEventForm({
   return (
         <Box>
           <Typography variant="h5" fontWeight="bold">
-            Editing {event.name}
+            {createMode ? "Create new event": `Editing ${event.name}`}
           </Typography>
           <form onSubmit={handleSubmit(onSubmit)}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -245,7 +270,6 @@ export default function EditEventForm({
                       <TextField
                         {...field}
                         label="Points"
-                        type="number"
                         error={!!errors.pointsRemain}
                         helperText={
                           errors.pointsRemain ? errors.pointsRemain.message : ""
@@ -263,7 +287,6 @@ export default function EditEventForm({
                       <TextField
                         {...field}
                         label="Capacity"
-                        type="number"
                         error={!!errors.capacity}
                         helperText={
                           errors.capacity ? errors.capacity.message : ""
@@ -300,17 +323,22 @@ export default function EditEventForm({
                       />
                     )}
                   />
-                  <Button
-                    startIcon={<PeopleIcon />}
-                    variant="contained"
-                    color="secondary"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      openEditEventModal()
-                    }}
-                  >
-                    {isSmall ? "Manage users" : "Manage event users"}
-                  </Button>
+                  {
+                    !hideManageUsers && (
+
+                      <Button
+                        startIcon={<PeopleIcon />}
+                        variant="contained"
+                        color="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openEditEventModal()
+                        }}
+                      >
+                        {isSmall ? "Manage users" : "Manage event users"}
+                      </Button>
+                    )
+                  }
                 </Stack>
                 <Button
                   variant="contained"
@@ -318,7 +346,7 @@ export default function EditEventForm({
                   type="submit"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Saving..." : "Save Changes"}
+                  {isSubmitting ? "Saving..." : createMode ? "Create event": "Save Changes"}
                 </Button>
               </Stack>
             </LocalizationProvider>
