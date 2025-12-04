@@ -80,7 +80,7 @@ export default function EditPromotionForm({
     onError: (error) => {
         showToast(`Error: ${error.message || 'Failed to update promotion'}`, "error");
     }
-    });
+  });
 
   const onSubmit = async (data) => {
     // Check for changes first

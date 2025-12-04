@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import api from "../../api/api"
 import { Alert, Box, CircularProgress, Modal, Typography, Stack, Chip, useTheme, Button, useMediaQuery } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
-import { FiEdit } from "react-icons/fi";
+import { FiEdit, FiTrash } from "react-icons/fi";
 import PaidIcon from "@mui/icons-material/Paid";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import DetailsTemplate from "../../components/common/DetailsTemplate";
@@ -12,13 +12,14 @@ import { useUser } from "../../context/UserContext.jsx";
 import { useState, useEffect } from "react";
 import EditPromotionForm from "./EditPromotionForm.jsx";
 import FormCard from "../../components/common/FormCard.jsx";
-
+import DeletePromotionForm from "./DeletePromotionForm.jsx";
 
 
 function PromotionDetails() {
     const theme = useTheme();
     const {user} = useUser();
     const [editModal, setEditModal] = useState(false);
+    const [deleteModal, setDeleteModal] = useState(false);
     const isSmall = useMediaQuery("(max-width: 670px)");
 
     const formatDate = (dateIsoString) => {
@@ -27,13 +28,6 @@ function PromotionDetails() {
             day: '2-digit',
             year: 'numeric'
         }).format(new Date(dateIsoString));
-    }
-
-    async function refetchPromotion() {
-        
-        const { data: promotionData } = await api.get("/promotions", {
-            params: {limit: 3}
-        });
     }
 
     return (
@@ -71,46 +65,90 @@ function PromotionDetails() {
                             }} 
                         />
                          {["manager", "superuser"].includes(user.role) && (
-                            <Button
-                                startIcon={<FiEdit color="grey" />}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setEditModal(true)
-                                  }}
-                                sx={{
-                                fontSize: 12,
-                                color: "grey",
-                                borderRadius: "8px",
-                                width: "fit-content",
-                                "&:hover": { backgroundColor: theme.palette.action.hover },
-                                }}
-                            >
-                                Edit
-                            </Button>
+                            <>
+                                <Button
+                                    startIcon={<FiEdit color="grey" />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setEditModal(true)
+                                    }}
+                                    sx={{
+                                        fontSize: 12,
+                                        color: "grey",
+                                        borderRadius: "8px",
+                                        width: "fit-content",
+                                        "&:hover": { backgroundColor: theme.palette.action.hover },
+                                    }}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    startIcon={<FiTrash color="red" />}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setDeleteModal(true)
+                                    }}
+                                    sx={{
+                                        fontSize: 12,
+                                        color: "red",
+                                        borderRadius: "8px",
+                                        width: "fit-content",
+                                        "&:hover": { backgroundColor: theme.palette.action.hover },
+                                    }}
+                                >
+                                    Delete
+                                </Button>                            
+                            </>
                         )}
                         <Modal
                             open={editModal}
                             onClose={(e) => {
-                            e.stopPropagation();
-                            setEditModal(false)
+                                e.stopPropagation();
+                                setEditModal(false)
                             }}
                             sx={{
-                            position: "fixed",
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            zIndex: 1300,
+                                position: "fixed",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                zIndex: 1300,
                             }}
                         >
                             <Box sx={{width: isSmall ? "100%":"50%"}}>
                                 <EditPromotionForm
                                     promotion={data}
                                     onClose={() => setEditModal(false)}      
+                                />
+                            </Box>
+                        </Modal>
+                        <Modal
+                            open={deleteModal}
+                            onClose={(e) => {
+                                e.stopPropagation();
+                                setDeleteModal(false)
+                            }}
+                            sx={{
+                                position: "fixed",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                bottom: 0,
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                zIndex: 1300,
+                            }}
+                        >
+                            <Box sx={{width: isSmall ? "100%":"50%"}}>
+                                <DeletePromotionForm
+                                    promotion={data}
+                                    onClose={() => setDeleteModal(false)}      
                                 />
                             </Box>
                         </Modal>
