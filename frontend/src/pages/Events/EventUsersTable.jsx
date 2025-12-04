@@ -1,7 +1,5 @@
 import {
   Box,
-  Chip,
-  IconButton,
   Paper,
   Table,
   TableBody,
@@ -9,22 +7,26 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
 import TableActions from "./TableActions.jsx";
-import { useEffect } from "react";
-
+import SaveCancelButtons from "../../components/common/SaveCancelButtons.jsx";
+import AwardAllButton from "../../components/common/AwardAllButton.jsx";
 export default function UsersTable({
-  setQueriedUserType,
-  filters,
   refetch,
   eventId,
   data,
+  pointChanges = {},
+  onPointChange,
+  onSaveChanges,
+  onCancelChanges,
+  onAwardAll,
+  isSaving = false,
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  // Badge colors that rotate
   const badgeColors = {
     guest: { bg: "#e8f5e8", text: "#2e7d32", border: "#4caf50" }, // Green
     organizer: { bg: "#e3f2fd", text: "#1565c0", border: "#42a5f5" }, // Blue,
@@ -46,18 +48,49 @@ export default function UsersTable({
     fontSize: "0.875rem",
     ...(isMobile && { padding: "16px 8px" }),
   };
-  setQueriedUserType(filters);
+  const handlePointFieldChange = (utorid, userId, newValue, originalValue) => {
+    if (onPointChange) {
+      onPointChange(utorid, userId, newValue, originalValue);
+    }
+  };
+
+  // Check if row has changes
+  const hasChanges = (utorid) => utorid in pointChanges;
+
+  // Get current value for TextField
+  const getCurrentPointValue = (user) => {
+    return pointChanges[user.utorid]?.newPoints ?? user.points;
+  };
+
+  const hasAnyChanges = Object.keys(pointChanges).length > 0;
+
   return (
-    <TableContainer
-      component={Paper}
-      sx={{
-        boxShadow: "none",
-        border: `1px solid ${theme.palette.divider}`,
-        borderRadius: 1,
-        maxWidth: "100%",
-      }}
-    >
-      <Table sx={{ width: "100%", minWidth: isMobile ? 0 : 400 }}>
+    <>
+      {hasAnyChanges ? (
+        <SaveCancelButtons
+          hasAnyChanges={hasAnyChanges}
+          isSaving={isSaving}
+          onCancelChanges={onCancelChanges}
+          onSaveChanges={onSaveChanges}
+          pointChanges={pointChanges}
+        />
+      ) : (
+        <AwardAllButton
+          onAwardAll={onAwardAll}
+          data={data}
+          isSaving={isSaving}
+        />
+      )}
+      <TableContainer
+        component={Paper}
+        sx={{
+          boxShadow: "none",
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: 1,
+          maxWidth: "100%",
+        }}
+      >
+        <Table sx={{ width: "100%", minWidth: isMobile ? 0 : 400 }}>
         <TableHead>
           <TableRow sx={{ backgroundColor: theme.palette.grey[50] }}>
             <TableCell sx={cellSx}>ID</TableCell>
@@ -66,9 +99,9 @@ export default function UsersTable({
               <>
                 <TableCell sx={cellSx}>NAME</TableCell>
                 <TableCell sx={cellSx}>EMAIL</TableCell>
-                <TableCell sx={cellSx}>POINTS</TableCell>
               </>
             )}
+            <TableCell sx={cellSx}>POINTS</TableCell>
             <TableCell sx={cellSx}>ACTION</TableCell>
           </TableRow>
         </TableHead>
@@ -109,19 +142,29 @@ export default function UsersTable({
                   <>
                     <TableCell sx={bodyCellSx}>{user.name}</TableCell>
                     <TableCell sx={bodyCellSx}>{user.email}</TableCell>
-                    <TableCell sx={bodyCellSx}>
-                      <Chip
-                        label={user.points}
-                        size="small"
-                        sx={{
-                          backgroundColor: theme.palette.grey[300],
-                          color: theme.palette.text.primary,
-                          fontWeight: 500,
-                        }}
-                      />
-                    </TableCell>
                   </>
                 )}
+                <TableCell sx={bodyCellSx}>
+                  <TextField
+                    value={getCurrentPointValue(user)}
+                    onChange={(e) => handlePointFieldChange(user.utorid, user.id, e.target.value, user.points)}
+                    size="small"
+                    disabled={isSaving}
+                    sx={{
+                      width: 64,
+                      backgroundColor: hasChanges(user.utorid)
+                        ? theme.palette.warning.light
+                        : theme.palette.grey[300],
+                      color: theme.palette.text.primary,
+                      fontWeight: 500,
+                      borderRadius: 2,
+                      "& .MuiInputBase-input": {
+                        textAlign: "center",
+                        padding: "6px 8px"
+                      },
+                    }}
+                  />
+                </TableCell>
                 <TableCell sx={bodyCellSx}>
                   <TableActions
                     refetch={refetch}
@@ -138,5 +181,6 @@ export default function UsersTable({
         </TableBody>
       </Table>
     </TableContainer>
+    </>
   );
 }

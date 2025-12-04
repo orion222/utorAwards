@@ -181,7 +181,7 @@ async function createReward(req, res) {
   const eventId = req.eventId;
 
   try {
-    const newTransaction = await TransactionService.createEvent(
+    const newTransaction = await TransactionService.createEventPointsTransfer(
       creatorUtorid,
       utorid,
       type,

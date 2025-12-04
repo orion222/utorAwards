@@ -13,8 +13,10 @@ import { useParams } from "react-router-dom";
 import api from "../../api/api.js";
 import { useNavigate } from "react-router-dom";
 import { useUser } from '../../context/UserContext.jsx'
+import { useToast } from "../../context/ToastContext.jsx";
 
 function ManageEventUsers() {
+  const { showToast } = useToast();
   const navigate = useNavigate();
   const { user } = useUser();
   const { eventId } = useParams();
@@ -37,7 +39,13 @@ function ManageEventUsers() {
       }
     }
     fetchEvent();
-  }, []);
+  }, [eventId, navigate, user.id, user.role]);
+
+  // Clear changes when eventId changes
+  useEffect(() => {
+    setPointChanges({});
+    setOriginalPoints({});
+  }, [eventId]);
 
   const filterConfig = {
     is_guest: {
@@ -71,6 +79,113 @@ function ManageEventUsers() {
       return "Unenrolled users";
     }
   };
+  const [pointChanges, setPointChanges] = useState({});
+  const [originalPoints, setOriginalPoints] = useState({});
+  const [isSaving, setIsSaving] = useState(false);
+
+  console.log(pointChanges);
+
+  const handlePointChange = (utorid, userId, newPoints, originalValue) => {
+    if (!(utorid in originalPoints)) {
+      setOriginalPoints(prev => ({
+        ...prev,
+        [utorid]: originalValue
+      }));
+    }
+
+    const numericNewPoints = parseInt(newPoints) || 0;
+    const numericOriginalPoints = originalPoints[utorid] || originalValue;
+
+    if (numericNewPoints === numericOriginalPoints) {
+      setPointChanges(prev => {
+        const updated = { ...prev };
+        delete updated[utorid];
+        return updated;
+      });
+    } else {
+      setPointChanges(prev => ({
+        ...prev,
+        [utorid]: {
+          userId: userId,
+          newPoints: numericNewPoints,
+          originalPoints: numericOriginalPoints,
+          changeAmount: numericNewPoints - numericOriginalPoints
+        }
+      }));
+    }
+  };
+
+  const handleSaveChanges = async (refetchFn) => {
+    const changeCount = Object.keys(pointChanges).length;
+    if (changeCount === 0) {
+      showToast("No changes to save", "info");
+      return;
+    }
+
+    setIsSaving(true);
+
+    try {
+      // Submit all changes in parallel
+      const updatePromises = Object.entries(pointChanges).map(([utorid, change]) =>
+        api.post(`/events/${eventId}/transactions`, {
+          type: 'event',
+          amount: change.changeAmount,
+          utorid: utorid,
+        })
+      );
+
+      await Promise.all(updatePromises);
+      showToast(`Successfully updated points for ${changeCount} guest${changeCount > 1 ? 's' : ''}`, "success");
+
+      setPointChanges({});
+      setOriginalPoints({});
+      if (refetchFn) {
+        refetchFn();
+      }
+
+    } catch (error) {
+      console.error("Error saving point changes:", error);
+      showToast("Failed to save some changes. Please try again.", "error");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleCancelChanges = () => {
+    setPointChanges({});
+    setOriginalPoints({});
+    showToast("Changes cancelled", "info");
+  };
+
+  const handleAwardAll = (awardAmount, userData) => {
+    // Create changes for all users
+    const newPointChanges = {};
+    const newOriginalPoints = {};
+
+    userData.forEach(user => {
+      const newPoints = user.points + awardAmount;
+
+      // Store original points if not already stored
+      if (!(user.utorid in originalPoints)) {
+        newOriginalPoints[user.utorid] = user.points;
+      }
+
+      // Create point change entry
+      newPointChanges[user.utorid] = {
+        userId: user.id,
+        newPoints: newPoints,
+        originalPoints: originalPoints[user.utorid] || user.points,
+        changeAmount: awardAmount
+      };
+    });
+
+    // Update state
+    setOriginalPoints(prev => ({ ...prev, ...newOriginalPoints }));
+    setPointChanges(prev => ({ ...prev, ...newPointChanges }));
+
+    showToast(`Awarded ${awardAmount} points to ${userData.length} guests`, "info");
+  };
+
   return (
     <Box sx={{ p: 2 }}>
       {event ? (
@@ -125,6 +240,12 @@ function ManageEventUsers() {
                     eventId={event.id}
                     data={data}
                     filters={getAppliedFilters()}
+                    pointChanges={pointChanges}
+                    onPointChange={handlePointChange}
+                    onSaveChanges={() => handleSaveChanges(refetch)}
+                    onCancelChanges={handleCancelChanges}
+                    onAwardAll={handleAwardAll}
+                    isSaving={isSaving}
                   />
                 )}
               </>

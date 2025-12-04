@@ -326,14 +326,14 @@ class TransactionService {
     return transferTransactions;
   }
 
-  static async createEvent(
+  static async createEventPointsTransfer(
     creatorUtorid,
     recipientUtorid,
     type,
     amount,
     eventId,
   ) {
-    return await prisma.$transaction(async (prisma) => {
+    return prisma.$transaction(async (prisma) => {
       const creator = await prisma.user.findUnique({
         where: {
           utorid: creatorUtorid,
