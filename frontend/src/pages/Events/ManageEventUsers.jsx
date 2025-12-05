@@ -142,7 +142,7 @@ function ManageEventUsers() {
 
     } catch (error) {
       console.error("Error saving point changes:", error);
-      showToast("Failed to save some changes. Please try again.", "error");
+      showToast(error.response?.data?.error || 'Failed to save changes', "error");
     } finally {
       setIsSaving(false);
     }

@@ -343,11 +343,10 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
         }}
       >
         <FormCard
-          width="fit-content"
+          width={'600px'}
           showClose={true}
           onClose={() => setEditModal(false)}
           sx={{
-            width: "90%",
             maxWidth: "600px",
             maxHeight: "90vh",
             overflow: "auto",

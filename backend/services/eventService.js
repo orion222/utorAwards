@@ -26,6 +26,9 @@ class EventService {
         points: points,
         pointsRemain: points,
         createdBy: { connect: { id: creatorId } },
+        organizers: {
+          connect: { id: creatorId },
+        }
       },
       select: {
         id: true,
