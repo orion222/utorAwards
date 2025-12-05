@@ -208,14 +208,16 @@ async function main() {
   // 2) Events
   // -----------------------------------------------------
   const eventsToCreate = [];
-  for (let i = 0; i < 12; i++) {
-    const startTime = faker.date.future();
+  const now = new Date();
+  for (let i = 0; i < 32; i++) {
+    const startTime = faker.date.between({ from: new Date(new Date().setMonth(now.getMonth() - 6)), to: new Date(new Date().setMonth(now.getMonth() + 6)) });
+    const weekInMs = 7 * 24 * 60 * 60 * 1000;
     eventsToCreate.push({
       name: faker.company.catchPhrase(),
       description: faker.lorem.sentence(),
       location: faker.location.streetAddress(),
       startTime: startTime,
-      endTime: new Date(startTime.getTime() + faker.number.int({ min: 1, max: 5 }) * 60 * 60 * 1000),
+      endTime: new Date(startTime.getTime() + weekInMs + faker.number.int({ max: weekInMs })), // 1-2 weeks duration
       capacity: faker.datatype.boolean() ? faker.number.int({ min: 20, max: 200 }) : null,
       points: faker.number.int({ min: 5, max: 50 }),
       pointsRemain: faker.number.int({ min: 5, max: 50 }),
@@ -250,8 +252,6 @@ async function main() {
         organizers: {
           connect: [...new Set(organizersToConnect.map(o => o.id))].map(id => ({ id })),
         },
-        // Make first 5 events active
-        ...(i < 5 && { startTime: faker.date.past(), endTime: faker.date.future() }),
       },
     });
   }
@@ -263,7 +263,8 @@ async function main() {
   const promotionsToCreate = [];
   for (let i = 0; i < 20; i++) {
     const type = faker.helpers.arrayElement(["automatic", "onetime"]);
-    const startTime = faker.date.between({ from: '2024-01-01T00:00:00.000Z', to: '2026-12-31T00:00:00.000Z' });
+    // Create promotions spanning from 1 year ago to 1 year in the future
+    const startTime = faker.date.between({ from: new Date(new Date().setFullYear(new Date().getFullYear() - 1)), to: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) });
     promotionsToCreate.push({
       name: faker.commerce.productName() + " Promo",
       description: faker.lorem.sentence(),
@@ -302,6 +303,7 @@ async function main() {
   // -----------------------------------------------------
   let transactionCount = 0;
   const purchaseTransactions = [];
+  const usedOnetimePromosByUser = new Map(); // Keep track of used onetime promos to avoid re-using them for a user
 
   // Purchase transactions (50)
   const activePromos = createdPromotions.filter(p => new Date(p.startTime) < new Date() && new Date(p.endTime) > new Date());
@@ -310,11 +312,19 @@ async function main() {
     const spent = faker.number.int({ min: 50, max: 100 });
     const processor = faker.helpers.arrayElement([...cashiers, ...managers]);
 
-    let promoToUse = null;
-    if (i % 3 === 0 && activePromos.length > 0) {
-      const eligiblePromos = activePromos.filter(p => p.type === 'onetime' && p.minSpending <= spent);
+    let promosToUse = [];
+    // Every other transaction will try to use promos
+    if (i % 2 === 0 && activePromos.length > 0) {
+      const userUsedOnetimePromoIds = usedOnetimePromosByUser.get(user.id) || new Set();
+      const eligiblePromos = activePromos.filter(p =>
+        p.type === 'onetime' &&
+        p.minSpending <= spent &&
+        !userUsedOnetimePromoIds.has(p.id)
+      );
+
       if (eligiblePromos.length > 0) {
-        promoToUse = faker.helpers.arrayElement(eligiblePromos);
+        const numPromos = faker.number.int({ min: 1, max: Math.min(2, eligiblePromos.length) });
+        promosToUse = faker.helpers.arrayElements(eligiblePromos, numPromos);
       }
     }
 
@@ -327,15 +337,31 @@ async function main() {
       remark: `Purchase of ${faker.commerce.product()}`,
       processed: true,
       processedById: processor.id,
+      createdAt: faker.date.past({ years: 1 }),
     };
 
-    if (promoToUse) {
-      purchaseData.promotions = { connect: { id: promoToUse.id } };
-      purchaseData.amount += Math.floor(spent * promoToUse.rate);
-      purchaseData.remark += ` with promo ${promoToUse.name}`;
+    if (promosToUse.length > 0) {
+      purchaseData.promotions = { connect: promosToUse.map(p => ({ id: p.id })) };
+      const promoAmount = promosToUse.reduce((total, p) => total + Math.floor(spent * p.rate), 0);
+      purchaseData.amount += promoAmount;
+      purchaseData.remark += ` with promos: ${promosToUse.map(p => p.name).join(', ')}`;
     }
 
-    const newPurchase = await prisma.transaction.create({ data: purchaseData });
+    const newPurchase = await prisma.transaction.create({
+      data: purchaseData,
+      select: { id: true, createdAt: true, targetUserId: true },
+    });
+
+    // Record that the user has used these onetime promotions
+    if (promosToUse.length > 0) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { promotions: { connect: promosToUse.map(p => ({ id: p.id })) } }
+      });
+      const userUsedOnetimePromoIds = usedOnetimePromosByUser.get(user.id) || new Set();
+      promosToUse.forEach(p => userUsedOnetimePromoIds.add(p.id));
+      usedOnetimePromosByUser.set(user.id, userUsedOnetimePromoIds);
+    }
     purchaseTransactions.push(newPurchase);
     transactionCount++;
   }
@@ -357,6 +383,7 @@ async function main() {
         processed: true,
         processedById: manager.id,
         relatedId: transactionToAdjust.id,
+        createdAt: faker.date.between({ from: transactionToAdjust.createdAt, to: new Date() }),
       }
     });
     transactionCount++;
@@ -366,7 +393,10 @@ async function main() {
   // Event transactions (20)
   for (let i = 0; i < 20; i++) {
     const user = faker.helpers.arrayElement(createdUsers);
-    const event = faker.helpers.arrayElement(createdEvents);
+    // Only award points for events that have ended
+    const pastEvents = createdEvents.filter(e => new Date(e.endTime) < new Date());
+    if (pastEvents.length === 0) continue;
+    const event = faker.helpers.arrayElement(pastEvents);
     const organizer = faker.helpers.arrayElement(eventOrganizers);
     await prisma.transaction.create({
       data: {
@@ -378,39 +408,61 @@ async function main() {
         remark: `Attended ${event.name}`,
         relatedId: event.id,
         eventInvolvedId: event.id,
+        createdAt: faker.date.between({ from: new Date(event.endTime), to: new Date() }),
       }
     });
     transactionCount++;
   }
   console.log(`Created 20 event transactions.`);
 
-  // Redemption transactions (15)
-  for (let i = 0; i < 15; i++) {
+  // Redemption transactions (35)
+  for (let i = 0; i < 35; i++) {
     const user = faker.helpers.arrayElement(createdUsers.filter(u => u.points > 50));
     if (!user) continue;
-    const promotion = faker.helpers.arrayElement(createdPromotions.filter(p => p.type === 'automatic' && p.points));
-    if (!promotion) continue;
-    const pointsToRedeem = promotion.points;
-    if (user.points < pointsToRedeem) continue;
+
+    const availableAutomaticPromos = createdPromotions.filter(p => p.type === 'automatic' && p.points);
+    if (availableAutomaticPromos.length === 0) continue;
+
+    // Use 1 to 2 automatic promotions
+    const numPromosToRedeem = faker.number.int({ min: 1, max: Math.min(2, availableAutomaticPromos.length) });
+    const promosToRedeem = faker.helpers.arrayElements(availableAutomaticPromos, numPromosToRedeem);
+    
+    const totalPointsToRedeem = promosToRedeem.reduce((sum, p) => sum + p.points, 0);
+    if (user.points < totalPointsToRedeem) continue;
 
     const shouldBeProcessed = faker.datatype.boolean();
     const processor = faker.helpers.arrayElement([...cashiers, ...managers]);
 
+    const createdAt = faker.date.past({ years: 1 });
     const redemptionData = {
       type: "redemption",
       userId: user.id,
       targetUserId: user.id,
-      amount: -pointsToRedeem,
-      spent: pointsToRedeem,
-      remark: `Redeemed ${promotion.name}`,
-      promotions: { connect: { id: promotion.id } },
+      amount: -totalPointsToRedeem,
+      spent: totalPointsToRedeem,
+      remark: `Redeemed: ${promosToRedeem.map(p => p.name).join(', ')}`,
+      promotions: { connect: promosToRedeem.map(p => ({ id: p.id })) },
       processed: shouldBeProcessed,
       processedById: shouldBeProcessed ? processor.id : null,
+      createdAt: createdAt,
     };
-    await prisma.transaction.create({ data: redemptionData });
+
+    // Delete 7 redemptions at different times
+    if (i % 5 === 0) {
+      redemptionData.deletedAt = faker.date.between({ from: createdAt, to: new Date() });
+    }
+    const newRedemption = await prisma.transaction.create({ data: redemptionData });
+
+    // Record that the user has used these promotions
+    if (promosToRedeem.length > 0) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { promotions: { connect: promosToRedeem.map(p => ({ id: p.id })) } }
+      });
+    }
     transactionCount++;
   }
-  console.log(`Created 15 redemption transactions.`);
+  console.log(`Created 35 redemption transactions.`);
 
   // Transfer transactions (15 pairs)
   for (let i = 0; i < 15; i++) {
@@ -421,11 +473,12 @@ async function main() {
     const amount = faker.number.int({ min: 5, max: 50 });
     if (sender.points < amount) continue;
 
+    const transferDate = faker.date.past({ years: 1 });
     await prisma.transaction.create({
-      data: { type: "transfer", userId: sender.id, targetUserId: recipient.id, amount: -amount, spent: 0, remark: `Gift points to ${recipient.utorid}`, relatedId: recipient.id }
+      data: { type: "transfer", userId: sender.id, targetUserId: recipient.id, amount: -amount, spent: 0, remark: `Gift points to ${recipient.utorid}`, relatedId: recipient.id, createdAt: transferDate }
     });
     await prisma.transaction.create({
-      data: { type: "transfer", userId: recipient.id, targetUserId: sender.id, amount: amount, spent: 0, remark: `Received points from ${sender.utorid}`, relatedId: sender.id }
+      data: { type: "transfer", userId: recipient.id, targetUserId: sender.id, amount: amount, spent: 0, remark: `Received points from ${sender.utorid}`, relatedId: sender.id, createdAt: transferDate }
     });
     transactionCount += 2;
   }
@@ -440,9 +493,10 @@ async function main() {
           let recipient = faker.helpers.arrayElement(regularUsers);
           while (recipient.id === sender.id) { recipient = faker.helpers.arrayElement(regularUsers); }
           const amount = faker.number.int({ min: 500, max: 1500 });
+          const transferDate = faker.date.past({ years: 1 });
 
-          await prisma.transaction.create({ data: { type: "transfer", userId: sender.id, targetUserId: recipient.id, amount: -amount, spent: 0, remark: "Large suspicious transfer", suspicious: true, relatedId: recipient.id } });
-          await prisma.transaction.create({ data: { type: "transfer", userId: recipient.id, targetUserId: sender.id, amount: amount, spent: 0, remark: `Received large suspicious transfer from ${sender.utorid}`, suspicious: true, relatedId: sender.id } });
+          await prisma.transaction.create({ data: { type: "transfer", userId: sender.id, targetUserId: recipient.id, amount: -amount, spent: 0, remark: "Large suspicious transfer", suspicious: true, relatedId: recipient.id, createdAt: transferDate } });
+          await prisma.transaction.create({ data: { type: "transfer", userId: recipient.id, targetUserId: sender.id, amount: amount, spent: 0, remark: `Received large suspicious transfer from ${sender.utorid}`, suspicious: true, relatedId: sender.id, createdAt: transferDate } });
           transactionCount += 2;
       }
 
@@ -451,7 +505,7 @@ async function main() {
           const userToAdjust = faker.helpers.arrayElement(suspiciousUsers);
           const manager = faker.helpers.arrayElement(managers);
           await prisma.transaction.create({
-              data: { type: "adjustment", userId: manager.id, targetUserId: userToAdjust.id, amount: faker.number.int({ min: 200, max: 500 }), spent: 0, remark: "Suspicious manual point adjustment", suspicious: true, processed: true, processedById: manager.id }
+              data: { type: "adjustment", userId: manager.id, targetUserId: userToAdjust.id, amount: faker.number.int({ min: 200, max: 500 }), spent: 0, remark: "Suspicious manual point adjustment", suspicious: true, processed: true, processedById: manager.id, createdAt: faker.date.past({ years: 1 }) }
           });
           transactionCount++;
       }
