@@ -19,18 +19,20 @@ import dayjs from "dayjs";
 import api from "../../../api/api";
 import { profileSchema as schema } from "./constant";
 import useToast from "../../common/hooks/useToast";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export default function ProfileModal({ user, setUser, open, onClose, showToast }) {
+export default function ProfileModal({ user, open, onClose, showToast }) {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [avatarPreview, setAvatarPreview] = useState(user?.avatarUrl ? `${backendURL}/${user.avatarUrl}` : null);
   const [avatarFile, setAvatarFile] = useState(null);
   const {showToast: modalShowToast, ToastComponent} = useToast();
+  const queryClient = useQueryClient();
 
   const {
     control,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({ 
     resolver: yupResolver(schema),
     defaultValues: {
@@ -51,6 +53,31 @@ export default function ProfileModal({ user, setUser, open, onClose, showToast }
     }
   }, [user, reset]);
 
+  const updateProfileMutation = useMutation({
+    mutationFn: async (formData) => {
+      const res = await api.patch("/users/me", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      return res.data;
+    },
+    onSuccess: () => {
+      showToast("Profile updated successfully!", "success");
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+      queryClient.invalidateQueries({ queryKey: ["user-details", String(user.id)] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ["leaderboard"] });
+      onClose();
+    },
+    onError: (error) => {
+      const message =
+        error.response?.data?.error ||
+        error.response?.data?.message ||
+        "Failed to update profile";
+
+      modalShowToast(message, "error");
+    },
+  });
+
   const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -63,11 +90,11 @@ export default function ProfileModal({ user, setUser, open, onClose, showToast }
     }
   };
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const formData = new FormData();
     formData.append("name", data.name);
     formData.append("email", data.email);
-    
+
     if (data.birthday) {
       const birthdayString = dayjs(data.birthday).format("YYYY-MM-DD");
       formData.append("birthday", birthdayString);
@@ -77,22 +104,7 @@ export default function ProfileModal({ user, setUser, open, onClose, showToast }
       formData.append("avatar", avatarFile);
     }
 
-    try {
-      const response = await api.patch(`/users/me`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setUser(response.data);
-      showToast("Profile updated successfully!", "success");
-      onClose();
-    } catch (error) {
-      const message =
-        error.response?.data?.error ||
-        error.response?.data?.message ||
-        "Failed to update profile";
-      modalShowToast(message, "error");
-    }
+    updateProfileMutation.mutate(formData);
   };
 
   return (
@@ -147,8 +159,8 @@ export default function ProfileModal({ user, setUser, open, onClose, showToast }
         </DialogContent>
         <DialogActions sx={{ p: "0 24px 16px" }}>
           <Button onClick={onClose}>Cancel</Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Changes"}
+          <Button type="submit" variant="contained" disabled={updateProfileMutation.isPending}>
+            {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}
           </Button>
         </DialogActions>
         </form>
