@@ -3,10 +3,12 @@ import FormCard from "../../components/common/FormCard";
 import { Box, Typography, Stack, Button } from "@mui/material";
 import api from "../../api/api";
 import { useToast } from "../../context/ToastContext.jsx";
+import { useNavigate } from "react-router-dom";
 
 export default function DeletePromotionForm({ promotion, onClose }) {
     const queryClient = useQueryClient();
     const { showToast } = useToast();
+    const navigate = useNavigate();
     
     const deletePromotionMutation = useMutation({
         mutationFn: async () => {
@@ -18,6 +20,7 @@ export default function DeletePromotionForm({ promotion, onClose }) {
             queryClient.invalidateQueries({ queryKey: ['promotion-details', String(promotion.id)] });
             queryClient.invalidateQueries({ queryKey: ['promotions'] });
             onClose();
+            navigate(-1);
         },
         onError: (error) => {
             console.log(error);
