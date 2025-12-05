@@ -17,6 +17,7 @@ export default function DeletePromotionForm({ promotion, onClose }) {
         onSuccess: () => {
             showToast("Delete successful", "success");
             queryClient.invalidateQueries({ queryKey: ['promotion-details', String(promotion.id)] });
+            queryClient.invalidateQueries({ queryKey: ['promotions'] });
             onClose();
         },
         onError: (error) => {
