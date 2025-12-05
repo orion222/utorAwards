@@ -3,8 +3,48 @@
 # You should write detailed description on:
 
 # 1. All the packages you need to install
-npm install @mui/material @mui/icons-material @emotion/react @emotion/styled
-npm i react-hook-form yup
+npm i @emotion/react
+npm i @emotion/styled
 npm i @hookform/resolvers
+npm i @mui/icons-material
+npm i @mui/material
+npm i @mui/x-date-pickers
+npm i @tanstack/react-query
+npm i axios
+npm i dayjs
+npm i jwt-decode
+npm i lucide-react
+npm i prettier
+npm i qrcode
+npm i react
+npm i react-dom
+npm i react-hook-form
+npm i react-icons
+npm i react-router-dom
+npm i yup
 
+npm i @prisma/client
+npm i bcrypt
+npm i cors
+npm i express
+npm i express-jwt
+npm i express-rate-limit
+npm i jsonwebtoken
+npm i multer
+npm i nodemailer
+npm i prisma
+npm i sqlite3
+npm i uuid
+npm i zod
+
+npm i -D @faker-js/faker
+npm i -D nodemon
 # 2. How to configure various servers (e.g., Nginx, Apache, etc)
+Required .env for frontend
+VITE_BACKEND_URL={insert backend URL here}
+
+Required .env for backend
+JWT_SECRET={insert any jwt secret}
+EMAIL_USER=placeholder.noreply@gmail.com
+EMAIL_PASSWORD={insert app password for the above email user}
+FRONTEND_URL={insert frontend URL here}
