@@ -49,9 +49,9 @@ export default function DeletePromotionForm({ promotion, onClose }) {
                             variant="outlined"
                             color="error"
                             onClick={() => deletePromotionMutation.mutate()}
-                            disabled={deletePromotionMutation.isLoading}
+                            disabled={deletePromotionMutation.isPending}
                         >
-                            {deletePromotionMutation.isLoading ? "Deleting..." : "Yes, Delete"}
+                            {deletePromotionMutation.isPending ? "Deleting..." : "Yes, Delete"}
                         </Button>
                         <Button
                             variant="contained"
