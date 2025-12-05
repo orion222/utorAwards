@@ -5,13 +5,20 @@ import {
   Box,
   CircularProgress,
   Typography,
+  Modal,
+  useMediaQuery,
 } from "@mui/material";
 import { useUser } from "../../context/UserContext.jsx";
 import EventCard from "../../components/common/EventCard.jsx";
+import { useState } from 'react';
+import EditEventForm from '../../pages/Events/EditEventForm.jsx';
+import CreateEventButton from '../../pages/Events/CreateEventButton.jsx';
+import FormCard from "../../components/common/FormCard.jsx";
 
 function EventManagement() {
+  const isSmall = useMediaQuery('(max-width:450px)');
   const { user } = useUser();
-
+  const [createEventModal, setCreateEventModal] = useState(false);
   const filterConfig = {
     name: {
       type: "text",
@@ -62,23 +69,12 @@ function EventManagement() {
   return (
     <Box sx={{ my: 2 }}>
       <FilterableList
-        queryKey="my-managed-events"
+        queryKey={`my-managed-events-${user.id}`}
         apiEndpoint="/users/me/events/management"
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
       >
         {({ data, isFetching, error, refetch }) => {
-          if (error) {
-            return (
-              <Box display="flex" justifyContent="center" p={4}>
-                <Alert severity="error">
-                  <AlertTitle severity="error">Error</AlertTitle>
-                  Something went wrong while fetching your transactions. Your filters may be invalid. Try again later.
-                </Alert>
-              </Box>
-            );
-          }
-
           if (isFetching) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
@@ -88,38 +84,79 @@ function EventManagement() {
           }
 
           return (
-            <>
-              {data.length === 0 ? (
-                <Box>
-                  <Typography variant="body2" color="textSecondary">
-                    No results found
-                  </Typography>
-                </Box>
+            error ? (
+              <Box display="flex" justifyContent="center" p={4}>
+                <Alert severity="error">
+                  <AlertTitle severity="error">Error</AlertTitle>
+                  Something went wrong while fetching your events. Your filters may be invalid. Try again later.
+                </Alert>
+              </Box>
               ) : (
-                <Box
-                  sx={{
-                    width: "100%",
-                    maxWidth: "100%",
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "1fr",
-                      sm: "repeat(2, 1fr)",
-                      md: "repeat(3, 1fr)",
-                    },
-                    gap: 2,
-                  }}
-                >
-                  {data.map((event) => (
-                    <EventCard
-                      event={event}
-                      key={event.id}
-                      editable={true}
-                      refetch={refetch}
+                <>
+                  <CreateEventButton onClick = {() => setCreateEventModal(true)} />
+                  {data.length === 0 ? (
+                    <Box>
+                      <Typography variant="body2" color="textSecondary">
+                        No results found
+                      </Typography>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        display: "grid",
+                        gridTemplateColumns: {
+                          xs: "1fr",
+                          sm: "repeat(2, 1fr)",
+                          md: "repeat(3, 1fr)",
+                        },
+                        gap: 2,
+                      }}
+                    >
+                      {data.map((event) => (
+                        <EventCard
+                          event={event}
+                          key={event.id}
+                          editable={true}
+                          refetch={refetch}
+                        />
+                      ))}
+                    </Box>
+                  )}
+                  <Modal
+                    open={createEventModal}
+                    onClose={() => setCreateEventModal(false)}
+                    aria-labelledby="user-details-modal"
+                    aria-describedby="user-details-content"
+                    sx={{
+                      position: "fixed",
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      backgroundColor: "rgba(0,0,0,0.5)",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      zIndex: 1300,
+                    }}
+                  >
+                    <FormCard
+                      title="Create Event"
+                      showClose={true}
+                      onClose = {() => {
+                        setCreateEventModal(false);
+                      }}
+                      keepForm={true}
+                      width={'600px'}
+                      children = {
+                        <EditEventForm onClose = {() => setCreateEventModal(false)} refetch={refetch} createMode = {true} hideManageUsers = {true}/>
+                      }
                     />
-                  ))}
-                </Box>
-              )}
-            </>
+                  </Modal>
+                </>
+              )
           );
         }}
       </FilterableList>

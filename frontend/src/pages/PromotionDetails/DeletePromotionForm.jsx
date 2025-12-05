@@ -11,7 +11,6 @@ export default function DeletePromotionForm({ promotion, onClose }) {
     const deletePromotionMutation = useMutation({
         mutationFn: async () => {
             const res = await api.delete(`/promotions/${promotion.id}`);
-            console.log("hi");
             return res.data;
         },
         onSuccess: () => {
