@@ -6,10 +6,10 @@ import theme from "./theme";
 
 import ProtectedClearanceRoute from "./components/routes/ProtectedClearanceRoute";
 import AppLayout from "./components/layout/AppLayout";
-import ProtectedAuthRoute from "./components/routes/RootElement.jsx";
 import ProtectedOrganizerRoute from "./components/routes/ProtectedOrganizerRoute.jsx";
 import NotFound from "./pages/NotFound";
 import Unauthorized from "./pages/Unauthorized";
+import Landing from "./pages/Landing/index.jsx";
 
 const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Events = lazy(() => import("./pages/Explore/Events.jsx"));
@@ -28,7 +28,6 @@ const Invitations = lazy(() => import("./pages/MyEvents/Invitations.jsx"));
 const QRCode = lazy(() => import("./pages/Wallet/QRCode.jsx"));
 const RedeemPoints = lazy(() => import("./pages/Wallet/RedeemPoints.jsx"));
 const Transfer = lazy(() => import("./pages/Wallet/TransferPoints.jsx"));
-const EventEditForm = lazy(() => import("./pages/Events/EditEventForm.jsx"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard/index.jsx"));
 const EventDetails = lazy(() => import("./pages/EventDetails/index.jsx"));
 const PromotionDetails = lazy(
@@ -37,18 +36,19 @@ const PromotionDetails = lazy(
 const TransactionDetails = lazy(
   () => import("./pages/TransactionDetails/index.jsx"),
 );
+const UserDetails = lazy(() => import("./pages/UserDetails/index.jsx"));
 const Admin = lazy(() => import("./pages/Admin/index.jsx"));
 const AllUsers = lazy(() => import("./pages/Admin/AllUsers.jsx"));
 const AllTransactions = lazy(() => import("./pages/Admin/AllTransactions.jsx"));
 import ManageEventUsers from "./pages/Events/ManageEventUsers.jsx";
-import UserDetails from "./pages/UserDetails/index.jsx";
+
 
 function App() {
   return (
     <BrowserRouter>
       <ThemeProvider theme={theme}>
         <Routes>
-          <Route index element={<ProtectedAuthRoute />} />
+          <Route index element={<Landing />} />
           <Route path="login" element={<Login />} />
           <Route path="forgot-password" element={<ForgotPassword />} />
           <Route path="reset-password" element={<ResetPassword />} />
