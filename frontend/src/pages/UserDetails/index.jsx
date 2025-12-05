@@ -208,7 +208,6 @@ function UserDetails() {
                                 <EditUserForm
                                     user={userData}
                                     onClose={handleCloseEditModal}
-                                    onSubmit={handleEditSubmit}
                                 />
                             )}
                         </Box>

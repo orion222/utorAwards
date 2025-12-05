@@ -6,10 +6,6 @@ export const userSchema = yup.object({
     .string()
     .required('Name is required')
     .min(2, 'Name must be at least 2 characters'),
-  utorid: yup
-    .string()
-    .required('UTorID is required')
-    .min(3, 'UTorID must be at least 3 characters'),
   email: yup
     .string()
     .email('Invalid email format')
