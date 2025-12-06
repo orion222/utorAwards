@@ -5,7 +5,7 @@ const NotFoundError = require("../utils/errors/notFoundError");
 const ForbiddenError = require("../utils/errors/forbiddenError");
 const BadRequestError = require("../utils/errors/badRequestError");
 const { generateFakeName } = require("../utils/userHelpers");
-const { sendPasswordChangeEmail } = require("../utils/emailSender");
+const { sendPasswordChangeEmail, sendResetPasswordEmail } = require("../utils/emailSender");
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -40,6 +40,8 @@ class UserService {
         resetToken: true,
       },
     });
+
+    await sendResetPasswordEmail(newUser.email, newUser.resetToken, true);
 
     return {
       ...newUser,

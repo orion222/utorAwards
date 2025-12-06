@@ -1,14 +1,11 @@
-import { useSearchParams, Navigate, Link } from "react-router-dom";
+import { useSearchParams, Navigate, Link, useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-
-import { resetPasswordSchema } from "./constants.js";
-
+import { resetPasswordSchema } from "./constants";
 import api from "../../api/api";
 import FormCard from "../../components/common/FormCard.jsx";
 import PasswordField from "../../components/common/PasswordField.jsx";
-
 import {
   Box,
   Button,
@@ -17,10 +14,13 @@ import {
   Link as MUILink
 } from "@mui/material";
 
-function ResetPassword() {
+export default function ResetPassword() {
+  const location = useLocation();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const resetToken = searchParams.get("token");
   const email = searchParams.get("email");
+  const isCreatePassword = location.pathname === "/create-password";
 
   const [serverError, setServerError] = useState("");
   const [success, setSuccess] = useState("");
@@ -29,7 +29,7 @@ function ResetPassword() {
     register,
     handleSubmit,
     reset,
-    formState: { errors }
+    formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(resetPasswordSchema)
   });
@@ -48,22 +48,35 @@ function ResetPassword() {
         password: values.password
       });
 
-      setSuccess("Password successfully reset.");
+      if (isCreatePassword) {
+        setSuccess("Password created successfully! You will be redirected to login shortly.");
+      } 
+      else {
+        setSuccess("Password successfully reset. You will be redirected to login shortly.");
+      }
+
       reset();
+      setTimeout(() => navigate("/login"), 3000);
     } catch (err) {
-      setServerError(err.response?.data?.message || "Something went wrong.");
+      setServerError(err.response?.data?.error || err.response?.data || "Something went wrong.");
     }
   };
+
+  const pageTitle = isCreatePassword ? "Create Your Password" : "Reset Your Password";
+  const pageDescription = isCreatePassword
+    ? "Welcome to UTORAwards! Please create a password for your new account."
+    : "Enter a new password for your account.";
+  const buttonText = isCreatePassword ? "Create Password" : "Reset Password";
 
   return (
     <Box height="100vh" sx={{ overflow: "hidden" }}>
       <FormCard>
         <Typography variant="h5" fontWeight={600} mb={1}>
-          Reset your password
+          {pageTitle}
         </Typography>
 
         <Typography variant="body2" color="text.secondary" mb={3}>
-          Enter a new password for your account.
+          {pageDescription}
         </Typography>
 
         {serverError && (
@@ -83,24 +96,25 @@ function ResetPassword() {
             label="New Password"
             id="password"
             error={errors.password?.message}
-            register={{...register("password")}}
+            register={{ ...register("password") }}
           />
 
           <PasswordField
-            label="Confirm Password"
+            label="Confirm New Password"
             id="confirmPassword"
             error={errors.confirmPassword?.message}
             register={{...register("confirmPassword")}}
           />
-
+ 
           <Button
             type="submit"
             variant="contained"
             fullWidth
             size="large"
             sx={{ mt: 2 }}
+            disabled={isSubmitting || !!success}
           >
-            Reset Password
+            {isSubmitting ? (isCreatePassword ? "Creating..." : "Resetting...") : buttonText}
           </Button>
 
           <Box sx={{ textAlign: "center", mt: 2 }}>
@@ -122,5 +136,3 @@ function ResetPassword() {
     </Box>
   );
 }
-
-export default ResetPassword;

@@ -46,10 +46,10 @@ export default function CreatePurchase() {
             const errMessage = error.response?.data?.error || error.response?.data?.message || "Purchase transaction creation failed";
             const msg = (
             <Stack spacing={1}>
-                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", color: "#232715", fontWeight: 600 }}>Purchase Transaction Creation Failed</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>An error has occurred: {errMessage}</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Please try again later.</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>If this error persists, please contact your manager.</Typography>
+                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", fontWeight: 600 }}>Purchase Transaction Creation Failed</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>An error has occurred: {errMessage}</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>Please try again later.</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>If this error persists, please contact your manager.</Typography>
             </Stack>
             );
             showToast(msg, "error");
