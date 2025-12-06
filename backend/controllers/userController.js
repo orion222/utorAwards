@@ -534,6 +534,7 @@ async function updateMyPassword(req, res) {
 
   try {
     await UserService.updateMyUserPassword(id, old, newPassword);
+    
     res.status(200).send();
   } catch (error) {
     res.status(error.statusCode || 500).json({ error: error.message });
