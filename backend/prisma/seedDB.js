@@ -524,7 +524,7 @@ async function main() {
       rsvpsToCreate.push({
         userId: user.id,
         eventId: event.id,
-        status: faker.helpers.arrayElement(["confirmed", "pending", "declined"]),
+        status: faker.helpers.arrayElement(["confirmed", "declined"]),
       });
     }
   }

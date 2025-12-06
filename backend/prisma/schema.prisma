@@ -28,7 +28,6 @@ enum PromotionType {
 }
 
 enum RsvpStatus {
-  pending
   confirmed
   declined
 }
