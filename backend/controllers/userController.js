@@ -149,7 +149,7 @@ async function getSpecificUser(req, res) {
 
 async function updateSpecificUser(req, res) {
   const userId = req.userId;
-  const { email, verified, suspicious, role } = req.body;
+  const { name, email, verified, suspicious, role } = req.body;
 
   if (
     Object.keys(req.body).length === 0 ||
@@ -162,6 +162,15 @@ async function updateSpecificUser(req, res) {
 
   const updateFields = {};
   const userRole = req.user?.role;
+
+  if (name) {
+    if (typeof name !== "string") {
+      return res
+        .status(400)
+        .json({ error: "Bad Request: invalid name type" });
+    }
+    updateFields.name = name;
+  }
 
   if (email) {
     if (typeof email !== "string" || !email.endsWith("@mail.utoronto.ca")) {

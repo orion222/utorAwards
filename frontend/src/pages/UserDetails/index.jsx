@@ -1,5 +1,5 @@
 import DetailsTemplate from "../../components/common/DetailsTemplate";
-import { Box, Typography, Avatar, Alert, Stack, Chip, Button, Divider } from "@mui/material";
+import { Box, Typography, Avatar, Alert, Stack, Chip, Button, Divider, Modal } from "@mui/material";
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SavingsIcon from "@mui/icons-material/Savings";
 import CakeIcon from "@mui/icons-material/Cake";
@@ -7,15 +7,48 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import LoginIcon from "@mui/icons-material/Login";
 import { useUser } from "../../context/UserContext";
+import { useState } from "react";
 import PromotionCard from "../../components/common/PromotionCard";
+import PromoteUserForm from "./PromoteUserForm.jsx";
+import EditUserForm from "./EditUserForm.jsx";
 
 function UserDetails() {
     const { user } = useUser();
     const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const [showPromoteModal, setShowPromoteModal] = useState(false);
+    const [showEditModal, setShowEditModal] = useState(false);
+    const [userData, setUserData] = useState(null);
 
     const formatDate = (isoString) => {
         return new Date(isoString).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
     }
+
+    const handlePromoteClick = (data) => {
+        setUserData(data);
+        setShowPromoteModal(true);
+    };
+
+    const handleEditClick = (data) => {
+        setUserData(data);
+        setShowEditModal(true);
+    };
+
+    const handleClosePromoteModal = () => {
+        setShowPromoteModal(false);
+        setUserData(null);
+    };
+
+    const handleCloseEditModal = () => {
+        setShowEditModal(false);
+        setUserData(null);
+    };
+
+    const handleEditSubmit = async (values) => {
+        // TODO: Implement API call to update user
+        console.log('Edit user data:', values);
+        // After successful API call:
+        handleCloseEditModal();
+    };
 
     return (
         <DetailsTemplate queryKey="user-details" apiEndpoint="/users">
@@ -29,7 +62,7 @@ function UserDetails() {
                             <Typography variant="h4" fontWeight="bold" gutterBottom>
                                 {data.name}
                                 {data.verified && (
-                                    <VerifiedIcon sx={{ ml: 1 }} />
+                                    <VerifiedIcon sx={{ ml: 1, color: "#1591EA" }} />
                                 )}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
@@ -56,9 +89,21 @@ function UserDetails() {
                                 </Stack>                                
                             )}
                             <Stack direction="row" gap={1}>
-                                <Button variant="contained" color="secondary">Edit User</Button>
-                                <Button variant="contained" color="secondary">Promote</Button>
-                            </Stack>                            
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => handleEditClick(data)}
+                                >
+                                    Edit User
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="secondary"
+                                    onClick={() => handlePromoteClick(data)}
+                                >
+                                    Promote
+                                </Button>
+                            </Stack>
                         </>
                     )}
 
@@ -127,6 +172,46 @@ function UserDetails() {
                             </Box>                        
                         </>
                     )}
+
+                    {/* Promote User Modal */}
+                    <Modal
+                        open={showPromoteModal}
+                        onClose={handleClosePromoteModal}
+                        aria-labelledby="promote-user-modal"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Box>
+                            {userData && (
+                                <PromoteUserForm
+                                    user={userData}
+                                    onClose={handleClosePromoteModal}
+                                />
+                            )}
+                        </Box>
+                    </Modal>
+                   <Modal
+                        open={showEditModal}
+                        onClose={handleCloseEditModal}
+                        aria-labelledby="edit-user-modal"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Box>
+                            {userData && (
+                                <EditUserForm
+                                    user={userData}
+                                    onClose={handleCloseEditModal}
+                                />
+                            )}
+                        </Box>
+                    </Modal>
                 </Box>
             )}
         </DetailsTemplate>
