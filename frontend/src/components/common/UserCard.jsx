@@ -14,7 +14,7 @@ import UserDetail from "./UserDetail";
 import { useNavigate } from "react-router-dom";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
-export default function UserCard({ user }) {
+export default function UserCard({ user, clickable = true }) {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const theme = useTheme();
   const [detailsModal, setDetailsModal] = useState(false);
@@ -27,9 +27,9 @@ export default function UserCard({ user }) {
         borderRadius: 2,
         border: `1px solid ${theme.palette.custom.border}`,
         p: 1,
-        "&:hover": { cursor: "pointer", boxShadow: 4 },
+        "&:hover": { cursor: clickable ? "pointer" : "default", boxShadow: clickable ? 4 : "none" },
       }}
-      onClick={() => navigate(`/users/${user.id}`)}
+      onClick={clickable ? () => navigate(`/users/${user.id}`) : undefined}
     >
       <CardContent sx={{ p: 1.5, "&:last-child": { pb: 1.5 } }}>
         <Stack direction="row" gap={1.5}>
