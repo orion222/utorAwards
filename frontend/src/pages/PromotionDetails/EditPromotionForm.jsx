@@ -31,7 +31,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 export default function EditPromotionForm({
   promotion,
   onClose,
-  refetch = null,
 }) {
   const { showToast } = useToast();
   const {
@@ -41,27 +40,27 @@ export default function EditPromotionForm({
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
-      name: promotion.name,
-      description: promotion.description,
+      name: promotion.name ?? "",
+      description: promotion.description ?? "",
       startTime: dayjs(promotion.startTime),
       endTime: dayjs(promotion.endTime),
-      minSpending: promotion.minSpending,
+      minSpending: promotion.minSpending ?? 0,
       type: promotion.type,
-      rate: promotion.rate,
-      points: promotion.points,
+      rate: promotion.rate ?? 0,
+      points: promotion.points ?? 0,
     },
   });
 
   const hasFormChanged = (formData) => {
     return (
-      formData.name !== promotion.name ||
-      formData.description !== promotion.description ||
-      formData.startTime.toISOString() !== promotion.startTime ||
-      formData.endTime.toISOString() !== promotion.endTime ||
+      formData.name !== (promotion.name ?? "") ||
+      formData.description !== (promotion.description ?? "") ||
+      formData.startTime.toISOString() !== dayjs(promotion.startTime).toISOString() ||
+      formData.endTime.toISOString() !== dayjs(promotion.endTime).toISOString() ||
       formData.type !== promotion.type ||
-      Number(formData.minSpending) !== promotion.minSpending || 
-      Number(formData.rate) !== promotion.rate ||
-      Number(formData.points) !== promotion.points
+      Number(formData.minSpending) !== (promotion.minSpending ?? 0) ||
+      Number(formData.rate) !== (promotion.rate ?? 0) ||
+      Number(formData.points) !== (promotion.points ?? 0)
     );
   };
 
