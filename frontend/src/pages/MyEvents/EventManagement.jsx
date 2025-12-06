@@ -119,7 +119,6 @@ function EventManagement() {
                           event={event}
                           key={event.id}
                           editable={true}
-                          refetch={refetch}
                         />
                       ))}
                     </Box>

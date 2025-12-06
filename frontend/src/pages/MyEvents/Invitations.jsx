@@ -67,7 +67,7 @@ function Invitations() {
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
       >
-        {({ data, isFetching, error, refetch }) => {
+        {({ data, isFetching, error }) => {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
@@ -111,7 +111,7 @@ function Invitations() {
                   }}
                 >
                   {data.map((event) => (
-                    <EventCard refetch={refetch} event={event} key={event.id} />
+                    <EventCard event={event} key={event.id} />
                   ))}
                 </Box>
               )}

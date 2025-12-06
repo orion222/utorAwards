@@ -29,6 +29,7 @@ import UnRSVPSuccessModal from "../../components/common/UnRSVPSuccessModal";
 import { useUser } from "../../context/UserContext.jsx";
 import api from "../../api/api";
 import { useToast } from "../../context/ToastContext.jsx";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Define the content component in the same file
 function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsvpSuccess, setUnRsvpSuccess }) {
@@ -38,6 +39,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const { id } = useParams();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [editModal, setEditModal] = useState(false);
   const [rsvp, setRSVP] = useState(data?.guests?.some((item) => item.user.id === user.id) || false);
@@ -50,33 +52,35 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
     }).format(new Date(dateIsoString));
   };
 
-  const rsvpForEvent = async () => {
-    try {
-      const res = await api.post(`events/${id}/guests/me`, {});
-      if (res.status === 201) {
-        setRsvpSuccess(true);
-        setRSVP(true);
-        refetch();
-      }
-    } catch (error) {
+  const rsvpMutation = useMutation({
+    mutationFn: async () => {
+      return api.post(`events/${id}/guests/me`, {});
+    },
+    onSuccess: () => {
+      setRsvpSuccess(true);
+      setRSVP(true);
+      queryClient.invalidateQueries({ queryKey: ["event-details", String(id)] });
+    },
+    onError: (error) => {
       showToast(error.response?.data?.error || "An unknown error occurred.", "error");
       console.error("Error rsvp'ing for event:", error);
     }
-  };
+  });
 
-  const unRsvpForEvent = async () => {
-    try {
-      const res = await api.delete(`events/${id}/guests/me`, {});
-      if (res.status === 204) {
-        setUnRsvpSuccess(true);
-        setRSVP(false);
-        refetch();
-      }
-    } catch (error) {
+  const unRsvpMutation = useMutation({
+    mutationFn: async () => {
+      return api.delete(`events/${id}/guests/me`, {});
+    },
+    onSuccess: () => {
+      setUnRsvpSuccess(true);
+      setRSVP(false);
+      queryClient.invalidateQueries({ queryKey: ["event-details", String(id)] });
+    },
+    onError: (error) => {
       showToast(error.response?.data?.error || "An unknown error occurred.", "error");
       console.error("Error un-rsvp'ing for event:", error);
     }
-  };
+  });
 
   const isSmall = useMediaQuery("(max-width: 670px)");
   const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
@@ -149,11 +153,11 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
             </Button>
           ) : null
         )}
-        {!isOrganizer && (
+        {!isOrganizer && !hasEnded && (
           <Box>
             {!rsvp ? (
               <Button
-                onClick={rsvpForEvent}
+                onClick={() => rsvpMutation.mutate()}
                 sx={{
                   color: "black",
                   bgcolor: theme.palette.secondary.main,
@@ -169,7 +173,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
               </Button>
             ) : (
               <Button
-                onClick={unRsvpForEvent}
+                onClick={() => unRsvpMutation.mutate()}
                 sx={{
                   color: "black",
                   bgcolor: theme.palette.secondary.main,

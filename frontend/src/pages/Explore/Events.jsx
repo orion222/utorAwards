@@ -111,7 +111,7 @@ function Events() {
                   }}
                 >
                   {data.map((event) => (
-                    <EventCard refetch={refetch} event={event} key={event.id} />
+                    <EventCard event={event} key={event.id} />
                   ))}
                 </Box>
               )}
