@@ -83,7 +83,7 @@ function App() {
                 <Route path="promotions" element={<Promotions />} />
               </Route>
               <Route path="my-events" element={<MyEvents />}>
-                <Route path="invitations" element={<Invitations />} />
+                <Route path="rsvps" element={<Invitations />} />
 
                 {/* ORGANIZER ROUTES */}
                 <Route

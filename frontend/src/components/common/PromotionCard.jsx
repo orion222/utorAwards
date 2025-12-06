@@ -43,25 +43,21 @@ function PromotionCard({ promotion, hover }) {
             '&:hover': isHover ? { cursor: 'pointer', boxShadow: 4 } :  { cursor: 'default' }
             }}
             onClick={handleViewPromotion}
-        >
-            <Box sx={{display: "flex", flexDirection: "column", gap: 0.25 }}> {/* left side */}
-                <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
-                {rate ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                        <StarIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
-                        <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                            +{rate*100}% Boosted Rate
-                        </Typography>
-                </Box>) : (
-                        <Box></Box>
-                )}
-                {points ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                        <PaidIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
-                        <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                            {points} Bonus Points
-                        </Typography>
-                </Box>) : (
-                    <Box></Box>
-                )}
+            >
+                <Box sx={{display: "flex", flexDirection: "column"}}> {/* left side */}
+                    <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
+                    {rate && ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                            <StarIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
+                            <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
+                                {Math.round(+rate*100)}% Boosted Rate
+                            </Typography>
+                    </Box>)}
+                    {points && ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                            <PaidIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
+                            <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
+                                {points} Bonus Points
+                            </Typography>
+                    </Box>)}
                 <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
                         <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
                         <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 

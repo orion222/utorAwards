@@ -30,6 +30,7 @@ import { useUser } from "../../context/UserContext.jsx";
 import api from "../../api/api";
 import { useToast } from "../../context/ToastContext.jsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import EventStatusChip from "../Events/EventStatusChip.jsx";
 
 // Define the content component in the same file
 function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsvpSuccess, setUnRsvpSuccess }) {
@@ -88,7 +89,6 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
 
   if (!data) return null;
   const { startTime, endTime } = data;
-  const hasStarted = new Date(startTime) <= new Date();
   const hasEnded = new Date(endTime) < new Date();
 
   return (
@@ -116,43 +116,25 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
       </Box>
 
       <Stack direction="row" gap={1} alignItems="center">
-        {hasEnded ? (
-          <Chip
-            label="ENDED"
-            size="medium"
-            sx={{ fontWeight: 600, fontSize: "0.9rem" }}
-          />
-        ) : hasStarted ? (
-          <Chip
-            label="LIVE"
-            size="medium"
-            sx={{
-              backgroundColor: "#ff4444",
-              color: "white",
-              fontWeight: 600,
-              fontSize: "0.9rem",
+        <EventStatusChip startTime={data.startTime} endTime={data.endTime} published={data.published} />
+        {(isOrganizer || isManagerOrSuperuser) && !hasEnded &&
+          <Button
+            startIcon={<FiEdit color="grey" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditModal(true);
             }}
-          />
-        ) : (
-          (isOrganizer || isManagerOrSuperuser) ? (
-            <Button
-              startIcon={<FiEdit color="grey" />}
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditModal(true);
-              }}
-              sx={{
-                fontSize: 12,
-                color: "grey",
-                borderRadius: "8px",
-                width: "fit-content",
-                "&:hover": { backgroundColor: theme.palette.action.hover },
-              }}
-            >
-              Edit
-            </Button>
-          ) : null
-        )}
+            sx={{
+              fontSize: 12,
+              color: "grey",
+              borderRadius: "8px",
+              width: "fit-content",
+              "&:hover": { backgroundColor: theme.palette.action.hover },
+            }}
+          >
+            Edit
+          </Button>
+          }
         {!isOrganizer && !hasEnded && (
           <Box>
             {!rsvp ? (

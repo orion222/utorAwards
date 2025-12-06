@@ -169,7 +169,7 @@ function PromotionDetails() {
                             <Box sx={{ display: "flex", gap: 1, mb: 0.5, alignItems: "center" }}>
                                 <StarIcon sx={{ color: theme.palette.custom.accent}}/>
                                 <Typography variant="body2" sx={{ color: theme.palette.custom.accent}}>
-                                    +{data.rate * 100}% Boosted Rate
+                                    {Math.round(+data.rate * 100)}% Boosted Rate
                                 </Typography>
                             </Box>
                         )}

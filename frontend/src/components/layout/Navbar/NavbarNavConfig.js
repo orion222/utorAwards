@@ -19,7 +19,7 @@ const REGULAR_ITEMS = [
   { label: "Wallet", icon: WalletIcon, path: "/wallet", children: [ { label: "My QR Code", path: "/wallet/my-qr-code" }, { label: "Redeem Points", path: "/wallet/redeem" }, { label: "Transfer Points", path: "/wallet/transfer" } ] },
   { label: "Past Transactions", icon: History, path: "/past-transactions" },
   { label: "Explore", icon: Compass, path: "/explore", children: [ { label: "Events", path: "/explore/events" }, { label: "Promotions", path: "/explore/promotions" }] },
-  { label: "My Events", icon: Mail, path: "/my-events/invitations" },
+  { label: "My Events", icon: Mail, path: "/my-events/rsvps" },
   { label: "Leaderboard", icon: ListOrdered, path: "/leaderboard" },
 ];
 
@@ -51,7 +51,7 @@ export function getNavForRole(role, isEventOrganizer) {
   }
 
   if (isEventOrganizer || role === "manager" || role === "superuser") {
-    items[4] = { label: "My Events", icon: Mail, path: "/my-events", children: [ { label: "Invitations", path: "/my-events/invitations" }, { label: "Management", path: "/my-events/management" }] };
+    items[4] = { label: "My Events", icon: Mail, path: "/my-events", children: [ { label: "Rsvps", path: "/my-events/rsvps" }, { label: "Management", path: "/my-events/management" }] };
   }
 
   return items;

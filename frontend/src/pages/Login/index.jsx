@@ -20,11 +20,12 @@ import {
 import FormCard from "../../components/common/FormCard";
 import PasswordField from "../../components/common/PasswordField";
 import { loginSchema } from "./constants.js";
+import { useToast } from '../../context/ToastContext.jsx';
 
 function Login() {
   const { login } = useUser();
   const navigate = useNavigate();
-
+  const { showToast } = useToast();
   const [serverError, setServerError] = useState("");
 
   const {
@@ -48,6 +49,7 @@ function Login() {
       login(authData.token);
       navigate("/dashboard");
       reset();
+      showToast(`Logged in as ${values.utorid}`, 'success')
     } catch (error) {
       console.warn(error.response?.data || error.message);
       setServerError(

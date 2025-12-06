@@ -59,26 +59,6 @@ function Promotions() {
 
   return (
     <Box sx={{ my: 2 }}>
-       {["manager", "superuser"].includes(user.role) && (
-          <Button
-              onClick={(e) => {
-                  e.stopPropagation();
-                  setCreateModal(true)
-              }}
-              sx={{
-                  fontSize: 12,
-                  color: "grey",
-                  borderRadius: "8px",
-                  width: "fit-content",
-                  padding: "16px",
-                  "&:hover": { backgroundColor: theme.palette.action.hover },
-              }}
-              startIcon={<AddCircleOutlineIcon sx={{color:"grey",fontSize:12}} />}
-          >
-              Create Promotion 
-              
-          </Button>                           
-      )}
       <Modal
         open={createModal}
         onClose={(e) => {
@@ -127,6 +107,23 @@ function Promotions() {
 
           return (
             <>
+              {["manager", "superuser"].includes(user.role) && (
+                <Box display="flex" justifyContent="flex-end" width='100%'>
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setCreateModal(true)
+                    }}
+                    sx={{
+                      mb: 2,
+                    }}
+                    startIcon={<AddCircleOutlineIcon sx={{fontSize:12}} />}
+                    variant="contained"
+                  >
+                    Create Promotion
+                  </Button>
+                </Box>
+              )}
               {data.length === 0 ? (
                 <Box>
                   <Typography variant="body2" color="textSecondary">No results found</Typography>

@@ -5,14 +5,13 @@ import { useUser } from "../../context/UserContext";
 function MyEvents() {
   const location = useLocation();
   const { user } = useUser();
-  const tabValue = ["/my-events/invitations", "/my-events/management"].includes(
+  const tabValue = ["/my-events/rsvps", "/my-events/management"].includes(
     location.pathname,
   )
     ? location.pathname
     : false;
 
-  if (location.pathname === "/my-events") return <Navigate to="invitations" />;
-
+  if (location.pathname === "/my-events") return <Navigate to="rsvps" />;
   return (
     <>
       <Typography variant="h4">My Events</Typography>
@@ -22,10 +21,10 @@ function MyEvents() {
         tabValue && (
           <Tabs value={tabValue}>
             <Tab
-              label="Invitations"
-              value="/my-events/invitations"
+              label="RSVP"
+              value="/my-events/rsvps"
               component={Link}
-              to="/my-events/invitations"
+              to="/my-events/rsvps"
             />
             <Tab
               label="Management"

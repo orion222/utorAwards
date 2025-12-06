@@ -1,22 +1,16 @@
 import {
-  Stack,
   Box,
   Typography,
   useMediaQuery,
-  Button,
-  Modal,
-  Chip,
+  Stack,
 } from "@mui/material";
 import theme from "../../theme.js";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationPin";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import api from "../../api/api";
-import { useUser } from "../../context/UserContext";
 
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import EventStatusChip from "../../pages/Events/EventStatusChip.jsx";
 
 function EventCard({
   event,
@@ -55,9 +49,6 @@ function EventCard({
     return truncated;
   }
 
-  const hasStarted = new Date(startTime) < new Date();
-  const hasEnded = new Date(endTime) < new Date();
-
   const handleViewDetails = () => {
     if (!detailsPage) return;
     navigate(`/events/${event.id}`, { state: { event } });
@@ -71,7 +62,6 @@ function EventCard({
           display: "flex",
           flexDirection: "row",
           gap: "10px",
-          justifyContent: "space-between",
           border: 1,
           borderColor: theme.palette.custom.border,
           bgcolor: theme.palette.background.paper,
@@ -79,8 +69,8 @@ function EventCard({
         }}
         onClick={handleViewDetails}
       >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", width: '100%' }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: "4px", width: '100%' }}>
             <Typography sx={{ fontSize: 20, fontWeight: "bold" }}>
               {name}
             </Typography>
@@ -135,19 +125,22 @@ function EventCard({
                 display: "flex",
                 flexDirection: "row",
                 gap: "8px",
-                alignItems: "center",
+                justifyContent: "space-between",
               }}
             >
-              <PeopleAltIcon
-                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-              >
-                {capacity === null
-                  ? `${numGuests}`
-                  : `${numGuests}/${capacity}`}
-              </Typography>
+              <Stack direction='row'>
+                <PeopleAltIcon
+                  sx={{ fontSize: 14, color: theme.palette.text.secondary }}
+                />
+                <Typography
+                  sx={{ fontSize: 11, color: theme.palette.text.secondary }}
+                >
+                  {capacity === null
+                    ? `${numGuests}`
+                    : `${numGuests}/${capacity}`}
+                </Typography>
+              </Stack>
+              <EventStatusChip startTime={startTime} endTime={endTime} published={event.published}/>
             </Box>
           </Box>
         </Box>
@@ -230,27 +223,7 @@ function EventCard({
               {truncateStr(description)}
             </Typography>
           </Box>
-            {hasEnded ? (
-              <Chip
-                label="ENDED"
-                size="small"
-                sx={{
-                  fontWeight: "bold",
-                  fontSize: 10,
-                }}
-              />
-            ) : hasStarted ? (
-              <Chip
-                label="LIVE"
-                size="small"
-                sx={{
-                  backgroundColor: "#ff4444",
-                  color: "white",
-                  fontWeight: "bold",
-                  fontSize: 10,
-                }}
-              />
-            ) : null}
+            <EventStatusChip startTime={startTime} endTime={endTime} published={event.published}/>
         </Box>
         <Box
           sx={{

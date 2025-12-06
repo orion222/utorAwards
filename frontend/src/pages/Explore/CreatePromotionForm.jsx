@@ -234,7 +234,7 @@ export default function CreatePromotionForm({onClose}) {
                     render={({ field }) => (
                       <TextField
                         {...field}
-                        label="rate"
+                        label="Rate"
                         type="number"
                         error={!!errors.rate}
                         helperText={
@@ -252,7 +252,7 @@ export default function CreatePromotionForm({onClose}) {
                     render={({ field }) => (
                       <TextField
                         {...field}
-                        label="points"
+                        label="Points"
                         type="number"
                         error={!!errors.points}
                         helperText={
@@ -270,6 +270,11 @@ export default function CreatePromotionForm({onClose}) {
                   color="primary"
                   type="submit"
                   disabled={isSubmitting}
+                  sx={{
+                    alignSelf: isSmall ? 'center': 'flex-end',
+                    padding: isSmall ? '10px 50px' : '10px 80px',
+                    width: isSmall ? '100%' : 'auto',
+                  }}
                 >
                   {isSubmitting ? "Creating..." : "Create"}
                 </Button>
