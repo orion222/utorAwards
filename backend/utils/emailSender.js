@@ -18,24 +18,44 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-async function sendResetPasswordEmail(recipientEmail, resetToken) {
-    const resetUrl = `${frontendURL}/reset-password?token=${resetToken}&email=${recipientEmail}`;
+async function sendResetPasswordEmail(recipientEmail, resetToken, isNewUser) {
+
+    const url = `${frontendURL}/${isNewUser ? 'create' : 'reset'}-password?token=${resetToken}&email=${recipientEmail}`;
+    
+    const templates = {
+    newUser: {
+        subject: "[UTORAwards] Welcome! Create your password",
+        mainText: "Welcome to UTORAwards! A new account has been created for you.<br/><br/>Click the button below to create your password and activate your account:",
+        buttonText: "Create Password",
+        expiryText: "This link will expire in 7 days.",
+        ignoreText: "If you <strong>did not</strong> expect this email, you can safely ignore it.",
+        footerText: "This automated message was sent to create your account password."
+    },
+    resetPassword: {
+        subject: "[UTORAwards] Reset your password",
+        mainText: "A request was made to reset the password for your UTORAwards account.<br/><br/>Click the button below to choose a new password:",
+        buttonText: "Reset Password",
+        expiryText: "This link will expire in 1 hour.",
+        ignoreText: "If you <strong>did not request</strong> a password reset, you can safely ignore this email.",
+        footerText: "This automated message was sent because a password reset was requested for your account."
+    }
+};
+
+    const { subject, mainText, buttonText, expiryText, ignoreText, footerText } = isNewUser ? templates.newUser : templates.resetPassword;
 
     await transporter.sendMail({
         from: senderEmail,
         to: recipientEmail,
-        subject: "[UTORAwards] Reset your password",
+        subject,
         html: `
             <div style="font-family: Arial, sans-serif; padding: 20px; color: #232715;">
                 <h2 style="color: #7CD93A;">UTORAwards</h2>
 
                 <p>Hello,</p>
-                <p>A request was made to reset the password for your UTORAwards account.</p>
-
-                <p>Click the button below to choose a new password:</p>
+                <p>${mainText}</p>
 
                 <a 
-                    href="${resetUrl}" 
+                    href="${url}" 
                     style="
                     display: inline-block;
                     margin: 16px 0;
@@ -47,14 +67,12 @@ async function sendResetPasswordEmail(recipientEmail, resetToken) {
                     border-radius: 6px;
                     "
                 >
-                    Reset Password
+                    ${buttonText}
                 </a>
 
-                <p>This link will expire in 1 hour.</p>
+                <p>${expiryText}</p>
 
-                <p>
-                    If you <strong>did not request</strong> a password reset, you can safely ignore this email.
-                </p>
+                <p>${ignoreText}</p>
 
                 <p style="margin-top: 24px;">
                     Stay safe,<br />
@@ -64,7 +82,7 @@ async function sendResetPasswordEmail(recipientEmail, resetToken) {
                 <hr style="margin: 24px 0; border: none; border-top: 1px solid #D9DCCF;" />
 
                 <p style="font-size: 12px; color: #6B6F5A;">
-                    This automated message was sent because a password reset was requested for your account.
+                    ${footerText}
                 </p>
             </div>
         `

@@ -35,7 +35,7 @@ class AuthService {
 
     const { resetToken } = resetDetails;
 
-    await sendResetPasswordEmail(email, resetToken);
+    await sendResetPasswordEmail(email, resetToken, false);
   }
 
   static async resetPassword(email, resetToken, password) {
