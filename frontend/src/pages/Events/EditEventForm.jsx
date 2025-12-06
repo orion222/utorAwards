@@ -1,6 +1,12 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { editEventSchema as schema } from "./constants.js";
+import { useState } from "react";
+import {
+  GeoapifyContext,
+  GeoapifyGeocoderAutocomplete,
+} from "@geoapify/react-geocoder-autocomplete";
+import "@geoapify/geocoder-autocomplete/styles/minimal.css";
 import {
   DesktopDateTimePicker,
   MobileDateTimePicker,
@@ -20,6 +26,7 @@ import {
   Switch,
   FormControlLabel,
   CircularProgress,
+  useTheme,
 } from "@mui/material";
 
 import api from "../../api/api.js";
@@ -45,6 +52,7 @@ export default function EditEventForm({
   hideManageUsers = false,
   createMode = false,
 }) {
+  const theme = useTheme();
   const { showToast } = useToast();
   const {
     control,
@@ -78,6 +86,8 @@ export default function EditEventForm({
     );
   };
 
+  const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY;
+  const [locationValue, setLocationValue] = useState(event.location || "");
   const onSubmit = async (data) => {
     if (!hasFormChanged(data)) {
       showToast("No changes made", "info");
@@ -252,16 +262,57 @@ export default function EditEventForm({
                 <Controller
                   name="location"
                   control={control}
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label="Location"
-                      error={!!errors.location}
-                      helperText={
-                        errors.location ? errors.location.message : ""
-                      }
-                      fullWidth
-                    />
+                  render={({field}) => (
+                    <GeoapifyContext apiKey={apiKey}>
+
+                      <Box sx={{ width: "100%" }}>
+                        <Typography variant="body2" sx={{ mb: 0.5 }}>
+                          Location
+                        </Typography>
+
+                        <Box
+                          sx={{
+                            width: "100%",
+                            "& .geoapify-autocomplete-input": {
+                              backgroundColor: theme.palette.background.paper,
+                              boxSizing: "border-box",
+                              padding: "16.5px 14px",
+                              borderRadius: 1,
+                              width: "100%",
+                            },
+                            "& .geoapify-input-wrapper": {
+                              width: "100%",
+                            },
+                          }}
+                        >
+                          <GeoapifyGeocoderAutocomplete
+                            placeholder="Enter address..."
+                            lang="en"
+                            limit={5}
+                            value={locationValue}
+                            onUserInput={(input) => {
+                              setLocationValue(input);
+                              field.onChange(input);
+                            }}
+                            placeSelect={(place) => {
+                              const formatted = place?.properties?.formatted || "";
+                              setLocationValue(formatted);
+                              field.onChange(formatted);
+                            }}
+                          />
+                        </Box>
+
+                        {errors.location && (
+                          <Typography
+                            variant="caption"
+                            color="error"
+                            sx={{ mt: 0.5, display: "block" }}
+                          >
+                            {errors.location.message}
+                          </Typography>
+                        )}
+                      </Box>
+                    </GeoapifyContext>
                   )}
                 />
                 <Stack direction="row" spacing={2}>
