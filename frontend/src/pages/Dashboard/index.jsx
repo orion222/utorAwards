@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
 import { Link } from "react-router-dom";
-import { Typography, Box, useMediaQuery, Button, Link as MUILink } from "@mui/material";
+import { Typography, Box, useMediaQuery, Button, Link as MUILink, Divider } from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import WavingHandIcon from '@mui/icons-material/WavingHand';
 import theme from '../../theme.js';
@@ -135,6 +135,7 @@ function Dashboard() {
         </Box>
         {isManagerOrSuperuser && (
             <>
+                <Divider />
                 <Box padding={2}>
                     <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
                         <Typography sx={{fontSize: 24}}>
@@ -154,6 +155,7 @@ function Dashboard() {
                         </MUILink>
                     </Box>
                 </Box>
+                <Divider />
                 <Box padding={2}>
                     <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
                         <Typography sx={{fontSize: 24}}>
@@ -174,6 +176,7 @@ function Dashboard() {
                         </MUILink>
                     </Box>
                 </Box>
+                <Divider />
                 <Box padding={2}>
                     <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
                         <Typography sx={{fontSize: 24}}>
