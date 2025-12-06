@@ -40,10 +40,10 @@ export default function CreateUser() {
             const errMessage = error.response?.data?.error || error.response?.data?.message || "User profile creation failed";
             const msg = (
             <Stack spacing={1}>
-                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", color: "#232715", fontWeight: 600 }}>User Profile Creation Failed</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>An error has occurred: {errMessage}</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Please try again later.</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>If this error persists, please contact your manager.</Typography>
+                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", fontWeight: 600 }}>User Profile Creation Failed</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>An error has occurred: {errMessage}</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>Please try again later.</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>If this error persists, please contact your manager.</Typography>
             </Stack>
             );
             showToast(msg, "error");
@@ -154,11 +154,11 @@ export default function CreateUser() {
                 description={
                     <>  
                         <Stack spacing={2} sx={{ p: 1 }}>
-                            <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Are you sure you want to create a new user with the following details?</Typography>
-                            <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}><b>UTORid:</b> {formData?.utorid}</Typography>
-                            <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}><b>Name:</b> {formData?.name}</Typography>
-                            <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}><b>Email:</b> {formData?.email}</Typography>
-                            <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Note: Personal information can be updated later by managers.</Typography>
+                            <Typography variant="body1" color="text.secondary">Are you sure you want to create a new user with the following details?</Typography>
+                            <Typography variant="body1" color="text.secondary"><b>UTORid:</b> {formData?.utorid}</Typography>
+                            <Typography variant="body1" color="text.secondary"><b>Name:</b> {formData?.name}</Typography>
+                            <Typography variant="body1" color="text.secondary"><b>Email:</b> {formData?.email}</Typography>
+                            <Typography variant="body1" color="text.secondary">Note: Personal information can be updated later by managers.</Typography>
                         </Stack>
                     </>
                 }

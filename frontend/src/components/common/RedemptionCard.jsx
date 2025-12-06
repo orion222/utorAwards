@@ -27,22 +27,17 @@ export default function RedemptionCard({ redemption, onProcess, processing }) {
   return (
     <Box sx={{ p: 2 }}>
         <Card
-        variant="outlined"
-        sx={{
-            backgroundColor: "#f8faf4",
-            borderRadius: 2,
-            borderColor: "#d9dccf",
-            width: "100%",
-        }}
+          variant="outlined"
+          sx={{
+              borderRadius: 2,
+              width: "100%",
+          }}
         >
         <CardContent>
             <Chip
                 label={redemption.processed ? "PROCESSED" : "UNPROCESSED"}
-                sx={{
-                bgcolor: redemption.processed ? "#62c53c" : "#e8ebdf",
-                fontWeight: "bold",
-                borderRadius: 1,
-                }}
+                color={redemption.processed ? "success" : "default"}
+                sx={{ fontWeight: "bold", borderRadius: 1 }}
             />
 
             <Divider sx={{ my: 2 }} />
@@ -71,7 +66,7 @@ export default function RedemptionCard({ redemption, onProcess, processing }) {
             <Box textAlign="right">
                 <Typography
                     variant="h4"
-                    sx={{ fontWeight: 800, color: "#6b6f5a" }}
+                    sx={{ fontWeight: 800, color: "text.secondary" }}
                 >
                     {redemption.amount} pts
                 </Typography>
@@ -83,11 +78,8 @@ export default function RedemptionCard({ redemption, onProcess, processing }) {
                 {!redemption.processed && (
                     <Button
                         variant="contained"
-                        sx={{
-                            mt: 2,
-                            bgcolor: "#7cd93a",
-                            "&:hover": { bgcolor: "#6bc02e" },
-                        }}
+                        color="success"
+                        sx={{ mt: 2 }}
                         onClick={() => onProcess(redemption)}
                         disabled={processing}
                     >
@@ -105,8 +97,8 @@ export default function RedemptionCard({ redemption, onProcess, processing }) {
 function DetailsItem({ label, value }) {
   return (
     <Box>
-      <Typography variant="body2" color="textSecondary">
-        <strong style={{ color: "#232715" }}>{label}:</strong> {value}
+      <Typography variant="body2" color="text.secondary">
+        <Typography component="span" sx={{ fontWeight: "bold", color: "text.primary" }}>{label}:</Typography> {value}
       </Typography>
     </Box>
   );

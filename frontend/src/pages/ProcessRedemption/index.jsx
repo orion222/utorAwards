@@ -56,10 +56,10 @@ export default function ProcessRedemption() {
             const errMessage = error.response?.data?.error || error.response?.data?.message || "Redemption processing failed";
             const msg = (
             <Stack spacing={1}>
-                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", color: "#232715", fontWeight: 600 }}>Redemption Failed</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>An error has occurred: {errMessage}</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Please try again later.</Typography>
-                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>If this error persists, please contact your manager.</Typography>
+                <Typography variant="subtitle1" sx={{ fontFamily: "Inter, sans-serif", fontWeight: 600 }}>Redemption Failed</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>An error has occurred: {errMessage}</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>Please try again later.</Typography>
+                <Typography variant="body2" sx={{ fontFamily: "Inter, sans-serif" }}>If this error persists, please contact your manager.</Typography>
             </Stack>
             );
             showToast(msg, "error");
@@ -90,7 +90,7 @@ export default function ProcessRedemption() {
             <FormCard>
                 <form onSubmit={handleSubmit(onSearch)}>
                     <Stack spacing={2}>
-                        <Box component="h2" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                        <Box component="h3" sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                             Search for a redemption to process:
                         </Box>
 
@@ -143,9 +143,9 @@ export default function ProcessRedemption() {
                         description={
                             <>  
                                 <Stack spacing={2} sx={{ p: 1 }}>
-                                    <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Are you sure you want to process the following redemption?</Typography>
-                                    <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>Transaction ID: {transactionData.id}</Typography>
-                                    <Typography variant="body1" sx={{ fontFamily: "Inter, sans-serif", color: "#6b6f5a" }}>This action cannot be undone.</Typography>
+                                    <Typography variant="body1" color="text.secondary">Are you sure you want to process the following redemption?</Typography>
+                                    <Typography variant="body1" color="text.secondary">Transaction ID: {transactionData.id}</Typography>
+                                    <Typography variant="body1" color="text.secondary">This action cannot be undone.</Typography>
                                 </Stack>
                             </>
                         }
