@@ -43,45 +43,50 @@ function PromotionCard({ promotion, hover }) {
             '&:hover': isHover ? { cursor: 'pointer', boxShadow: 4 } :  { cursor: 'default' }
             }}
             onClick={handleViewPromotion}
-            >
-                <Box sx={{display: "flex", flexDirection: "column"}}> {/* left side */}
-                    <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
-                    {rate ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                            <StarIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
-                            <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                                +{rate*100}% Boosted Rate
-                            </Typography>
-                    </Box>) : (
-                            <Box></Box>
-                    )}
-                    {points ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                            <PaidIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
-                            <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
-                                {points} Bonus Points
-                            </Typography>
-                    </Box>) : (
+        >
+            <Box sx={{display: "flex", flexDirection: "column", gap: 0.25 }}> {/* left side */}
+                <Typography sx={{fontSize: 20, fontWeight:"bold"}}>{name}</Typography>
+                {rate ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                        <StarIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
+                        <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
+                            +{rate*100}% Boosted Rate
+                        </Typography>
+                </Box>) : (
                         <Box></Box>
-                    )}
-                    <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
-                            <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
-                            <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
-                                Until {formatDate(endTime)}
-                            </Typography>
-                    </Box>
-                    <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
-                        {description}
-                    </Typography>
+                )}
+                {points ? ( <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                        <PaidIcon sx={{fontSize: 11, color: theme.palette.custom.accent}}/>
+                        <Typography sx={{fontSize: 11, color: theme.palette.custom.accent}}>
+                            {points} Bonus Points
+                        </Typography>
+                </Box>) : (
+                    <Box></Box>
+                )}
+                <Box sx={{display: "flex", flexDirection: "row", gap: "8px", alignItems: "center"}}>
+                        <CalendarTodayIcon sx={{fontSize: 14, color: theme.palette.text.secondary}}/>
+                        <Typography sx={{fontSize: 11, color: theme.palette.text.secondary}}> 
+                            Until {formatDate(endTime)}
+                        </Typography>
                 </Box>
-                <Box> {/* right side */}
-                    <Chip 
-                        label={type.toUpperCase()}
-                        size="medium"
-                        sx={{
-                            fontWeight: 600,
-                            fontSize: "0.9rem",
-                        }} 
-                    />
-                </Box>
+                <Typography 
+                    sx={{                
+                        fontSize: 11,
+                        maxWidth: "260px",
+                        height: isSmall ? "22.5px" : "45px",}}
+                    > 
+                    {description}
+                </Typography>
+            </Box>
+            <Box> {/* right side */}
+                <Chip 
+                    label={type.toUpperCase()}
+                    size="medium"
+                    sx={{
+                        fontWeight: 600,
+                        fontSize: "0.9rem",
+                    }} 
+                />
+            </Box>
         </Box>
     )
 }
