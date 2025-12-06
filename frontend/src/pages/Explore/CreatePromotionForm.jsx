@@ -161,7 +161,8 @@ export default function CreatePromotionForm({onClose}) {
                           "year",
                           "month",
                           "day",
-                          ...(!isSmall ? ["hours", "minutes"] : []),
+                          "hours", 
+                          "minutes"
                         ]}
                         sx={{ width: "50%" }}
                       />
@@ -187,7 +188,8 @@ export default function CreatePromotionForm({onClose}) {
                           "year",
                           "month",
                           "day",
-                          ...(!isSmall ? ["hours", "minutes"] : []),
+                          "hours", 
+                          "minutes"
                         ]}
                       />
                     )}
