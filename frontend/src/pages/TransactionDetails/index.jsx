@@ -22,7 +22,7 @@ function TransactionDetails() {
             {data  => (
                 <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
                     <Box>
-                        <Box sx={{ display: "flex", gap: 2 }}> 
+                        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}> 
                             <Typography variant="h4" fontWeight="bold">
                                 {data.type.charAt(0).toUpperCase() + data.type.slice(1)}
                             </Typography>

@@ -159,7 +159,6 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
                 width: "max-content",
                 backgroundColor: "#E8EBDF",
                 padding: 1,
-                overflowY: "auto",
               },
             },
           }}

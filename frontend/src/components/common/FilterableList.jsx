@@ -217,12 +217,14 @@ function FilterableList({
           onChange={(e) => setSearchInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && applyFilters()}
           placeholder="Search..."
-          InputProps={{
-            endAdornment: (
-              <IconButton size="small" onClick={applyFilters}>
-                <SearchIcon />
-              </IconButton>
-            ),
+          slotProps={{
+            input: {
+              endAdornment: (
+                <IconButton size="small" onClick={applyFilters}>
+                  <SearchIcon />
+                </IconButton>                
+              )
+            }
           }}
           sx={{
             width: isMobileWidth ? "100%" : "50%",
