@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../../context/UserContext";
 import api from "../../api/api";
-import { useNavigate, Link } from "react-router-dom";
-import { Container, Typography, Box, useMediaQuery, FormControl, InputLabel, OutlinedInput, FormHelperText, IconButton, Button, Alert, Link as MUILink } from "@mui/material";
+import { Link } from "react-router-dom";
+import { Typography, Box, useMediaQuery, Button, Link as MUILink } from "@mui/material";
 import WalletIcon from '@mui/icons-material/Wallet';
 import WavingHandIcon from '@mui/icons-material/WavingHand';
 import theme from '../../theme.js';
@@ -13,55 +13,63 @@ import ShoppingCartCheckoutIcon from '@mui/icons-material/ShoppingCartCheckout';
 import RedeemIcon from '@mui/icons-material/Redeem';
 import UserCard from "../../components/common/UserCard.jsx";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-// import RSVPSuccessModal from "./RSVPSuccessModal.jsx";
-// import UnRSVPSuccessModal from "./UnRSVPSuccessModal.jsx";
+import { useQuery } from "@tanstack/react-query";
 
 function Dashboard() {
     const { user } = useUser();
-    const [transactions, setTransactions] = useState([]);
-    const [promotions, setPromotions] = useState([]);
-    const [events, setEvents] = useState([]);
-    const [users, setUsers] = useState([]);
-    const [ transactionItem, setTransactionItem] = useState(null);
 
-    useEffect(() => {
-        async function fetchData() {
-          try {
-            const { data: transactionData } = await api.get("/users/me/transactions", {
-                params: {limit: 3}
-            });
-            setTransactions(transactionData.results);
+    const fetchTransactions = async () => {
+        const { data } = await api.get("/users/me/transactions", {
+        params: { limit: 3 },
+        });
+        return data.results;
+    };
 
-            if (["manager", "superuser"].includes(user.role)) {
-                const { data: eventData } = await api.get("/events", {
-                    params: {
-                        orderBy: "startTime_asc",
-                        limit: 3
-                    }
-                });
-                
-                const { data: promotionData } = await api.get("/promotions", {
-                    params: {limit: 3}
-                });
+    const fetchEvents = async () => {
+        const { data } = await api.get("/events", {
+        params: { orderBy: "startTime_asc", limit: 3 },
+        });
+        return data.results;
+    };
 
-                const { data: userData } = await api.get("/users", {
-                    params: {
-                        orderBy: "lastLogin_desc",
-                        limit: 3
-                    }
-                });
-                setPromotions(promotionData.results);
-                setEvents(eventData.results);
-                setUsers(userData.results);                
-            }
+    const fetchPromotions = async () => {
+        const { data } = await api.get("/promotions", {
+        params: { limit: 3 },
+        });
+        return data.results;
+    };
 
-          } catch (error) {
-            console.error("Error fetching data:", error);
-          }
-        }
-        
-        fetchData();
-    }, []);
+    const fetchUsers = async () => {
+        const { data } = await api.get("/users", {
+        params: { orderBy: "lastLogin_desc", limit: 3 },
+        });
+        return data.results;
+    };
+
+    const { data: transactions = [] } = useQuery({
+        queryKey: ["transactions"],
+        queryFn: fetchTransactions,
+    });
+
+    const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
+
+    const { data: events = [] } = useQuery({
+        queryKey: ["events"],
+        queryFn: fetchEvents,
+        enabled: isManagerOrSuperuser,
+    });
+
+    const { data: promotions = [] } = useQuery({
+        queryKey: ["promotions"],
+        queryFn: fetchPromotions,
+        enabled: isManagerOrSuperuser,
+    });
+
+    const { data: users = [] } = useQuery({
+        queryKey: ["users"],
+        queryFn: fetchUsers,
+        enabled: isManagerOrSuperuser,
+    });
 
     const isSmall = useMediaQuery("(max-width: 670px)");
 
@@ -83,7 +91,7 @@ function Dashboard() {
                     <WalletIcon sx={{fontSize: 16, mr: 1 }} />
                     View My Wallet
                 </Button>
-                {["cashier", "manager", "superuser"].includes(user.role) && (
+                {(user.role === "cashier" || isManagerOrSuperuser) && (
                     <>
                         <Button variant="contained" color="secondary" component={Link} to="/create-transaction" sx={{fontSize: 12, p: 1 }}>
                             <ShoppingCartCheckoutIcon sx={{fontSize: 16, mr: 1 }} />
@@ -95,7 +103,7 @@ function Dashboard() {
                         </Button>
                     </>
                 )}
-                {["manager", "superuser"].includes(user.role) && (
+                {isManagerOrSuperuser && (
                     <>
                         <Button variant="contained" color="secondary" component={Link} to="/admin/users" sx={{fontSize: 12, p: 1 }}>
                             <ManageAccountsIcon sx={{fontSize: 16, mr: 1 }} />
@@ -114,7 +122,7 @@ function Dashboard() {
                 <Box>
                     {transactions.length > 0 ? (
                         transactions.map(transaction => (
-                            <TransactionItemCard transaction={transaction} key={transaction.id} onClick={() => setTransactionItem(transaction)}></TransactionItemCard>
+                            <TransactionItemCard transaction={transaction} key={transaction.id} />
                         ))
                     ) : (
                         <Typography>No transactions found.</Typography>
@@ -125,7 +133,7 @@ function Dashboard() {
                 </MUILink>
             </Box>
         </Box>
-        {["manager", "superuser"].includes(user.role) && (
+        {isManagerOrSuperuser && (
             <>
                 <Box padding={2}>
                     <Box sx={{display: "flex", flexDirection: "column", gap: "10px"}}>
@@ -135,7 +143,7 @@ function Dashboard() {
                         <Box sx={{ display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
                             {promotions.length > 0 ? (
                                 promotions.map(promotion => (
-                                    <PromotionCard promotion={promotion} key={promotion.id}></PromotionCard>
+                                    <PromotionCard promotion={promotion} key={promotion.id} />
                                 ))
                             ) : (
                                 <Typography>No promotions found.</Typography>
@@ -154,7 +162,7 @@ function Dashboard() {
                         <Box sx={{display: 'grid', gridTemplateColumns: {xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)'}, gap: 2 }}>
                                 {events.length > 0 ? (
                                     events.map(event => (
-                                            <EventCard event={event} key={event.id} ></EventCard>
+                                            <EventCard event={event} key={event.id} />
                                     ))
                                 ) : (
                                     <Typography>No events found.</Typography>

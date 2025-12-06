@@ -371,7 +371,6 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
 }
 
 function EventDetails() {
-  const { id } = useParams();
   const [rsvpSuccess, setRsvpSuccess] = useState(false);
   const [unRsvpSuccess, setUnRsvpSuccess] = useState(false);
 
