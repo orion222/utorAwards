@@ -51,7 +51,7 @@ async function getFilteredEvents(req, res) {
       .json({ error: "Bad Request: invalid published value" });
   }
   if (
-    published &&
+    !published &&
     userRole !== RoleType.manager &&
     userRole !== RoleType.superuser
   ) {

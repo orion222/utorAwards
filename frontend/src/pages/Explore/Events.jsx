@@ -66,8 +66,9 @@ function Events() {
         apiEndpoint="/events"
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
+        additionalParams={{published: true}}
       >
-        {({ data, isFetching, error, refetch }) => {
+        {({ data, isFetching, error }) => {
           if (error) {
             return (
               <Box display="flex" justifyContent="center" p={4}>

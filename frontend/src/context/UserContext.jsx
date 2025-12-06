@@ -51,6 +51,7 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("token");
     queryClient.setQueryData(["user"], null);
     queryClient.invalidateQueries(["user"]);
+    queryClient.clear();
   }, [queryClient]);
 
   // intercept invalid tokens as responses and auto-logout user

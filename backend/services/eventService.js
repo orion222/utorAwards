@@ -93,6 +93,7 @@ class EventService {
     const currDate = new Date();
     if (started === "true") {
       filterDetails.startTime = { lt: currDate };
+      filterDetails.endTime = { gt: currDate };
     } else if (started === "false") {
       filterDetails.startTime = { gte: currDate };
     }
@@ -139,6 +140,7 @@ class EventService {
       endTime: true,
       capacity: true,
       numGuests: true,
+      published: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -216,7 +218,6 @@ class EventService {
     ) {
       delete specificEvent.pointsRemain;
       delete specificEvent.pointsAwarded;
-      delete specificEvent.published;
     }
 
     return specificEvent;
