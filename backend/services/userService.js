@@ -5,6 +5,7 @@ const NotFoundError = require("../utils/errors/notFoundError");
 const ForbiddenError = require("../utils/errors/forbiddenError");
 const BadRequestError = require("../utils/errors/badRequestError");
 const { generateFakeName } = require("../utils/userHelpers");
+const { sendPasswordChangeEmail } = require("../utils/emailSender");
 
 const SECRET_KEY = process.env.JWT_SECRET;
 
@@ -341,7 +342,7 @@ class UserService {
 
     if (!user) throw new NotFoundError("User not found");
 
-    const { password } = user;
+    const { email, password } = user;
     if (password && !(await bcrypt.compare(oldPassword, password)))
       throw new ForbiddenError("Incorrect old password");
 
@@ -359,6 +360,8 @@ class UserService {
         password: hashedPassword,
       },
     });
+
+    await sendPasswordChangeEmail(email);
   }
 
   static async getLeaderboard(search, name, role, verified, page, limit) {

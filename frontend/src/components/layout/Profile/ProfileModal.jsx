@@ -157,7 +157,7 @@ export default function ProfileModal({ user, open, onClose, showToast }) {
             />
           </Stack>
         </DialogContent>
-        <DialogActions sx={{ p: "0 24px 16px" }}>
+        <DialogActions sx={{ p: "0 24px 24px" }}>
           <Button onClick={onClose}>Cancel</Button>
           <Button type="submit" variant="contained" disabled={updateProfileMutation.isPending}>
             {updateProfileMutation.isPending ? "Saving..." : "Save Changes"}

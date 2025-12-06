@@ -9,6 +9,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { passwordSchema } from "./constant";
 import api from "../../../api/api";
 import { useToast } from "../../../context/ToastContext";
+import PasswordField from "../../common/PasswordField";
 
 export default function ChangePassword({onClose}) {
 	const { showToast } = useToast();
@@ -30,12 +31,11 @@ export default function ChangePassword({onClose}) {
 			});
 			showToast("Password updated successfully!", "success");
 			reset();
-      onClose();
+            onClose();
         } 
 		catch (error) {
             const status = error.response?.status;
             const message = error.response?.data?.error || "Failed to update password";
-            console.log(error);
             if (status === 403) {
                 setError("currentPassword", { type: "manual", message: "Current password is incorrect" });
             } 
@@ -53,25 +53,36 @@ export default function ChangePassword({onClose}) {
                 name="currentPassword"
                 control={control}
                 render={({ field }) => (
-                    <TextField
-                        {...field}
+                    <PasswordField
                         label="Current Password"
-                        type="password"
-                        error={!!errors.currentPassword}
-                        helperText={errors.currentPassword?.message}
+                        id="current-password"
+                        value={field.value}
+                        register={{
+                            onChange: field.onChange,
+                            onBlur: field.onBlur,
+                            name: field.name,
+                            ref: field.ref,
+                        }}
+                        error={errors.currentPassword?.message}
                     />
                 )}
             />
+
             <Controller
                 name="newPassword"
                 control={control}
                 render={({ field }) => (
-                    <TextField
-                        {...field}
+                    <PasswordField
                         label="New Password"
-                        type="password"
-                        error={!!errors.newPassword}
-                        helperText={errors.newPassword?.message}
+                        id="new-password"
+                        value={field.value}
+                        register={{
+                            onChange: field.onChange,
+                            onBlur: field.onBlur,
+                            name: field.name,
+                            ref: field.ref,
+                        }}
+                        error={errors.newPassword?.message}
                     />
                 )}
             />
@@ -79,12 +90,17 @@ export default function ChangePassword({onClose}) {
                 name="confirmNewPassword"
                 control={control}
                 render={({ field }) => (
-                    <TextField
-                        {...field}
+                    <PasswordField
                         label="Confirm New Password"
-                        type="password"
-                        error={!!errors.confirmNewPassword}
-                        helperText={errors.confirmNewPassword?.message}
+                        id="confirm-new-password"
+                        value={field.value}
+                        register={{
+                            onChange: field.onChange,
+                            onBlur: field.onBlur,
+                            name: field.name,
+                            ref: field.ref,
+                        }}
+                        error={errors.confirmNewPassword?.message}
                     />
                 )}
             />
