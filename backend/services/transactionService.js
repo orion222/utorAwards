@@ -586,6 +586,7 @@ class TransactionService {
           type: true,
           spent: true,
           amount: true,
+          createdAt: true,
           promotions: {
             select: {
               id: true,
