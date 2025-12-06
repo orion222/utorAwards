@@ -50,7 +50,6 @@ export const UserProvider = ({ children }) => {
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     queryClient.setQueryData(["user"], null);
-    queryClient.invalidateQueries(["user"]);
     queryClient.clear();
   }, [queryClient]);
 

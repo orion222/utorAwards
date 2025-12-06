@@ -77,11 +77,11 @@ class EventService {
     }
 
     if (name) {
-      tempFilterDetail.OR.push({ name: name });
+      tempFilterDetail.OR.push({ name: { contains: name } });
     }
 
     if (location) {
-      tempFilterDetail.OR.push({ location: location });
+      tempFilterDetail.OR.push({ location: { contains: location }});
     }
 
     if (tempFilterDetail.OR.length !== 0) {
@@ -800,30 +800,28 @@ class EventService {
     orderBy,
   ) {
     const filterDetails = {};
-
     filterDetails.AND = [];
-
     let tempFilterDetail = { OR: [] };
 
     if (search) {
-      tempFilterDetail.OR.push({ name: { contains: search } });
-      tempFilterDetail.OR.push({ description: { contains: search } });
-      tempFilterDetail.OR.push({ location: { contains: search } });
+      tempFilterDetail.OR.push({ name: { contains: search, mode: 'insensitive' } });
+      tempFilterDetail.OR.push({ description: { contains: search, mode: 'insensitive' } });
+      tempFilterDetail.OR.push({ location: { contains: search, mode: 'insensitive' } });
     }
 
     if (name) {
-      tempFilterDetail.OR.push({ name: name });
+      tempFilterDetail.OR.push({ name: { contains: name, mode: 'insensitive' } });
     }
 
     if (location) {
-      tempFilterDetail.OR.push({ location: location });
+      tempFilterDetail.OR.push({ location: { contains: location, mode: 'insensitive' } });
     }
 
-    if (tempFilterDetail.OR.length !== 0) {
+    if (tempFilterDetail.OR.length > 0) {
       filterDetails.AND.push(tempFilterDetail);
     }
 
-    tempFilterDetail = { OR: [] };
+    tempFilterDetail = { OR: [] }; // Reset for the next set of OR conditions
 
     const currDate = new Date();
     if (started === "true") {
@@ -844,25 +842,33 @@ class EventService {
       filterDetails.published = false;
     }
 
-    if (showFull === "true") {
-      tempFilterDetail.OR = [];
+    if (showFull === "false") {
+      tempFilterDetail.OR.push({ capacity: null });
+      tempFilterDetail.OR.push({
+        numGuests: { lt: prisma.event.fields.capacity },
+      });
+    } else if (showFull === "true") {
       filterDetails.NOT = { capacity: null };
-      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
-    } else if (showFull === "false") {
+      filterDetails.numGuests = { gte: prisma.event.fields.capacity };
+    }
+
+    if (role === RoleType.regular || role === RoleType.cashier) {
+      filterDetails.published = true;
+      // This block was causing issues. Let's assume regular users should only see non-full events.
       tempFilterDetail.OR.push({ capacity: null });
       tempFilterDetail.OR.push({
         numGuests: { lt: prisma.event.fields.capacity },
       });
     }
 
-    if (role === RoleType.regular || role === RoleType.cashier) {
-      filterDetails.published = true;
-      tempFilterDetail.OR = [];
-      filterDetails.NOT = { capacity: null };
-      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+    if (tempFilterDetail.OR.length > 0) {
+      filterDetails.AND.push(tempFilterDetail);
     }
 
-    filterDetails.AND.push(tempFilterDetail);
+    // If AND is empty after all filters, remove it to avoid issues.
+    if (filterDetails.AND.length === 0) {
+      delete filterDetails.AND;
+    }
 
     const selectDetails = {
       id: true,
@@ -935,10 +941,9 @@ class EventService {
       tempFilterDetail.OR.push({ location: location });
     }
 
-    if (tempFilterDetail.OR.length !== 0) {
+    if (tempFilterDetail.OR.length > 0) {
       filterDetails.AND.push(tempFilterDetail);
     }
-
     tempFilterDetail = { OR: [] };
 
     const currDate = new Date();
@@ -963,7 +968,7 @@ class EventService {
     if (showFull === "true") {
       tempFilterDetail.OR = [];
       filterDetails.NOT = { capacity: null };
-      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
+      filterDetails.numGuests = { equals: prisma.event.fields.capacity };
     } else if (showFull === "false") {
       tempFilterDetail.OR.push({ capacity: null });
       tempFilterDetail.OR.push({
@@ -977,8 +982,6 @@ class EventService {
       filterDetails.NOT = { capacity: null };
       filterDetails.numGuests = { gt: prisma.event.fields.capacity };
     }
-
-    filterDetails.AND.push(tempFilterDetail);
 
     const selectDetails = {
       id: true,
