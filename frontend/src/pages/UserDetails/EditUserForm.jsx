@@ -158,23 +158,25 @@ function EditUserForm({ user, onClose, onSubmit }) {
           )}
         />
 
-        <Controller
-          name="suspicious"
-          control={control}
-          defaultValue={user.suspicious}
-          render={({ field }) => (
-            <FormControlLabel
-              control={
-                <Switch
-                  {...field}
-                  checked={!!field.value}
-                  size="large"
-                />
-              }
-              label="Flag as suspicious"
-            />
-          )}
-        />
+        {(user.role === "regular" || user.role === "cashier") && 
+          <Controller
+            name="suspicious"
+            control={control}
+            defaultValue={user.suspicious}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    checked={!!field.value}
+                    size="large"
+                  />
+                }
+                label="Flag as suspicious"
+              />
+            )}
+          />
+        }
 
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 3 }}>
           <Button variant="outlined" onClick={onClose} disabled={editUserMutation.isPending}>
