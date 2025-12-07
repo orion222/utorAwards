@@ -114,12 +114,12 @@ async function main() {
   const hashedPassword = await bcrypt.hash("Password@123", 10);
   const usersToCreate = [];
 
-  // Create 2 superusers
-  for (let i = 0; i < 2; i++) {
+  // Create 3 superusers
+  for (let i = 0; i < 3; i++) {
     const superuserUtorid = faker.string.alphanumeric(8).toLowerCase();
     usersToCreate.push({
       name: faker.person.fullName(),
-      utorid: superuserUtorid,
+      utorid: i === 0 ? 'admin': superuserUtorid,
       email: `${superuserUtorid}@mail.utoronto.ca`,
       password: hashedPassword,
       role: "superuser",

@@ -31,7 +31,6 @@ export default function DeletePromotionForm({ promotion, onClose }) {
         <FormCard
             title={`Delete ${promotion.name}?`}
             width="40%"
-            showClose={true}
             onClose={(e) => {
                 e.stopPropagation();
                 onClose();
