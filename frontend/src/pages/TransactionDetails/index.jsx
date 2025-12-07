@@ -1,7 +1,8 @@
-import { Box, Typography, Stack, Chip, Divider, ListItem, ListItemText, ListItemAvatar, Avatar, List } from "@mui/material";
+import { Box, Typography, Stack, Divider, ListItem, ListItemText, ListItemAvatar, Avatar, List } from "@mui/material";
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import DetailsTemplate from "../../components/common/DetailsTemplate.jsx";
 import PromotionCard from "../../components/common/PromotionCard.jsx";
+import StatusChip from "../../components/common/StatusChip.jsx";
 
 function TransactionDetails() {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -58,7 +59,7 @@ function TransactionDetails() {
                     </Box>
 
                     <Stack direction="row" spacing={1}>
-                        <Chip 
+                        <StatusChip
                             label={data.processed ? "PROCESSED" : "PENDING"}
                             color={data.processed ? "primary" : "warning"}
                             size="medium"
@@ -68,7 +69,7 @@ function TransactionDetails() {
                             }} 
                         />
                         {data.suspicious && (
-                            <Chip 
+                            <StatusChip
                                 label="SUSPICIOUS"
                                 color="error"
                                 size="medium"

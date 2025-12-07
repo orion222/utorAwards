@@ -1,5 +1,5 @@
 import DetailsTemplate from "../../components/common/DetailsTemplate";
-import { Box, Typography, Avatar, Alert, Stack, Chip, Button, Divider, Modal } from "@mui/material";
+import { Box, Typography, Avatar, Alert, Stack, Button, Divider, Modal } from "@mui/material";
 import VerifiedIcon from '@mui/icons-material/Verified';
 import SavingsIcon from "@mui/icons-material/Savings";
 import CakeIcon from "@mui/icons-material/Cake";
@@ -11,6 +11,7 @@ import { useState } from "react";
 import PromotionCard from "../../components/common/PromotionCard";
 import PromoteUserForm from "./PromoteUserForm.jsx";
 import EditUserForm from "./EditUserForm.jsx";
+import StatusChip from '../../components/common/StatusChip.jsx'
 
 function UserDetails() {
     const { user } = useUser();
@@ -70,7 +71,7 @@ function UserDetails() {
                         <>
                             {data.suspicious && (
                                 <Stack direction="row" gap={1}>
-                                    <Chip 
+                                    <StatusChip
                                         label="SUSPICIOUS"
                                         color="error"
                                         size="medium"

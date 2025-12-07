@@ -1,51 +1,30 @@
-import {
-  Chip,
-} from "@mui/material"
-import CircleIcon from '@mui/icons-material/Circle';
+import StatusChip from '../../components/common/StatusChip.jsx';
 export default function EventStatusChip({startTime, endTime, published}) {
   const hasEnded = new Date(endTime) < new Date();
   const isLive = new Date(startTime) < new Date() && !hasEnded;
 
-  const commonChipProps = {
-    width: 'fit-content',
-    padding: '0 1rem',
-    fontSize: 10,
-    fontWeight: 'bold',
-    border: '1px solid black',
-  }
   if (isLive) {
     return (
-      <Chip
+      <StatusChip
         label="LIVE"
-        size="small"
         sx={{
-          ...commonChipProps,
           backgroundColor: "#ff4444",
           color: "white",
-          "& .MuiChip-icon": {
-            color: "#fff",
-          },
         }}/>
     )
   }
   else if (hasEnded) {
     return (
-      <Chip
+      <StatusChip
         label="ENDED"
-        size="small"
-        sx={{
-          ...commonChipProps,
-        }}
       />
     )
   }
   else if (published) {
     return (
-      <Chip
+      <StatusChip
         label="PUBLISHED"
-        size="small"
         sx={{
-          ...commonChipProps,
           backgroundColor: "#dde5b6"
         }}
       />
@@ -53,11 +32,9 @@ export default function EventStatusChip({startTime, endTime, published}) {
   }
   else if (!published) {
     return (
-      <Chip
+      <StatusChip
         label="DRAFT"
-        size="small"
         sx={{
-          ...commonChipProps,
           backgroundColor: "#a98467",
           color: 'white'
         }}

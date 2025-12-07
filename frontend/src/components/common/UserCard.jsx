@@ -7,12 +7,12 @@ import {
   Card,
   CardContent,
   Modal,
-  Chip
 } from "@mui/material";
 import { useState } from "react";
 import UserDetail from "./UserDetail";
 import { useNavigate } from "react-router-dom";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import StatusChip from './StatusChip.jsx';
 
 export default function UserCard({ user, clickable = true }) {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -82,7 +82,7 @@ export default function UserCard({ user, clickable = true }) {
               </Typography>
               
               {user.suspicious && (
-                <Chip 
+                <StatusChip
                     label="SUSPICIOUS" 
                     color="error" 
                     size="small" 

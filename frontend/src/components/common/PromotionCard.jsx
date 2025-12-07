@@ -1,4 +1,4 @@
-import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Button } from "@mui/material";
+import { Card, CardContent, Stack, Box, Typography, Accordion, AccordionSummary, useMediaQuery, useTheme, AccordionDetails, Divider, Button } from "@mui/material";
 import theme from '../../theme.js';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LocationPinIcon from '@mui/icons-material/LocationPin';
@@ -8,7 +8,7 @@ import SellIcon from '@mui/icons-material/Sell';
 import PaidIcon from '@mui/icons-material/Paid';
 import { TheatersOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
-
+import StatusChip from './StatusChip.jsx'
 function PromotionCard({ promotion, hover }) {
     const navigate = useNavigate();
     const isSmall = useMediaQuery("(max-width: 670px)");
@@ -74,12 +74,13 @@ function PromotionCard({ promotion, hover }) {
                 </Typography>
             </Box>
             <Box> {/* right side */}
-                <Chip 
+                <StatusChip
                     label={type.toUpperCase()}
                     size="medium"
                     sx={{
                         fontWeight: 600,
                         fontSize: "0.9rem",
+                        backgroundColor: type === 'automatic' ? '#f7e1d7': '#e0f7d7',
                     }} 
                 />
             </Box>

@@ -2,6 +2,7 @@ import { Card, CardContent, Stack, Chip, Box, Typography, Accordion, AccordionSu
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useNavigate, Link } from "react-router-dom";
+import StatusChip from "./StatusChip.jsx";
 
 function TransactionItemCard({ transaction, hover }) {
     const isSmall = useMediaQuery("(max-width: 670px)");
@@ -46,10 +47,9 @@ function TransactionItemCard({ transaction, hover }) {
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', pr: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'start', gap: 0.5, flexDirection: "column" }}>
                                 <Box sx={{ display: 'flex', gap: 0.5, alignItems: "center" }}>
-                                    <Chip
+                                    <StatusChip
                                         label={type.toUpperCase()}
                                         size="small"
-                                        variant="outlined"
                                     />
                                     {promotionIds && promotionIds.length !== 0 && (
                                         <LocalOfferIcon sx={{ fontSize: 18, color: "primary.main" }} />
@@ -83,13 +83,13 @@ function TransactionItemCard({ transaction, hover }) {
                             {targetUser && amount < 0 && `To: ${targetUser.utorid}`}  
                         </Typography>
                         <Stack direction="row" spacing={1} my={2}>
-                            <Chip 
+                            <StatusChip
                                 label={processed ? "PROCESSED" : "PENDING"}
                                 color={processed ? "primary" : "warning"}
                                 size="small"
                             />
                             {suspicious && (
-                                <Chip 
+                                <StatusChip
                                     label="SUSPICIOUS" 
                                     color="error" 
                                     size="small" 
@@ -150,7 +150,7 @@ function TransactionItemCard({ transaction, hover }) {
                 <Box mb={2} sx={{ display: "flex", alignItems: "center" }}>
                     <Box sx={{ flex: 1, pr: 2 }}>
                         <Stack direction="row" spacing={1} mb={2}>
-                            <Chip 
+                            <StatusChip
                                 label={type.toUpperCase()}
                                 variant="outlined" 
                                 size="medium" 
@@ -159,7 +159,7 @@ function TransactionItemCard({ transaction, hover }) {
                                     fontSize: "0.9rem",
                                 }} 
                             />
-                            <Chip 
+                            <StatusChip
                                 label={processed ? "PROCESSED" : "PENDING"}
                                 color={processed ? "primary" : "warning"}
                                 size="medium" 
@@ -169,7 +169,7 @@ function TransactionItemCard({ transaction, hover }) {
                                 }} 
                             />
                             {suspicious && (
-                                <Chip 
+                                <StatusChip
                                     label="SUSPICIOUS" 
                                     color="error" 
                                     size="medium" 
