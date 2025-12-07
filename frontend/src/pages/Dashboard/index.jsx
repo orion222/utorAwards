@@ -20,28 +20,28 @@ function Dashboard() {
 
     const fetchTransactions = async () => {
         const { data } = await api.get("/users/me/transactions", {
-        params: { limit: 3 },
+            params: { limit: 3 },
         });
         return data.results;
     };
 
     const fetchEvents = async () => {
         const { data } = await api.get("/events", {
-        params: { orderBy: "startTime_desc", limit: 3 },
+            params: { orderBy: "startTime_desc", limit: 3 },
         });
         return data.results;
     };
 
     const fetchPromotions = async () => {
         const { data } = await api.get("/promotions", {
-        params: { limit: 3 },
+            params: { limit: 3 },
         });
         return data.results;
     };
 
     const fetchUsers = async () => {
         const { data } = await api.get("/users", {
-        params: { orderBy: "lastLogin_desc", limit: 3 },
+            params: { orderBy: "lastLogin_desc", limit: 3 },
         });
         return data.results;
     };
