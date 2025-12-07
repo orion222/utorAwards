@@ -34,9 +34,6 @@ function Landing() {
   const trackRef = useRef(null);
   const autoScrollRef = useRef({ rafId: null, pausedUntil: 0, offsetPx: 0 });
 
-  if (user) {
-    return <Navigate to="/dashboard" />;
-  }
   // Auto-scroll the testimonial track slowly; wrap seamlessly
   useEffect(() => {
     const speedPxPerSec = 20; // very slow
@@ -73,6 +70,10 @@ function Landing() {
       if (autoScrollRef.current.rafId) cancelAnimationFrame(autoScrollRef.current.rafId);
     };
   }, [testimonials.length]);
+
+  if (user) {
+    return <Navigate to="/dashboard" />;
+  }
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "background.default", position: "relative" }}>
