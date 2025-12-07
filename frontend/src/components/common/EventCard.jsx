@@ -3,6 +3,8 @@ import {
   Typography,
   useMediaQuery,
   Stack,
+  Card,
+  CardContent
 } from "@mui/material";
 import theme from "../../theme.js";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -53,211 +55,200 @@ function EventCard({
     if (!detailsPage) return;
     navigate(`/events/${event.id}`, { state: { event } });
   };
-  if (isSmall) {
-    return (
-      <Box
-        sx={{
-          padding: "16px",
-          borderRadius: "8px",
-          display: "flex",
-          flexDirection: "row",
-          gap: "10px",
-          border: 1,
-          borderColor: theme.palette.custom.border,
-          bgcolor: theme.palette.background.paper,
-          "&:hover": detailsPage ? { cursor: "pointer", boxShadow: 4 } : {},
-        }}
-        onClick={handleViewDetails}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", gap: "8px", width: '100%' }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "4px", width: '100%' }}>
+
+  return (
+    <Card
+      sx={{
+        p: 2,
+        pb: 0,
+        borderRadius: 2,
+        border: `1px solid ${theme.palette.custom.border}`,
+        bgcolor: theme.palette.background.paper,
+        "&:hover": detailsPage ? { cursor: "pointer", boxShadow: 4 } : {},
+        containerType: "inline-size",
+        containerName: "eventCard",
+
+        display: "flex",
+        flexDirection: "column",
+      }}
+      onClick={handleViewDetails}
+    >
+      <CardContent sx={{ p: 0, display: "flex", flex: 1 }}>
+        <Stack
+          sx={{
+            gap: 2,
+            width: "100%",
+
+            /* MOBILE */
+            "@container eventCard (max-width: 300px)": {
+              flexDirection: "column",
+              alignItems: "stretch",
+            },
+
+            /* DESKTOP */
+            "@container eventCard (min-width: 301px)": {
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "stretch",   // important: lets children stretch vertically
+            },
+
+            // ensure the Stack fills CardContent vertically
+            height: "100%",
+          }}
+        >
+          {/* ---------------- LEFT CONTENT ---------------- */}
+          <Stack
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              gap: 1,
+
+              // ensures it fills the Stack height on desktop
+              alignSelf: "stretch",
+              height: "100%",
+            }}
+          >
+            {/* NAME */}
             <Typography sx={{ fontSize: 20, fontWeight: "bold" }}>
               {name}
             </Typography>
+
+            {/* POINTS — mobile only */}
+            <Typography
+              sx={{
+                fontSize: 16,
+                fontWeight: "bold",
+
+                "@container eventCard (max-width: 300px)": {
+                  display: "block",
+                },
+                "@container eventCard (min-width: 301px)": {
+                  display: "none",
+                },
+              }}
+            >
+              ({points} pts)
+            </Typography>
+
+            {/* DATE */}
+            <Stack direction="row" spacing={1} alignItems="center">
+              <CalendarTodayIcon
+                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
+              />
+              <Typography sx={{ fontSize: 11, color: theme.palette.text.secondary }}>
+                {formatDate(startTime)} – {formatDate(endTime)}
+              </Typography>
+            </Stack>
+
+            {/* LOCATION */}
+            <Stack direction="row" spacing={1} alignItems="center">
+              <LocationPinIcon
+                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
+              />
+              <Typography sx={{ fontSize: 11, color: theme.palette.text.secondary }}>
+                {location}
+              </Typography>
+            </Stack>
+
+            {/* DESCRIPTION */}
+            <Typography
+              sx={{
+                fontSize: 11,
+                maxWidth: 260,
+                overflow: "hidden",
+                display: "-webkit-box",
+                WebkitBoxOrient: "vertical",
+
+                "@container eventCard (max-width: 300px)": {
+                  WebkitLineClamp: 1,
+                },
+                "@container eventCard (min-width: 301px)": {
+                  WebkitLineClamp: 3,
+                },
+              }}
+            >
+              {description}
+            </Typography>
+
+            {/* bottom area in left column — push to bottom on desktop */}
+            <Box
+              sx={{
+                mt: "auto",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "flex-start",
+                gap: 1,
+                width: "100%",
+              }}
+            >
+              {/* STATUS CHIP */}
+              <EventStatusChip
+                startTime={startTime}
+                endTime={endTime}
+                published={event.published}
+                sx={{
+                  "@container eventCard (min-width: 301px)": { marginRight: 0 },
+                }}
+              />
+
+              {/* CAP + CHIP on mobile (moved next to chip), hidden on desktop */
+                /* On desktop capacity is shown on the right column; on mobile we show it here */}
+              <Stack
+                direction="row"
+                spacing={1}
+                alignItems="center"
+                sx={{
+                  marginLeft: "auto", // on mobile, this pushes capacity to the right beside chip
+                  "@container eventCard (max-width: 300px)": {
+                    display: "flex",
+                  },
+                  "@container eventCard (min-width: 301px)": {
+                    display: "none",
+                  },
+                }}
+              >
+                <PeopleAltIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
+                <Typography sx={{ fontSize: 11, color: theme.palette.text.secondary }}>
+                  {capacity === null ? `${numGuests}` : `${numGuests}/${capacity}`}
+                </Typography>
+              </Stack>
+            </Box>
+          </Stack>
+
+          {/* ---------------- RIGHT COLUMN DESKTOP ---------------- */}
+          <Stack
+            sx={{
+              "@container eventCard (max-width: 300px)": {
+                display: "none",
+              },
+
+              "@container eventCard (min-width: 301px)": {
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                alignSelf: "stretch",
+                minWidth: "max-content",
+                height: "100%",
+              },
+            }}
+          >
+            {/* POINTS */}
             <Typography sx={{ fontSize: 20, fontWeight: "bold" }}>
               {points} pts
             </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "8px",
-                alignItems: "center",
-              }}
-            >
-              <CalendarTodayIcon
-                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-              >
-                {formatDate(startTime)} - {formatDate(endTime)}
+
+            {/* CAPACITY */}
+            <Stack direction="row" spacing={1} justifyContent="flex-end">
+              <PeopleAltIcon sx={{ fontSize: 14, color: theme.palette.text.secondary }} />
+              <Typography sx={{ fontSize: 11, color: theme.palette.text.secondary }}>
+                {capacity === null ? `${numGuests}` : `${numGuests}/${capacity}`}
               </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "8px",
-                alignItems: "center",
-              }}
-            >
-              <LocationPinIcon
-                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-              >
-                {location}
-              </Typography>
-            </Box>
-            <Typography
-              sx={{
-                fontSize: 11,
-                width: "260px",
-                height: isSmall ? "22.5px" : "45px",
-              }}
-            >
-              {truncateStr(description)}
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "8px",
-                justifyContent: "space-between",
-              }}
-            >
-              <Stack direction='row'>
-                <PeopleAltIcon
-                  sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-                />
-                <Typography
-                  sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-                >
-                  {capacity === null
-                    ? `${numGuests}`
-                    : `${numGuests}/${capacity}`}
-                </Typography>
-              </Stack>
-              <EventStatusChip startTime={startTime} endTime={endTime} published={event.published}/>
-            </Box>
-          </Box>
-        </Box>
-      </Box>
-    );
-  } else {
-    return (
-      <Box
-        sx={{
-          padding: "16px",
-          borderRadius: "8px",
-          display: "flex",
-          flexDirection: "row",
-          gap: "10px",
-          justifyContent: "space-between",
-          border: 1,
-          borderColor: theme.palette.custom.border,
-          bgcolor: theme.palette.background.paper,
-          flexShrink: 1,
-          "&:hover": detailsPage ? { cursor: "pointer", boxShadow: 4 } : {},
-        }}
-        onClick={handleViewDetails}
-      >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            width: "auto",
-            justifyContent: "space-between",
-            gap: "8px",
-          }}
-        >
-          {" "}
-          {/* left side */}
-          <Box sx={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            <Typography sx={{ fontSize: 20, fontWeight: "bold" }}>
-              {name}
-            </Typography>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "8px",
-                alignItems: "center",
-              }}
-            >
-              <CalendarTodayIcon
-                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-              >
-                {formatDate(startTime)} - {formatDate(endTime)}
-              </Typography>
-            </Box>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "row",
-                gap: "8px",
-                alignItems: "center",
-              }}
-            >
-              <LocationPinIcon
-                sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-              />
-              <Typography
-                sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-              >
-                {location}
-              </Typography>
-            </Box>
-            <Typography
-              sx={{
-                fontSize: 11,
-                maxWidth: "260px",
-                height: isSmall ? "22.5px" : "45px",
-              }}
-            >
-              {truncateStr(description)}
-            </Typography>
-          </Box>
-            <EventStatusChip startTime={startTime} endTime={endTime} published={event.published}/>
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}
-        >
-          {" "}
-          {/* right side */}
-          <Typography sx={{ fontSize: 20, fontWeight: "bold" }}>
-            {points} pts
-          </Typography>
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "row",
-              gap: "8px",
-              alignItems: "center",
-            }}
-          >
-            <PeopleAltIcon
-              sx={{ fontSize: 14, color: theme.palette.text.secondary }}
-            />
-            <Typography
-              sx={{ fontSize: 11, color: theme.palette.text.secondary }}
-            >
-              {capacity === null ? `${numGuests}` : `${numGuests}/${capacity}`}
-            </Typography>
-          </Box>
-        </Box>
-      </Box>
-    );
-  }
+            </Stack>
+          </Stack>
+        </Stack>
+      </CardContent>
+    </Card>
+  );
 }
 
 export default EventCard;
