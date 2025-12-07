@@ -705,7 +705,7 @@ async function retrieveMyEventManagement(req, res) {
 
   let orderByObj = null;
   if (orderBy) {
-    const validFields = ["startTime", "endTime", "points", "numGuests"];
+    const validFields = ["startTime", "endTime", "points", "numGuests", "createdAt"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
       return res
