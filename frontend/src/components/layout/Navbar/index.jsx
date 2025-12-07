@@ -29,15 +29,22 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
       sx={{
         width: sidebarWidth,
         backgroundColor: "#E8EBDF",
-        borderRight: isMobileWidth ? 0 : "1px solid #ccc",
         padding: 1,
         transition: "width 0.3s",
-        mt: 8,
         overflowY: "auto",
         overflowX: "hidden",
         flexShrink: 0,
-        position: isMobileWidth ? "static" : "fixed",
-        height: "calc(100% - 64px)",
+        ...(isMobileWidth
+          ? {
+              position: "static",
+              borderRight: 0,
+            }
+          : {
+              position: "fixed",
+              top: "64px",
+              bottom: 0,
+              borderRight: "1px solid #ccc",
+            }),
       }}
     >
       <MenuList sx={{ p: 0, pb: 2 }}>
@@ -159,6 +166,12 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
                 width: "max-content",
                 backgroundColor: "#E8EBDF",
                 padding: 1,
+                top: "56px",
+                height: "calc(100% - 56px)",
+                [`@media (orientation: landscape)`]: { //Drawer adjustment for mobile landscape
+                  top: "48px",
+                  height: "calc(100% - 48px)",
+                },
               },
             },
           }}
