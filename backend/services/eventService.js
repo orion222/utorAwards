@@ -141,6 +141,7 @@ class EventService {
       capacity: true,
       numGuests: true,
       published: true,
+      createdAt: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -188,6 +189,7 @@ class EventService {
         }
       },
       numGuests: true,
+      createdAt: true,
     };
 
     const specificEvent = await prisma.$transaction(async (tx) => {
@@ -881,6 +883,7 @@ class EventService {
       points: true,
       published: true,
       description: true,
+      createdAt: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -994,6 +997,7 @@ class EventService {
       points: true,
       description: true,
       published: true,
+      createdAt: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
@@ -1011,7 +1015,7 @@ class EventService {
         take: limit,
         skip: (page - 1) * limit,
         select: selectDetails,
-        orderBy: orderBy ? orderBy : {},
+        orderBy: orderBy ? orderBy : { createdAt: "desc" },
       }),
     ]);
 
