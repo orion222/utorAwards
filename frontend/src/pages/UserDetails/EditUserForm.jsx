@@ -7,7 +7,8 @@ import {
   Button,
   Box,
   Typography,
-  Stack
+  Stack,
+  Switch
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -33,6 +34,7 @@ function EditUserForm({ user, onClose, onSubmit }) {
       role: user?.role || 'regular',
       birthday: user?.birthday || '',
       hideUtorid: user?.hideUtorid || false,
+      suspicious: user?.suspicious || false
     },
     mode: 'onBlur',
   });
@@ -63,6 +65,7 @@ function EditUserForm({ user, onClose, onSubmit }) {
       role: data.role === user?.role ? null : data.role,
       birthday: data.birthday === user?.birthday ? null : data.birthday,
       hideUtorid: data.hideUtorid === user?.hideUtorid ? null : data.hideUtorid,
+      suspicious: data.suspicious === user?.suspicious ? null : data.suspicious
     };
 
     editUserMutation.mutate(payload);
@@ -154,6 +157,26 @@ function EditUserForm({ user, onClose, onSubmit }) {
             />
           )}
         />
+
+        {(user.role === "regular" || user.role === "cashier") && 
+          <Controller
+            name="suspicious"
+            control={control}
+            defaultValue={user.suspicious}
+            render={({ field }) => (
+              <FormControlLabel
+                control={
+                  <Switch
+                    {...field}
+                    checked={!!field.value}
+                    size="large"
+                  />
+                }
+                label="Flag as suspicious"
+              />
+            )}
+          />
+        }
 
         <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end', mt: 3 }}>
           <Button variant="outlined" onClick={onClose} disabled={editUserMutation.isPending}>
