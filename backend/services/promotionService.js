@@ -75,7 +75,7 @@ class PromotionService {
     }
 
     if (name) {
-      tempFilterDetail.OR.push({ name: name });
+      tempFilterDetail.OR.push({ name: { contains: name }});
     }
 
     if (tempFilterDetail.OR.length !== 0) {

@@ -806,17 +806,17 @@ class EventService {
     let tempFilterDetail = { OR: [] };
 
     if (search) {
-      tempFilterDetail.OR.push({ name: { contains: search, mode: 'insensitive' } });
-      tempFilterDetail.OR.push({ description: { contains: search, mode: 'insensitive' } });
-      tempFilterDetail.OR.push({ location: { contains: search, mode: 'insensitive' } });
+      tempFilterDetail.OR.push({ name: { contains: search } });
+      tempFilterDetail.OR.push({ description: { contains: search } });
+      tempFilterDetail.OR.push({ location: { contains: search }});
     }
 
     if (name) {
-      tempFilterDetail.OR.push({ name: { contains: name, mode: 'insensitive' } });
+      tempFilterDetail.OR.push({ name: { contains: name }});
     }
 
     if (location) {
-      tempFilterDetail.OR.push({ location: { contains: location, mode: 'insensitive' } });
+      tempFilterDetail.OR.push({ location: { contains: location }});
     }
 
     if (tempFilterDetail.OR.length > 0) {
@@ -937,11 +937,11 @@ class EventService {
     }
 
     if (name) {
-      tempFilterDetail.OR.push({ name: name });
+      tempFilterDetail.OR.push({ name: { contains: name } });
     }
 
     if (location) {
-      tempFilterDetail.OR.push({ location: location });
+      tempFilterDetail.OR.push({ location: { contains: location } });
     }
 
     if (tempFilterDetail.OR.length > 0) {

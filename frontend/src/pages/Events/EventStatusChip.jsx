@@ -13,6 +13,17 @@ export default function EventStatusChip({startTime, endTime, published}) {
         }}/>
     )
   }
+  else if (!published) {
+    return (
+      <StatusChip
+        label="DRAFT"
+        sx={{
+          backgroundColor: "#a98467",
+          color: 'white'
+        }}
+      />
+    )
+  }
   else if (hasEnded) {
     return (
       <StatusChip
@@ -26,17 +37,6 @@ export default function EventStatusChip({startTime, endTime, published}) {
         label="PUBLISHED"
         sx={{
           backgroundColor: "#dde5b6"
-        }}
-      />
-    )
-  }
-  else if (!published) {
-    return (
-      <StatusChip
-        label="DRAFT"
-        sx={{
-          backgroundColor: "#a98467",
-          color: 'white'
         }}
       />
     )
