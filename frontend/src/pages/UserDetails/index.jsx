@@ -43,13 +43,6 @@ function UserDetails() {
         setUserData(null);
     };
 
-    const handleEditSubmit = async (values) => {
-        // TODO: Implement API call to update user
-        console.log('Edit user data:', values);
-        // After successful API call:
-        handleCloseEditModal();
-    };
-
     return (
         <DetailsTemplate queryKey="user-details" apiEndpoint="/users">
             {data => (

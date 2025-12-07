@@ -149,7 +149,7 @@ async function getSpecificUser(req, res) {
 
 async function updateSpecificUser(req, res) {
   const userId = req.userId;
-  const { name, email, verified, suspicious, role } = req.body;
+  const { name, email, verified, suspicious, role, birthday, hideUtorid} = req.body;
 
   if (
     Object.keys(req.body).length === 0 ||
@@ -202,6 +202,24 @@ async function updateSpecificUser(req, res) {
         .json({ error: "Bad Request: suspicious must be a boolean" });
     }
     updateFields.suspicious = suspicious;
+  }
+
+  if (birthday !== undefined && birthday !== null) {
+    if (typeof birthday !== "string" || !isValidYYYYMMDD(birthday)) {
+      return res
+        .status(400)
+        .json({ error: "Bad Request: invalid birthday format" });
+    }
+    updateFields.birthday = birthday;
+  }
+
+  if (hideUtorid !== undefined && hideUtorid !== null) {
+    if (typeof hideUtorid !== "boolean") {
+      return res
+        .status(400)
+        .json({ error: "Bad Request: hideUtorid must be a boolean" });
+    }
+    updateFields.hideUtorid = hideUtorid;
   }
 
   if (role) {

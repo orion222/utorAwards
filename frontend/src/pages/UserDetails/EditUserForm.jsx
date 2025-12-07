@@ -8,7 +8,8 @@ import {
   Box,
   Typography,
   Stack,
-  Switch
+  Switch,
+  useMediaQuery
 } from '@mui/material';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -17,6 +18,13 @@ import { roleOptions, userSchema } from './constants';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '../../context/ToastContext';
 import api from '../../api/api';
+import {
+  DesktopDatePicker,
+  MobileDatePicker,
+} from "@mui/x-date-pickers";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 function EditUserForm({ user, onClose, onSubmit }) {
   const { showToast } = useToast();
@@ -32,7 +40,7 @@ function EditUserForm({ user, onClose, onSubmit }) {
       name: user?.name || '',
       email: user?.email || '',
       role: user?.role || 'regular',
-      birthday: user?.birthday || '',
+      birthday: user?.birthday ? dayjs(user.birthday) : null,
       hideUtorid: user?.hideUtorid || false,
       suspicious: user?.suspicious || false
     },
@@ -41,9 +49,7 @@ function EditUserForm({ user, onClose, onSubmit }) {
 
   const editUserMutation = useMutation({
     mutationFn: async (payload) => {
-      console.log(payload);
       const res = await api.patch(`/users/${user.id}`, payload);
-      console.log(res);
       return res.data;
     },
     onSuccess: () => {
@@ -53,23 +59,28 @@ function EditUserForm({ user, onClose, onSubmit }) {
       onClose();
     },
     onError: (error) => {
-      console.log(error);
       showToast(`Error: ${error.message || 'Failed to update user'}`, "error");
     }
   });
 
   const onSubmitHandler = async (data) => {
+    const birthdayString = data.birthday ? dayjs(data.birthday).format("YYYY-MM-DD") : null;
     const payload = {
       name: data.name === user?.name ? null : data.name,
       email: data.email === user?.email ? null : data.email,
       role: data.role === user?.role ? null : data.role,
-      birthday: data.birthday === user?.birthday ? null : data.birthday,
+      birthday: birthdayString === user?.birthday ? null : birthdayString,
       hideUtorid: data.hideUtorid === user?.hideUtorid ? null : data.hideUtorid,
       suspicious: data.suspicious === user?.suspicious ? null : data.suspicious
     };
 
     editUserMutation.mutate(payload);
   };
+
+  const isSmall = useMediaQuery("(max-width: 600px)");
+  const DatePickerComponent = isSmall
+    ? MobileDatePicker
+    : DesktopDatePicker;
 
   return (
     <FormCard onClose={onClose}>
@@ -130,21 +141,27 @@ function EditUserForm({ user, onClose, onSubmit }) {
             </TextField>
           )}
         />
-        <Controller
-          name="birthday"
-          control={control}
-          render={({ field }) => (
-            <TextField
-              {...field}
-              fullWidth
-              label="Birthday (optional)"
-              placeholder="YYYY-MM-DD"
-              error={Boolean(errors.birthday)}
-              helperText={errors.birthday?.message}
-              margin="normal"
-            />
-          )}
-        />
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <Controller
+            name="birthday"
+            control={control}
+            render={({ field }) => (
+              <DatePickerComponent
+                {...field}
+                label="Birthday (optional)"
+                disableFuture
+                sx={{ width: '100%', mt: 2, mb: 1 }}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    error: !!errors.birthday,
+                    helperText: errors.birthday?.message,
+                  },
+                }}
+              />
+            )}
+          />
+        </LocalizationProvider>
 
         <Controller
           name="hideUtorid"
