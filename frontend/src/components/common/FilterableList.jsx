@@ -107,6 +107,8 @@ function FilterableList({
     retry: 1,
     placeholderData: (prev) => prev,
     staleTime: 300000, // 5 minutes
+    refetchOnWindowFocus: true,
+    refetchOnMount: 'always',
   });
 
   const applyFilters = () => {
