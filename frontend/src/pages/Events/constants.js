@@ -29,8 +29,13 @@ export const editEventSchema = yup.object({
     .min(0, "Points must be at least 0")
     .required("Points are required"),
   capacity: yup
-    .number()
-    .typeError("Capacity must be a number")
-    .min(1, "Capacity must be at least 1")
+    .mixed()
+    .test(
+      "is-valid-capacity",
+      "Capacity must be a positive number or 'None'",
+      value =>
+        value === "None" ||
+        (typeof value === "number" && value >= 1)
+    )
     .required("Capacity is required"),
 });
