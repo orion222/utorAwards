@@ -175,6 +175,7 @@ class UserService {
           createdAt: true,
           suspicious: true,
           verified: true,
+          avatarUrl: true,
         },
         orderBy: orderBy ? orderBy : { id: "asc" },
       }),
@@ -431,6 +432,7 @@ class UserService {
       if (user.hideUtorid) {
         return {
           ...user,
+          avatarUrl: null,
           utorid: generateFakeName(),
           rank: rankMap.get(user.id),
         };
