@@ -1,0 +1,263 @@
+# Deployment and Setup Guide
+
+This document describes how to prepare, set up, and deploy the UTORAwards application (frontend + backend) in a new environment. It covers required packages, environment configuration, and deployment steps.
+
+## a. Prerequisite Packages to Install
+
+Install the following packages on the target machine.
+
+- System prerequisites:
+  - Node.js 18+ and npm
+  - Git
+  - SQLite3
+- Frontend dependencies (installed via npm in the frontend folder):
+  - @emotion/react
+  - @emotion/styled
+  - @hookform/resolvers
+  - @mui/icons-material
+  - @mui/material
+  - @mui/x-date-pickers
+  - @tanstack/react-query
+  - axios
+  - dayjs
+  - jwt-decode
+  - lucide-react
+  - prettier
+  - qrcode
+  - react
+  - react-dom
+  - react-hook-form
+  - react-icons
+  - react-router-dom
+  - yup
+- Backend dependencies (installed via npm in the backend folder):
+  - @prisma/client
+  - bcrypt
+  - cors
+  - express
+  - express-jwt
+  - express-rate-limit
+  - jsonwebtoken
+  - multer
+  - nodemailer
+  - prisma (CLI)
+  - sqlite3
+  - uuid
+  - zod
+- Dev tools:
+  - @faker-js/faker
+  - nodemon
+
+## b. How to Set Up the Backend and Frontend
+
+Environment assumptions:
+- Backend exposed on http://localhost:3000
+- Frontend served on http://localhost:5173 (Vite dev) or via static hosting (production)
+
+Directory layout:
+- Root: course-project/
+  - backend/
+  - frontend/
+
+### 1) Backend Setup
+
+1. Configure environment variables in [backend/.env](backend/.env):
+   - JWT_SECRET=your_secret_here
+   - EMAIL_USER=your_gmail_username
+   - EMAIL_PASSWORD=your_app_password
+   - FRONTEND_URL=http://localhost:5173
+
+2. Install dependencies:
+   - From [backend](backend) folder:
+     ```sh
+     npm install
+     ```
+
+3. Initialize Prisma and database:
+   - Ensure SQLite is available (default). If using another DB, update [backend/prisma/schema.prisma](backend/prisma/schema.prisma) accordingly.
+   - Run migrations:
+     ```sh
+     npx prisma migrate deploy
+     ```
+   - Seed data:
+     ```sh
+     npm run seed
+     ```
+
+4. Start backend:
+   - Development (auto-restart):
+     ```sh
+     npx nodemon index.js 3000
+     ```
+   - Production:
+     ```sh
+     node index.js 3000
+     ```
+
+The server will be available at http://localhost:3000. Ensure CORS matches FRONTEND_URL.
+
+### 2) Frontend Setup
+
+1. Configure environment variables in [frontend/.env](frontend/.env):
+   - VITE_BACKEND_URL=http://localhost:3000
+
+2. Install dependencies:
+   - From [frontend](frontend) folder:
+     ```sh
+     npm install
+     ```
+
+3. Run development server:
+   ```sh
+   npm run dev
+   ```
+   - Default URL: http://localhost:5173
+
+4. Build for production:
+   ```sh
+   npm run build
+   ```
+   - Output in [frontend/dist](frontend/dist)
+
+## c. Deployment Information
+
+i. Recommended: Run backend and frontend on the same VM for simplicity.
+
+Example environment:
+- OS: Ubuntu 20.04 LTS
+- CPU: 2 vCPU
+- RAM: 4 GB
+- Disk: 20 GB
+- Node.js: 18+
+- Reverse proxy: Nginx
+
+### Production Deployment (Single VM)
+
+1. Backend (Express + Prisma):
+   - Create a systemd service (optional) to manage the backend:
+     ```ini
+     [Unit]
+     Description=UTORAwards Backend
+     After=network.target
+
+     [Service]
+     Type=simple
+     WorkingDirectory=/var/www/course-project/backend
+     ExecStart=/usr/bin/node index.js 3001
+     Restart=always
+     Environment=NODE_ENV=production
+     Environment=JWT_SECRET=your_secret_here
+     Environment=EMAIL_USER=your_gmail_username
+     Environment=EMAIL_PASSWORD=your_app_password
+     Environment=FRONTEND_URL=https://your-frontend-domain
+
+     [Install]
+     WantedBy=multi-user.target
+     ```
+
+   - Enable and start:
+     ```sh
+     sudo systemctl enable utorawards-backend
+     sudo systemctl start utorawards-backend
+     ```
+
+2. Frontend (Vite build + Nginx static hosting):
+   - Build assets:
+     ```sh
+     cd frontend
+     npm run build
+     ```
+   - Copy [frontend/dist](frontend/dist) to Nginx web root (e.g., /var/www/utorawards/dist).
+   - Nginx config (example):
+     ```nginx
+     server {
+       listen 80;
+       server_name your-frontend-domain;
+
+       root /var/www/utorawards/dist;
+       index index.html;
+
+       location / {
+         try_files $uri /index.html;
+       }
+
+       # Proxy API to backend
+       location /uploads/ {
+         proxy_pass http://127.0.0.1:3001/uploads/;
+         proxy_set_header Host $host;
+       }
+
+       location /auth/ {
+         proxy_pass http://127.0.0.1:3001/auth/;
+       }
+       location /users/ {
+         proxy_pass http://127.0.0.1:3001/users/;
+       }
+       location /events/ {
+         proxy_pass http://127.0.0.1:3001/events/;
+       }
+       location /transactions/ {
+         proxy_pass http://127.0.0.1:3001/transactions/;
+       }
+       location /promotions/ {
+         proxy_pass http://127.0.0.1:3001/promotions/;
+       }
+     }
+     ```
+
+3. Environment variables:
+   - Backend [backend/.env](backend/.env) must set FRONTEND_URL to your public frontend URL.
+   - Frontend [frontend/.env](frontend/.env) must set VITE_BACKEND_URL to your public backend URL (or same domain with Nginx proxy).
+
+4. SSL/TLS (optional but recommended):
+   - Use Certbot to obtain and install certificates on Nginx.
+   - Update Nginx to listen on 443 and redirect HTTP to HTTPS.
+
+5. Monitoring and logs:
+   - Use systemd journal for backend logs:
+     ```sh
+     journalctl -u utorawards-backend -f
+     ```
+   - Nginx access/error logs in /var/log/nginx.
+
+6. Email configuration:
+   - Backend requires Gmail app password in EMAIL_PASSWORD.
+   - Ensure “Less secure app access” alternative via app passwords is set.
+   - Confirm EMAIL_USER/EMAIL_PASSWORD can send emails; verify SMTP connectivity.
+
+7. Database:
+   - Default uses SQLite file via Prisma. For production durability, consider PostgreSQL.
+   - If migrating DB:
+     - Update [backend/prisma/schema.prisma](backend/prisma/schema.prisma)
+     - Run:
+       ```sh
+       npx prisma generate
+       npx prisma migrate deploy
+       ```
+
+ii. Environment summary:
+- Single VM: Ubuntu 20.04 LTS
+- Node.js 18+
+- Nginx serving built frontend and proxying API to local Express backend
+- SQLite (default) or PostgreSQL (optional)
+- Gmail SMTP credentials for password reset emails
+
+## Quick Start (Local Dev)
+
+- Backend:
+  ```sh
+  cd backend
+  npm install
+  npx prisma migrate deploy
+  npm run seed
+  node index.js 3000
+  ```
+- Frontend:
+  ```sh
+  cd frontend
+  npm install
+  echo "VITE_BACKEND_URL=http://localhost:3000" > .env
+  npm run dev
+  ```
+
+Open http://localhost:5173 and log in using seeded users.
