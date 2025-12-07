@@ -20,6 +20,8 @@ import LocationPinIcon from "@mui/icons-material/LocationOn";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { FiEdit } from "react-icons/fi";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
+import EventBusyIcon from "@mui/icons-material/EventBusy";
 
 import DetailsTemplate from "../../components/common/DetailsTemplate.jsx";
 import FormCard from "../../components/common/FormCard";
@@ -150,7 +152,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
                   justifyContent: "space-between",
                 }}
               >
-                <ArrowDropDownIcon sx={{ fontSize: isSmall ? 11 : 14 }} />
+                <EventAvailableIcon sx={{ fontSize: isSmall ? 16 : 17, mr: 0.5 }} />
                 <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
                   RSVP
                 </Typography>
@@ -166,7 +168,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
                   justifyContent: "space-between",
                 }}
               >
-                <ArrowDropDownIcon sx={{ fontSize: isSmall ? 11 : 14 }} />
+                <EventBusyIcon sx={{ fontSize: isSmall ? 16 : 17, mr: 0.5 }} />
                 <Typography sx={{ fontSize: isSmall ? 11 : 14 }}>
                   Cancel RSVP
                 </Typography>
