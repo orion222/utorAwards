@@ -124,7 +124,7 @@ async function retrievePromotion(req, res) {
 
   let orderByObj = null;
   if (orderBy) {
-    const validFields = ["startTime", "endTime", "points", "minSpending", "rate"];
+    const validFields = ["startTime", "endTime", "points", "minSpending", "rate", "createdAt"];
     orderByObj = convertOrderByField(orderBy, validFields);
     if (!orderByObj) {
       return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
