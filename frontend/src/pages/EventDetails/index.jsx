@@ -19,7 +19,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import LocationPinIcon from "@mui/icons-material/LocationOn";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
-import { FiEdit } from "react-icons/fi";
+import {FiEdit, FiTrash} from "react-icons/fi";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import EventBusyIcon from "@mui/icons-material/EventBusy";
 
@@ -33,6 +33,7 @@ import api from "../../api/api";
 import { useToast } from "../../context/ToastContext.jsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import EventStatusChip from "../Events/EventStatusChip.jsx";
+import DeleteEventForm from "../EventDetails/DeleteEventForm.jsx";
 
 // Define the content component in the same file
 function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsvpSuccess, setUnRsvpSuccess }) {
@@ -46,6 +47,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
 
   const [editModal, setEditModal] = useState(false);
   const [rsvp, setRSVP] = useState(data?.guests?.some((item) => item.user.id === user.id) || false);
+  const [deleteModal, setDeleteModal] = useState(false);
 
   const formatDate = (dateIsoString) => {
     return new Intl.DateTimeFormat("en-US", {
@@ -92,9 +94,10 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
   const isOrganizer = data.organizers.some((organizer) => organizer.id === user.id);
 
   if (!data) return null;
-  const { startTime, endTime } = data;
+  const { endTime, startTime } = data;
   const hasEnded = new Date(endTime) < new Date();
-
+  const hasStarted = new Date(startTime) < new Date();
+  const isLive = hasStarted && !hasEnded;
   return (
     <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
       <Typography variant="h4" fontWeight="bold">
@@ -121,24 +124,46 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
 
       <Stack direction="row" gap={1} alignItems="center">
         <EventStatusChip startTime={data.startTime} endTime={data.endTime} published={data.published} />
-        {(isOrganizer || isManagerOrSuperuser) && !hasEnded &&
-          <Button
-            startIcon={<FiEdit color="grey" />}
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditModal(true);
-            }}
-            sx={{
-              fontSize: 12,
-              color: "grey",
-              borderRadius: "8px",
-              width: "fit-content",
-              "&:hover": { backgroundColor: theme.palette.action.hover },
-            }}
-          >
-            Edit
-          </Button>
-          }
+        {(isOrganizer || isManagerOrSuperuser) && !hasEnded && (
+          <>
+            <Button
+              startIcon={<FiEdit color="grey" />}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditModal(true);
+              }}
+              sx={{
+                fontSize: 12,
+                color: "grey",
+                borderRadius: "8px",
+                width: "fit-content",
+                "&:hover": { backgroundColor: theme.palette.action.hover },
+              }}
+            >
+              Edit
+            </Button>
+            {
+              !data.published &&
+              <Button
+                startIcon={<FiTrash color="red" />}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteModal(true)
+                }}
+                sx={{
+                  fontSize: 12,
+                  color: "red",
+                  borderRadius: "8px",
+                  width: "fit-content",
+                  "&:hover": { backgroundColor: theme.palette.action.hover },
+                }}
+              >
+                Delete
+              </Button>
+            }
+          </>
+          )
+        }
         {!isOrganizer && !hasEnded && (
           <Box>
             {!rsvp ? (
@@ -355,6 +380,32 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
             }}
           />
         </FormCard>
+      </Modal>
+      <Modal
+        open={deleteModal}
+        onClose={(e) => {
+          e.stopPropagation();
+          setDeleteModal(false)
+        }}
+        sx={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1300,
+        }}
+      >
+        <Box sx={{width: isSmall ? "100%":"50%"}}>
+          <DeleteEventForm
+            event={data}
+            onClose={() => setDeleteModal(false)}
+          />
+        </Box>
       </Modal>
     </Box>
   );

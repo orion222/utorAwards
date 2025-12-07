@@ -3,17 +3,7 @@ export default function EventStatusChip({startTime, endTime, published}) {
   const hasEnded = new Date(endTime) < new Date();
   const isLive = new Date(startTime) < new Date() && !hasEnded;
 
-  if (isLive) {
-    return (
-      <StatusChip
-        label="LIVE"
-        sx={{
-          backgroundColor: "#ff4444",
-          color: "white",
-        }}/>
-    )
-  }
-  else if (!published) {
+  if (!published) {
     return (
       <StatusChip
         label="DRAFT"
@@ -22,6 +12,16 @@ export default function EventStatusChip({startTime, endTime, published}) {
           color: 'white'
         }}
       />
+    )
+  }
+  if (isLive) {
+    return (
+      <StatusChip
+        label="LIVE"
+        sx={{
+          backgroundColor: "#ff4444",
+          color: "white",
+        }}/>
     )
   }
   else if (hasEnded) {
