@@ -126,6 +126,7 @@ model Promotion {
   points            Int?
   startTime         DateTime
   endTime           DateTime
+  createdAt         DateTime @default(now())
   // transaction relations
   transactions      Transaction[] @relation("AppliedTransactionPromotions")
   // user relations

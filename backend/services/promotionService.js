@@ -131,10 +131,11 @@ class PromotionService {
         rate: true,
         points: true,
         description: true,
+        createdAt: true,
       };
       const [count, results] = await prisma.$transaction([
         prisma.promotion.count({ where }),
-        prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { startTime: "asc" } }),
+        prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { startTime: "desc" } }),
       ]);
 
       return { count, results };
@@ -150,11 +151,12 @@ class PromotionService {
       rate: true,
       points: true,
       description: true,
+      createdAt: true,
     };
 
     const [count, results] = await prisma.$transaction([
       prisma.promotion.count({ where }),
-      prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { startTime: "asc" } }),
+      prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { createdAt: "desc" } }),
     ]);
 
     return { count, results };
