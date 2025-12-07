@@ -74,7 +74,6 @@ export default function EditPromotionForm({
     onSuccess: () => {
         showToast("Edit successful", "success");
         queryClient.invalidateQueries({ queryKey: ['promotion-details', String(promotion.id)] });
-        queryClient.invalidateQueries({ queryKey: ['promotions'] }); 
         onClose();
     },
     onError: (error) => {

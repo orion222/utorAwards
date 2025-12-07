@@ -569,6 +569,10 @@ class TransactionService {
       if (relatedId) where.relatedId = relatedId;
     }
 
+    if (!operator && amount) {
+      where.amount = amount;
+    }
+
     if (operator && (amount || amount === 0)) {
       where.amount = { [operator]: amount };
     }
@@ -665,7 +669,7 @@ class TransactionService {
           },
           take: limit,
           skip: (page - 1) * limit,
-          orderBy: orderBy ? orderBy : {},
+          orderBy: orderBy ? orderBy : { createdAt: "asc" },
         })
     ]);
 

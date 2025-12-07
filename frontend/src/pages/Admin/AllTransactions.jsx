@@ -4,10 +4,6 @@ import TransactionItemCard from "../../components/common/TransactionItemCard.jsx
 
 function AllTransactions() {
   const filterConfig = {
-    name: {
-        type: "text",
-        label: "Name",
-    },
     createdBy: {
         type: "text",
         label: "Created By",
@@ -47,8 +43,6 @@ function AllTransactions() {
   };
 
   const orderByConfig = [
-    { label: "Name (A-Z)", value: "name_asc" },
-    { label: "Name (Z-A)", value: "name_desc" },
     { label: "Date (Newest)", value: "createdAt_desc" },
     { label: "Date (Oldest)", value: "createdAt_asc" },
     { label: "Points (Highest)", value: "amount_desc" },

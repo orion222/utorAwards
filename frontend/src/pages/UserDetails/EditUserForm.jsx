@@ -55,7 +55,6 @@ function EditUserForm({ user, onClose, onSubmit }) {
     onSuccess: () => {
       showToast("Update successful", "success");
       queryClient.invalidateQueries({ queryKey: ['user-details', String(user.id)] });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
       onClose();
     },
     onError: (error) => {

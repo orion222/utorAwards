@@ -52,7 +52,7 @@ function validRetrieveBody(req) {
     return false;
   }
 
-  if ((relatedId && !type) || (amount && !operator) || (!amount && operator))
+  if ((relatedId && !type) || (!amount && operator))
     return false;
 
   const relatedIdNum = relatedId ? Number(relatedId) : null;

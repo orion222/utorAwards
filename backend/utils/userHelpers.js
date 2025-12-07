@@ -8,7 +8,7 @@ function validRetrieveBody(req) {
     }
 
     // Check dependencies: relatedId requires type, amount requires operator, and vice versa
-    if ((relatedId && !type) || (amount && !operator) || (!amount && operator)) {
+    if ((relatedId && !type) || (!amount && operator)) {
         return false;
     }
 
