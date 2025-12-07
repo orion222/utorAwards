@@ -72,7 +72,6 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
       console.error("Error rsvp'ing for event:", error);
     }
   });
-
   const unRsvpMutation = useMutation({
     mutationFn: async () => {
       return api.delete(`events/${id}/guests/me`, {});
@@ -96,8 +95,6 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
   if (!data) return null;
   const { endTime, startTime } = data;
   const hasEnded = new Date(endTime) < new Date();
-  const hasStarted = new Date(startTime) < new Date();
-  const isLive = hasStarted && !hasEnded;
   return (
     <Box sx={{ my: 3, display: "flex", flexDirection: "column", gap: 3 }}>
       <Typography variant="h4" fontWeight="bold">
@@ -125,43 +122,42 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
       <Stack direction="row" gap={1} alignItems="center">
         <EventStatusChip startTime={data.startTime} endTime={data.endTime} published={data.published} />
         {(isOrganizer || isManagerOrSuperuser) && !hasEnded && (
-          <>
+          <Button
+            startIcon={<FiEdit color="grey" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setEditModal(true);
+            }}
+            sx={{
+              fontSize: 12,
+              color: "grey",
+              borderRadius: "8px",
+              width: "fit-content",
+              "&:hover": { backgroundColor: theme.palette.action.hover },
+            }}
+          >
+            Edit
+          </Button>
+          )
+        }
+        {
+          !data?.published && (
             <Button
-              startIcon={<FiEdit color="grey" />}
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditModal(true);
-              }}
-              sx={{
-                fontSize: 12,
-                color: "grey",
-                borderRadius: "8px",
-                width: "fit-content",
-                "&:hover": { backgroundColor: theme.palette.action.hover },
-              }}
-            >
-              Edit
-            </Button>
-            {
-              !data.published &&
-              <Button
-                startIcon={<FiTrash color="red" />}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setDeleteModal(true)
-                }}
-                sx={{
-                  fontSize: 12,
-                  color: "red",
-                  borderRadius: "8px",
-                  width: "fit-content",
-                  "&:hover": { backgroundColor: theme.palette.action.hover },
-                }}
-              >
-                Delete
-              </Button>
-            }
-          </>
+            startIcon={<FiTrash color="red" />}
+            onClick={(e) => {
+              e.stopPropagation();
+              setDeleteModal(true)
+            }}
+            sx={{
+              fontSize: 12,
+              color: "red",
+              borderRadius: "8px",
+              width: "fit-content",
+              "&:hover": { backgroundColor: theme.palette.action.hover },
+            }}
+          >
+            Delete
+          </Button>
           )
         }
         {!isOrganizer && !hasEnded && (

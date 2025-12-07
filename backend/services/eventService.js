@@ -160,8 +160,6 @@ class EventService {
         orderBy: orderBy || undefined,
       }),
     ]);
-    console.log(filterDetails);
-    console.log(results);
     return {
       count: count,
       results: results,
