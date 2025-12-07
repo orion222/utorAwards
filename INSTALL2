@@ -121,112 +121,71 @@ The server will be available at http://localhost:3000. Ensure CORS matches FRONT
 
 ## c. Deployment Information
 
-i. Recommended: Run backend and frontend on the same VM for simplicity.
+i. Preferred: Deploy frontend on Vercel and backend on Railway (Platform as a Service).
 
 Example environment:
-- OS: Ubuntu 20.04 LTS
-- CPU: 2 vCPU
-- RAM: 4 GB
-- Disk: 20 GB
-- Node.js: 18+
-- Reverse proxy: Nginx
+- Frontend: Vercel (React + Vite)
+- Backend: Railway (Node.js + Express)
+- Database: SQLite file on Railway
+- Email: Gmail SMTP (App Password)
 
-### Production Deployment (Single VM)
+### Production Deployment (PaaS: Vercel + Railway)
 
-1. Backend (Express + Prisma):
-   - Create a systemd service (optional) to manage the backend:
-     ```ini
-     [Unit]
-     Description=UTORAwards Backend
-     After=network.target
+1. Backend on Railway (Express + Prisma):
+   - Create a new Railway project and deploy the [backend](backend) directory.
+   - Database must be seeded first and the db file must be pushed to Railway, as free trial features do not let us to SSH into the server
+   - Set environment variables in Railway:
+     - PORT=3000
+     - JWT_SECRET=ILOVEPANCHEN
+     - EMAIL_USER=utorawards.noreply@gmail.com
+     - EMAIL_PASSWORD=cmpz ltyf fvot htds
+     - FRONTEND_URL=https://utor-awards.vercel.app
+   - For SQLite:
+     - The SQLite file will be stored in the container filesystem; for production durability, consider PostgreSQL.
+     - Run:
+       ```sh
+       npx prisma generate
+       npx prisma migrate deploy
+       ```
+   - Configure Railway build and start:
+     - Install: `npm install`
+     - Migrate: `npx prisma migrate deploy`
+     - Custom Start Command: `node index.js`
+   - Notes:
+     - Ensure CORS origin in [backend/index.js](backend/index.js) uses `process.env.FRONTEND_URL` set to your Vercel domain.
+     - The `/uploads` static path is served from the container; for persistent media, use object storage (e.g., S3) if needed.
 
-     [Service]
-     Type=simple
-     WorkingDirectory=/var/www/course-project/backend
-     ExecStart=/usr/bin/node index.js 3001
-     Restart=always
-     Environment=NODE_ENV=production
-     Environment=JWT_SECRET=your_secret_here
-     Environment=EMAIL_USER=your_gmail_username
-     Environment=EMAIL_PASSWORD=your_app_password
-     Environment=FRONTEND_URL=https://your-frontend-domain
+2. Frontend on Vercel (Vite build):
+   - Import the [frontend](frontend) directory as a Vercel project.
+   - Framework preset: Vite + React.
+   - Set environment variables in Vercel (Project Settings → Environment Variables):
+     - VITE_BACKEND_URL=https://utorawards-production.up.railway.app
+     - VITE_GEOAPIFY_API_KEY=e16f6846289b47b382cde56f8bcd7040
+   - Build settings:
+     - Install Command: `npm install`
+     - Build Command: `npm run build` or `vite build`
+     - Output Directory: `dist`
 
-     [Install]
-     WantedBy=multi-user.target
-     ```
+3. Environment variables summary:
+   - Backend [backend/.env](backend/.env) (Railway):
+     - JWT_SECRET, EMAIL_USER, EMAIL_PASSWORD, FRONTEND_URL, PORT
+   - Frontend [frontend/.env](frontend/.env) (Vercel):
+     - VITE_BACKEND_URL, VITE_GEOAPIFY_API_KEY
 
-   - Enable and start:
-     ```sh
-     sudo systemctl enable utorawards-backend
-     sudo systemctl start utorawards-backend
-     ```
-
-2. Frontend (Vite build + Nginx static hosting):
-   - Build assets:
-     ```sh
-     cd frontend
-     npm run build
-     ```
-   - Copy [frontend/dist](frontend/dist) to Nginx web root (e.g., /var/www/utorawards/dist).
-   - Nginx config (example):
-     ```nginx
-     server {
-       listen 80;
-       server_name your-frontend-domain;
-
-       root /var/www/utorawards/dist;
-       index index.html;
-
-       location / {
-         try_files $uri /index.html;
-       }
-
-       # Proxy API to backend
-       location /uploads/ {
-         proxy_pass http://127.0.0.1:3001/uploads/;
-         proxy_set_header Host $host;
-       }
-
-       location /auth/ {
-         proxy_pass http://127.0.0.1:3001/auth/;
-       }
-       location /users/ {
-         proxy_pass http://127.0.0.1:3001/users/;
-       }
-       location /events/ {
-         proxy_pass http://127.0.0.1:3001/events/;
-       }
-       location /transactions/ {
-         proxy_pass http://127.0.0.1:3001/transactions/;
-       }
-       location /promotions/ {
-         proxy_pass http://127.0.0.1:3001/promotions/;
-       }
-     }
-     ```
-
-3. Environment variables:
-   - Backend [backend/.env](backend/.env) must set FRONTEND_URL to your public frontend URL.
-   - Frontend [frontend/.env](frontend/.env) must set VITE_BACKEND_URL to your public backend URL (or same domain with Nginx proxy).
-
-4. SSL/TLS (optional but recommended):
-   - Use Certbot to obtain and install certificates on Nginx.
-   - Update Nginx to listen on 443 and redirect HTTP to HTTPS.
+4. SSL/TLS:
+   - Both Vercel and Railway provide HTTPS by default on their managed domains.
 
 5. Monitoring and logs:
-   - Use systemd journal for backend logs:
-     ```sh
-     journalctl -u utorawards-backend -f
-     ```
-   - Nginx access/error logs in /var/log/nginx.
+   - Railway: View service logs in the Dashboard (Deployments → Logs). Enable metrics where available.
+   - Vercel: View build and runtime logs in the Project → Deployments.
 
 6. Email configuration:
-   - Backend requires Gmail app password in EMAIL_PASSWORD.
-   - Ensure “Less secure app access” alternative via app passwords is set.
-   - Confirm EMAIL_USER/EMAIL_PASSWORD can send emails; verify SMTP connectivity.
+   - Use a Gmail app password for EMAIL_PASSWORD.
+   - Verify SMTP connectivity from Railway (logs show send status).
+   - Do not commit credentials; use platform secrets.
 
 7. Database:
-   - Default uses SQLite file via Prisma. For production durability, consider PostgreSQL.
+   - SQLite (default) is fine for demos but ephemeral on PaaS. Prefer PostgreSQL on Railway for persistence.
    - If migrating DB:
      - Update [backend/prisma/schema.prisma](backend/prisma/schema.prisma)
      - Run:
@@ -236,27 +195,43 @@ Example environment:
        ```
 
 ii. Environment summary:
-- Single VM: Ubuntu 20.04 LTS
-- Node.js 18+
-- Nginx serving built frontend and proxying API to local Express backend
-- SQLite (default) or PostgreSQL (optional)
-- Gmail SMTP credentials for password reset emails
+- Frontend: Vercel (Vite React app)
+- Backend: Railway (Node.js Express)
+- HTTPS: Managed by platforms
+- DB: SQLite (demo) or PostgreSQL (recommended)
+- Email: Gmail SMTP (App Password)
 
 ## Quick Start (Local Dev)
 
 - Backend:
   ```sh
   cd backend
+  # Create .env for local development
+  cat > .env << 'EOF'
+  PORT=3000
+  JWT_SECRET=your_local_jwt_secret
+  EMAIL_USER=your_email_user
+  EMAIL_PASSWORD=your_email_app_password
+  FRONTEND_URL=http://localhost:5173
+  EOF
+
   npm install
+  npx prisma generate
   npx prisma migrate deploy
   npm run seed
   node index.js 3000
   ```
+
 - Frontend:
   ```sh
   cd frontend
+  # Create .env for local development
+  cat > .env << 'EOF'
+  VITE_BACKEND_URL=http://localhost:3000
+  VITE_GEOAPIFY_API_KEY=your_geoapify_api_key
+  EOF
+
   npm install
-  echo "VITE_BACKEND_URL=http://localhost:3000" > .env
   npm run dev
   ```
 

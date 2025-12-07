@@ -194,7 +194,7 @@ function FilterableList({
     if (newPage !== page) {
       setPage(newPage);
     }
-    setTempFilters(getAppliedFilters());
+    setTempFilters({ ...initialFilters, ...appliedFilters });
   }, [searchParams]);
 
   useEffect(() => {
@@ -204,6 +204,10 @@ function FilterableList({
     setHasFilters(filterKeys.length > 0);
   }, [appliedFilters]);
 
+  const capitalizeFirst = (str) => {
+    if (!str || typeof str !== "string") return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
 
   return (
     <Box>
@@ -311,7 +315,7 @@ function FilterableList({
                     <FormControl key={key} size="small" sx={{ width: 130 }}>
                       <InputLabel>{config.label}</InputLabel>
                       <Select
-                        value={tempFilters[key] || ""}
+                        value={capitalizeFirst(tempFilters[key]) ?? ""}
                         onChange={(e) => updateTempFilter(key, e.target.value)}
                         label={config.label}
                         disabled={isDisabled}
@@ -354,7 +358,7 @@ function FilterableList({
                   <InputLabel>Order By</InputLabel>
                   <Select
                     label="Order By"
-                    value={tempFilters.orderBy || ""}
+                    value={tempFilters["orderBy"] || ""}
                     onChange={(e) =>
                       updateTempFilter("orderBy", e.target.value)
                     }

@@ -23,7 +23,7 @@ import {
 import { Link, Navigate } from "react-router-dom";
 import { useUser } from "../../context/UserContext";
 import { useEffect, useRef, useState } from "react";
-import UserCard from "../../components/common/UserCard";
+import UserCard from "./UserCard.jsx";
 import { testimonials, stats } from "./constants.js";
 
 function Landing() {
