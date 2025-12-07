@@ -66,7 +66,6 @@ function Events() {
         apiEndpoint="/events"
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
-        additionalParams={{published: true}}
         limit={9}
       >
         {({ data, isFetching, error }) => {

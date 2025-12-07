@@ -200,7 +200,7 @@ async function main() {
       isEventOrganizer: faker.datatype.boolean(0.2), // 20% chance
       hideUtorid: faker.datatype.boolean(),
       suspicious: i < 3, // ~10% are suspicious
-      verified: true,
+      verified: faker.datatype.boolean(),
       avatarUrl: avatarAssignments.pop(),
       birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
     });
@@ -259,6 +259,7 @@ async function main() {
       password: hashedPassword,
       role: "regular",
       points: 100, grossPoints: 500, isEventOrganizer: false, verified: true,
+      verified: i > 3, // Make first 3 not verified
       avatarUrl: avatarAssignments.pop(),
       birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
     });
