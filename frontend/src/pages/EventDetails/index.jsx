@@ -61,6 +61,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
       setRsvpSuccess(true);
       setRSVP(true);
       queryClient.invalidateQueries({ queryKey: ["event-details", String(id)] })
+      queryClient.invalidateQueries({ queryKey: ["my-event-invitations"] })
     },
     onError: (error) => {
       showToast(error.response?.data?.error || "An unknown error occurred.", "error");
@@ -76,6 +77,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
       setUnRsvpSuccess(true);
       setRSVP(false);
       queryClient.invalidateQueries({ queryKey: ["event-details", String(id)] });
+      queryClient.invalidateQueries({ queryKey: ["my-event-invitations"] })
     },
     onError: (error) => {
       showToast(error.response?.data?.error || "An unknown error occurred.", "error");

@@ -879,13 +879,13 @@ class EventService {
       capacity: true,
       numGuests: true,
       points: true,
+      published: true,
       description: true,
     };
 
     if (role === RoleType.manager || role === RoleType.superuser) {
       selectDetails.pointsRemain = true;
       selectDetails.pointsAwarded = true;
-      selectDetails.published = true;
     }
 
     filterDetails.rsvps = { some: { userId: userId } };
