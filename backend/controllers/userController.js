@@ -327,6 +327,7 @@ async function retrieveTransactions(req, res) {
     operator,
     page,
     limit,
+    orderBy,
   } = req.query;
 
   const pageNum = page ? parseInt(page, 10) : 1;
@@ -344,6 +345,15 @@ async function retrieveTransactions(req, res) {
     amountNum = parseInt(amount, 10);
   }
 
+  let orderByObj = null;
+  if (orderBy) {
+    const validFields = ["createdAt", "amount", "spent", "type"];
+    orderByObj = convertOrderByField(orderBy, validFields);
+    if (!orderByObj) {
+      return res.status(400).json({ error: "Bad Request: invalid orderBy value" });
+    }
+  }
+
   const { id } = req.user;
 
   try {
@@ -357,6 +367,7 @@ async function retrieveTransactions(req, res) {
       operator,
       pageNum,
       limitNum,
+      orderByObj
     );
 
     const formattedResults = results.map((transaction) => {
