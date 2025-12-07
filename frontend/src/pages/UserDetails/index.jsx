@@ -11,7 +11,8 @@ import { useState } from "react";
 import PromotionCard from "../../components/common/PromotionCard";
 import PromoteUserForm from "./PromoteUserForm.jsx";
 import EditUserForm from "./EditUserForm.jsx";
-import StatusChip from '../../components/common/StatusChip.jsx'
+import StatusChip from '../../components/common/StatusChip.jsx';
+import VerifyUserForm from "./VerifyUserForm.jsx";
 
 function UserDetails() {
     const { user } = useUser();
@@ -19,6 +20,7 @@ function UserDetails() {
     const [showPromoteModal, setShowPromoteModal] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
     const [userData, setUserData] = useState(null);
+    const [verifyModal, setVerifyModal] = useState(null);
 
     const formatDate = (isoString) => {
         return new Date(isoString).toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: true });
@@ -41,6 +43,16 @@ function UserDetails() {
 
     const handleCloseEditModal = () => {
         setShowEditModal(false);
+        setUserData(null);
+    };
+
+    const handleVerify = (data) => {
+        setUserData(data);
+        setVerifyModal(true);
+    }
+
+    const handleCloseVerifyModal = () => {
+        setVerifyModal(false);
         setUserData(null);
     };
 
@@ -97,6 +109,15 @@ function UserDetails() {
                                 >
                                     Promote
                                 </Button>
+                                {!data.verified &&
+                                    <Button
+                                        variant="contained"
+                                        color="secondary"
+                                        onClick={() => handleVerify(data)}
+                                    >
+                                        Verify
+                                    </Button>
+                                }
                             </Stack>
                         </>
                     )}
@@ -204,6 +225,23 @@ function UserDetails() {
                                     onClose={handleCloseEditModal}
                                 />
                             )}
+                        </Box>
+                    </Modal>
+                    <Modal
+                        open={verifyModal}
+                        onClose={handleCloseVerifyModal}
+                        aria-labelledby="verify-user-modal"
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                    >
+                        <Box>
+                            <VerifyUserForm
+                                user={userData}
+                                onClose={handleCloseVerifyModal}
+                            />
                         </Box>
                     </Modal>
                 </Box>
