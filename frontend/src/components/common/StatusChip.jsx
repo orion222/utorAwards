@@ -8,7 +8,8 @@ export default function StatusChip({ sx, ...props }) {
     padding: '0 1rem',
     fontSize: 10,
     fontWeight: 'bold',
-    border: '1px solid black',
+    border: '1px solid #adb5bd',
+    size: 'small',
   }
 
   return (

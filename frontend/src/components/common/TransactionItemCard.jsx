@@ -49,7 +49,6 @@ function TransactionItemCard({ transaction, hover }) {
                                 <Box sx={{ display: 'flex', gap: 0.5, alignItems: "center" }}>
                                     <StatusChip
                                         label={type.toUpperCase()}
-                                        size="small"
                                     />
                                     {promotionIds && promotionIds.length !== 0 && (
                                         <LocalOfferIcon sx={{ fontSize: 18, color: "primary.main" }} />
@@ -152,31 +151,15 @@ function TransactionItemCard({ transaction, hover }) {
                         <Stack direction="row" spacing={1} mb={2}>
                             <StatusChip
                                 label={type.toUpperCase()}
-                                variant="outlined" 
-                                size="medium" 
-                                sx={{
-                                    fontWeight: 600,
-                                    fontSize: "0.9rem",
-                                }} 
                             />
                             <StatusChip
                                 label={processed ? "PROCESSED" : "PENDING"}
                                 color={processed ? "primary" : "warning"}
-                                size="medium" 
-                                sx={{
-                                    fontWeight: 600,
-                                    fontSize: "0.9rem",
-                                }} 
                             />
                             {suspicious && (
                                 <StatusChip
                                     label="SUSPICIOUS" 
-                                    color="error" 
-                                    size="medium" 
-                                    sx={{
-                                        fontWeight: 600,
-                                        fontSize: "0.9rem",
-                                    }} 
+                                    color="error"
                                 />                                
                             )}
                         </Stack>
