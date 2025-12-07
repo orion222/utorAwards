@@ -1,22 +1,7 @@
 #!/usr/bin/env node
 "use strict";
 
-const port = (() => {
-  const args = process.argv;
-
-  if (args.length !== 3) {
-    console.error("usage: node index.js port");
-    process.exit(1);
-  }
-
-  const num = parseInt(args[2], 10);
-  if (isNaN(num)) {
-    console.error("error: argument must be an integer.");
-    process.exit(1);
-  }
-
-  return num;
-})();
+const PORT = process.env.PORT || 3000;
 
 require("dotenv").config();
 const path = require("path");
@@ -62,8 +47,8 @@ app.all("*", (_req, res) => {
   res.status(405).json({ error: "Method not allowed" });
 });
 
-const server = app.listen(port, () => {
-  console.log(`Server running on port ${port}`);
+const server = app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 server.on("error", (err) => {
