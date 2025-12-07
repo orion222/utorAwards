@@ -37,10 +37,10 @@ export default function Navbar({ isOpen, isMobileWidth, navItems, setIsNavOpen }
         overflowX: "hidden",
         flexShrink: 0,
         position: isMobileWidth ? "static" : "fixed",
-        height: "100%",
+        height: "calc(100% - 64px)",
       }}
     >
-      <MenuList sx={{ p: 0 }}>
+      <MenuList sx={{ p: 0, pb: 2 }}>
         {navItems.map((item) => {
           const hasActiveChild = item.children?.some((child) => location.pathname === child.path) || false;
 

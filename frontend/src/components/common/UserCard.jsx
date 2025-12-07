@@ -40,6 +40,10 @@ export default function UserCard({ user, clickable = true }) {
                 sx={{
                   fontWeight: "bold",
                   color: theme.palette.text.primary,
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  maxWidth: 180,
                 }}
               >
                 {user.name}

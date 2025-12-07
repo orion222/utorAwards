@@ -76,11 +76,8 @@ function PromotionCard({ promotion, hover }) {
             <Box> {/* right side */}
                 <StatusChip
                     label={type.toUpperCase()}
-                    size="medium"
                     sx={{
-                        fontWeight: 600,
-                        fontSize: "0.9rem",
-                        backgroundColor: type === 'automatic' ? '#f7e1d7': '#e0f7d7',
+                        backgroundColor: type === 'automatic' ? '#caf0f8': '#e0f7d7',
                     }} 
                 />
             </Box>
