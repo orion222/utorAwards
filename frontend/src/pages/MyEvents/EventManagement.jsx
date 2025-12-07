@@ -73,6 +73,7 @@ function EventManagement() {
         apiEndpoint="/users/me/events/management"
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
+        limit={9}
       >
         {({ data, isFetching, error, refetch }) => {
           if (isFetching) {

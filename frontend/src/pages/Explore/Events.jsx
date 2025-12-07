@@ -67,6 +67,7 @@ function Events() {
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
         additionalParams={{published: true}}
+        limit={9}
       >
         {({ data, isFetching, error }) => {
           if (error) {

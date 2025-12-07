@@ -84,7 +84,7 @@ function Promotions() {
             />
         </Box>
       </Modal>
-      <FilterableList queryKey="promotions" apiEndpoint="/promotions" filterConfig={filterConfig} orderByConfig={orderByConfig}>
+      <FilterableList queryKey="promotions" apiEndpoint="/promotions" filterConfig={filterConfig} orderByConfig={orderByConfig} limit={9}>
         {({ data, isFetching, error }) => {
           if (error) {
             return (

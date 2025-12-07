@@ -44,7 +44,7 @@ function AllUsers() {
   return (
     <>
       <Box sx={{ my: 2 }}>
-        <FilterableList queryKey="all-users" apiEndpoint="/users" filterConfig={filterConfig} orderByConfig={orderByConfig}>
+        <FilterableList queryKey="all-users" apiEndpoint="/users" filterConfig={filterConfig} orderByConfig={orderByConfig} limit={9}>
           {({ data, isFetching, error }) => {
             if (error) {
               return (

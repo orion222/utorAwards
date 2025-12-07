@@ -66,6 +66,7 @@ function Invitations() {
         apiEndpoint="/users/me/events/invitations"
         filterConfig={filterConfig}
         orderByConfig={orderByConfig}
+        limit={9}
       >
         {({ data, isFetching, error }) => {
           if (error) {

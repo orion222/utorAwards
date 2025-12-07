@@ -27,7 +27,7 @@ function Dashboard() {
 
     const fetchEvents = async () => {
         const { data } = await api.get("/events", {
-        params: { orderBy: "startTime_asc", limit: 3 },
+        params: { orderBy: "startTime_desc", limit: 3 },
         });
         return data.results;
     };
