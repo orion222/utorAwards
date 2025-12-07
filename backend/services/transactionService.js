@@ -762,7 +762,7 @@ class TransactionService {
     return activePromo;
   }
 
-  static async retrieveSingleTransaction(transactionId, role, userId) {
+  static async retrieveSingleTransaction(transactionId, role, utorid) {
     const transaction = await prisma.transaction.findUnique({
       where: {
         id: transactionId,
@@ -806,15 +806,15 @@ class TransactionService {
       throw new NotFoundError();
     }
 
-    if (transaction.type === TransactionType.transfer && role === RoleType.regular && transaction.user.id !== userId && transaction.targetUser.id !== userId) {
+    if (transaction.type === TransactionType.transfer && role === RoleType.regular && transaction.user.utorid !== utorid && transaction.targetUser.utorid !== utorid) {
       throw new ForbiddenError("Forbidden: Insufficient clearance to access this transaction");
     }
 
-    if ((transaction.type === TransactionType.purchase || transaction.type === TransactionType.adjustment) && role === RoleType.regular && transaction.targetUser.id !== userId) {
+    if ((transaction.type === TransactionType.purchase || transaction.type === TransactionType.adjustment) && role === RoleType.regular && transaction.targetUser.utorid !== utorid) {
       throw new ForbiddenError("Forbidden: Insufficient clearance to access this transaction");
     }
 
-    if (transaction.type === TransactionType.redemption && role === RoleType.regular && transaction.user.id !== userId) {
+    if (transaction.type === TransactionType.redemption && role === RoleType.regular && transaction.user.utorid !== utorid) {
       throw new ForbiddenError("Forbidden: Insufficient clearance to access this transaction");
     }
 
