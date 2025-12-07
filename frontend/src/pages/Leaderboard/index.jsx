@@ -43,7 +43,7 @@ function Leaderboard() {
 
       <FilterableList queryKey="leaderboard" apiEndpoint="/users/leaderboard" filterConfig={filterConfig} limit={10}>
         {({ data, isFetching, error, hasFilters }) => {
-          if (isFetching) {
+          if (isFetching && !data) {
             return (
               <Box display="flex" justifyContent="center" p={4}>
                 <CircularProgress />
@@ -76,7 +76,7 @@ function Leaderboard() {
             const rest = data.filter(u => u.rank > 3);
 
             return (
-              <>
+              <Box sx={{ opacity: isFetching ? 0.5 : 1, transition: "opacity 200ms ease-in-out" }}>
                 <Box
                   sx={{
                     display: "flex",
@@ -97,7 +97,7 @@ function Leaderboard() {
                           mb: 1,
                           bgcolor: "#C0C0C0"
                         }}
-                        src={second.avatarUrl ? `${backendURL}/${second.avatarUrl}` : undefined}
+                        src={!second.hideUtorid && second.avatarUrl ? `${backendURL}/${second.avatarUrl}` : undefined}
                       >
                         {second?.utorid.charAt(0).toUpperCase()}
                       </Avatar>
@@ -141,7 +141,7 @@ function Leaderboard() {
                           mb: 1,
                           bgcolor: "#E6B800"
                         }}
-                        src={first.avatarUrl ? `${backendURL}/${first.avatarUrl}` : undefined}
+                        src={!first.hideUtorid && first.avatarUrl ? `${backendURL}/${first.avatarUrl}` : undefined}
                       >
                         {first?.utorid.charAt(0).toUpperCase()}
                       </Avatar>
@@ -178,7 +178,7 @@ function Leaderboard() {
                           mb: 1,
                           bgcolor: "#CD7F32"
                         }}
-                        src={third.avatarUrl ? `${backendURL}/${third.avatarUrl}` : undefined}
+                        src={!third.hideUtorid && third.avatarUrl ? `${backendURL}/${third.avatarUrl}` : undefined}
                       >
                         {third?.utorid.charAt(0).toUpperCase()}
                       </Avatar>
@@ -207,7 +207,7 @@ function Leaderboard() {
                 <List>
                   {rest.map((user, i) => (
                     <ListItem
-                      key={user.utorid + i}
+                      key={user.id}
                       sx={{
                         bgcolor: "background.paper",
                         mb: 1,
@@ -220,11 +220,11 @@ function Leaderboard() {
                           fontWeight: "bold"
                         }}
                       >
-                        {i + 4}
+                        {user.rank}
                       </Typography>
 
                       <ListItemAvatar>
-                        <Avatar src={user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} alt="Profile Picture">
+                        <Avatar src={!user.hideUtorid && user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined} alt="Profile Picture">
                           {user.utorid.charAt(0).toUpperCase()}
                         </Avatar> 
                       </ListItemAvatar>
@@ -236,15 +236,16 @@ function Leaderboard() {
                     </ListItem>
                   ))}
                 </List>
-              </>
+              </Box>
             );
           }
 
           return (
-            <List>
+            <Box sx={{ opacity: isFetching ? 0.5 : 1, transition: "opacity 200ms ease-in-out" }}>
+              <List>
               {data.map((user, index) => (
                 <ListItem
-                  key={index}
+                  key={user.id}
                   sx={{
                     bgcolor: "background.paper",
                     mb: 1,
@@ -257,11 +258,13 @@ function Leaderboard() {
                       fontWeight: "bold"
                     }}
                   >
-                    {index + 1}
+                    {user.rank}
                   </Typography>
 
                   <ListItemAvatar>
-                    <Avatar src={`${backendURL}/${user.avatarUrl}`} />
+                    <Avatar src={!user.hideUtorid && user.avatarUrl ? `${backendURL}/${user.avatarUrl}` : undefined}>
+                      {user.utorid.charAt(0).toUpperCase()}
+                    </Avatar>
                   </ListItemAvatar>
 
                   <ListItemText
@@ -270,7 +273,8 @@ function Leaderboard() {
                   />
                 </ListItem>
               ))}
-            </List>
+              </List>
+            </Box>
           );
         }}
       </FilterableList>

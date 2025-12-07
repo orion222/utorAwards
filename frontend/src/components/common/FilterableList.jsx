@@ -105,6 +105,8 @@ function FilterableList({
     queryKey: [queryKey, getAppliedFilters(), page],
     queryFn: fetchData,
     retry: 1,
+    placeholderData: (prev) => prev,
+    staleTime: 300000, // 5 minutes
   });
 
   const applyFilters = () => {
