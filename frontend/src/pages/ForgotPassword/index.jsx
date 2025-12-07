@@ -19,6 +19,7 @@ import {
   Link as MUILink,
   CircularProgress
 } from "@mui/material";
+import LandingBackground from "../../components/common/LandingBackground.jsx";
 
 function ForgotPassword() {
   const [serverError, setServerError] = useState("");
@@ -52,81 +53,83 @@ function ForgotPassword() {
   };
 
   return (
-    <Box height="100vh" sx={{ overflow: "hidden" }}>
-      <FormCard>
-        <Typography variant="h5" fontWeight={600} mb={1}>
-          Forgot password?
-        </Typography>
+    <LandingBackground>
+      <Box sx={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 400, mx: 2 }}>
+        <FormCard>
+          <Typography variant="h5" fontWeight={600} mb={1}>
+            Forgot password?
+          </Typography>
 
-        <Typography variant="body2" color="text.secondary" mb={3}>
-          Enter the email used for your account and we'll send you a link to reset your password.
-        </Typography>
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            Enter the email used for your account and we'll send you a link to reset your password.
+          </Typography>
 
-        {loading && (
-          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-            <CircularProgress />
-          </Box>
-        )}
+          {loading && (
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+              <CircularProgress />
+            </Box>
+          )}
 
-        {sent && !serverError && (
-          <Alert severity="info" sx={{ mb: 2 }}>
-            Check your inbox! If an account exists for this email, we've sent a password reset link.
-          </Alert>
-        )}
+          {sent && !serverError && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Check your inbox! If an account exists for this email, we've sent a password reset link.
+            </Alert>
+          )}
 
-        {serverError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {serverError}
-          </Alert>
-        )}
+          {serverError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {serverError}
+            </Alert>
+          )}
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <FormControl
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            error={Boolean(errors.email)}
-          >
-            <InputLabel htmlFor="email">Email</InputLabel>
-            <OutlinedInput
-              id="email"
-              label="Email"
-              {...register("email")}
-            />
-            {errors.email && (
-              <FormHelperText error>
-                {errors.email.message}
-              </FormHelperText>
-            )}
-          </FormControl>
-
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            size="large"
-            sx={{ my: 2 }}
-          >
-            Reset
-          </Button>
-
-          <Box sx={{ textAlign: "center" }}>
-            <MUILink
-              component={Link}
-              to="/login"
-              underline="hover"
-              sx={{
-                color: "text.secondary",
-                fontSize: "0.85rem",
-                fontWeight: 500
-              }}
+          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+            <FormControl
+              fullWidth
+              margin="normal"
+              variant="outlined"
+              error={Boolean(errors.email)}
             >
-              Back to login
-            </MUILink>
+              <InputLabel htmlFor="email">Email</InputLabel>
+              <OutlinedInput
+                id="email"
+                label="Email"
+                {...register("email")}
+              />
+              {errors.email && (
+                <FormHelperText error>
+                  {errors.email.message}
+                </FormHelperText>
+              )}
+            </FormControl>
+
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              sx={{ my: 2 }}
+            >
+              Reset
+            </Button>
+
+            <Box sx={{ textAlign: "center" }}>
+              <MUILink
+                component={Link}
+                to="/login"
+                underline="hover"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: "0.85rem",
+                  fontWeight: 500
+                }}
+              >
+                Back to login
+              </MUILink>
+            </Box>
           </Box>
-        </Box>
-      </FormCard>
-    </Box>
+        </FormCard>        
+      </Box>
+    </LandingBackground>
   );
 }
 

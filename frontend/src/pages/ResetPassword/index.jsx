@@ -13,6 +13,7 @@ import {
   Alert,
   Link as MUILink
 } from "@mui/material";
+import LandingBackground from "../../components/common/LandingBackground.jsx";
 
 export default function ResetPassword() {
   const location = useLocation();
@@ -69,70 +70,72 @@ export default function ResetPassword() {
   const buttonText = isCreatePassword ? "Create Password" : "Reset Password";
 
   return (
-    <Box height="100vh" sx={{ overflow: "hidden" }}>
-      <FormCard>
-        <Typography variant="h5" fontWeight={600} mb={1}>
-          {pageTitle}
-        </Typography>
+    <LandingBackground>
+      <Box sx={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 400, mx: 2 }}>
+        <FormCard>
+          <Typography variant="h5" fontWeight={600} mb={1}>
+            {pageTitle}
+          </Typography>
 
-        <Typography variant="body2" color="text.secondary" mb={3}>
-          {pageDescription}
-        </Typography>
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            {pageDescription}
+          </Typography>
 
-        {serverError && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {serverError}
-          </Alert>
-        )}
+          {serverError && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {serverError}
+            </Alert>
+          )}
 
-        {success && (
-          <Alert severity="success" sx={{ mb: 2 }}>
-            {success}
-          </Alert>
-        )}
+          {success && (
+            <Alert severity="success" sx={{ mb: 2 }}>
+              {success}
+            </Alert>
+          )}
 
-        <Box component="form" onSubmit={handleSubmit(onSubmit)}>
-          <PasswordField
-            label="New Password"
-            id="password"
-            error={errors.password?.message}
-            register={{ ...register("password") }}
-          />
+          <Box component="form" onSubmit={handleSubmit(onSubmit)}>
+            <PasswordField
+              label="New Password"
+              id="password"
+              error={errors.password?.message}
+              register={{ ...register("password") }}
+            />
 
-          <PasswordField
-            label="Confirm New Password"
-            id="confirmPassword"
-            error={errors.confirmPassword?.message}
-            register={{...register("confirmPassword")}}
-          />
- 
-          <Button
-            type="submit"
-            variant="contained"
-            fullWidth
-            size="large"
-            sx={{ mt: 2 }}
-            disabled={isSubmitting || !!success}
-          >
-            {isSubmitting ? (isCreatePassword ? "Creating..." : "Resetting...") : buttonText}
-          </Button>
-
-          <Box sx={{ textAlign: "center", mt: 2 }}>
-            <MUILink
-              component={Link}
-              to="/login"
-              underline="hover"
-              sx={{
-                color: "text.secondary",
-                fontSize: "0.85rem",
-                fontWeight: 500
-              }}
+            <PasswordField
+              label="Confirm New Password"
+              id="confirmPassword"
+              error={errors.confirmPassword?.message}
+              register={{...register("confirmPassword")}}
+            />
+  
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              size="large"
+              sx={{ mt: 2 }}
+              disabled={isSubmitting || !!success}
             >
-              Back to login
-            </MUILink>
+              {isSubmitting ? (isCreatePassword ? "Creating..." : "Resetting...") : buttonText}
+            </Button>
+
+            <Box sx={{ textAlign: "center", mt: 2 }}>
+              <MUILink
+                component={Link}
+                to="/login"
+                underline="hover"
+                sx={{
+                  color: "text.secondary",
+                  fontSize: "0.85rem",
+                  fontWeight: 500
+                }}
+              >
+                Back to login
+              </MUILink>
+            </Box>
           </Box>
-        </Box>
-      </FormCard>
-    </Box>
+        </FormCard>
+      </Box>
+    </LandingBackground>
   );
 }
