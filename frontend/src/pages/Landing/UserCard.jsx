@@ -6,18 +6,14 @@ import {
   Avatar,
   Card,
   CardContent,
-  Modal,
   Chip
 } from "@mui/material";
-import { useState } from "react";
-import UserDetail from "./UserDetail";
 import { useNavigate } from "react-router-dom";
 import VerifiedIcon from "@mui/icons-material/Verified";
 
 export default function UserCard({ user, clickable = true }) {
   const backendURL = import.meta.env.VITE_BACKEND_URL;
   const theme = useTheme();
-  const [detailsModal, setDetailsModal] = useState(false);
   const navigate = useNavigate();
 
   return (
@@ -122,43 +118,6 @@ export default function UserCard({ user, clickable = true }) {
           </Stack>
         </Stack>
       </CardContent>
-
-      <Modal
-        open={detailsModal}
-        onClose={() => setDetailsModal(false)}
-        aria-labelledby="user-details-modal"
-        aria-describedby="user-details-content"
-        sx={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1300,
-        }}
-      >
-        <Box
-          sx={{
-            borderRadius: "8px",
-            boxShadow: 3,
-            width: "auto",
-            height: "auto",
-            backgroundColor: theme.palette.background.paper,
-            display: "flex",
-            flexDirection: "column",
-            gap: "0px",
-            outline: "none",
-            maxHeight: "90vh",
-            overflow: "auto",
-          }}
-        >
-          <UserDetail user={user} onClose={() => setDetailsModal(false)} />
-        </Box>
-      </Modal>
     </Card>
   );
 }
