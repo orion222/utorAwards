@@ -41,7 +41,7 @@ const defaultValues = {
   location: "",
   pointsRemain: 0,
   numGuests: 0,
-  capacity: 0,
+  capacity: "None",
   published: false,
 }
 export default function EditEventForm({
@@ -112,7 +112,7 @@ export default function EditEventForm({
       endTime: endTime.toISOString(),
       location: location,
       points: Number(pointsRemain),
-      capacity: Number(capacity),
+      capacity: isNaN(capacity) ? null : Number(capacity),
     };
     if (published) {
       payload["published"] = published;
