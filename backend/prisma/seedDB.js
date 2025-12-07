@@ -66,7 +66,7 @@ async function main() {
   }
 
   const avatarFiles = [];
-  const numAvatars = 10;
+  const numAvatars = 30; // Increased to guarantee avatars for fixed users
   console.log(`Downloading ${numAvatars} avatars...`);
   for (let i = 0; i < numAvatars; i++) {
     const avatarUrl = faker.image.avatar();
@@ -85,17 +85,31 @@ async function main() {
     process.exit(1);
   }
 
-  // Prepare avatar assignments: 20 users with avatars, 30 without
+  // Prepare avatar assignments
+  const numFixedUsers = 1 + 3 + 5 + 9; // 18
+  const numRandomUsers = 3 + 3 + 15 + 30; // 51
+  const numRandomWithAvatars = 20;
+
+  faker.helpers.shuffle(avatarFiles);
+
+  // Guarantee unique avatars for fixed users by taking them from the pool first.
+  const fixedUserAvatars = avatarFiles.splice(0, numFixedUsers);
+
+  // Prepare assignments for random users (some with, some without avatars)
+  const randomUserAvatarAssignments = [];
+  for (let i = 0; i < numRandomWithAvatars; i++) {
+    // Use the remaining avatars for the random pool
+    randomUserAvatarAssignments.push(faker.helpers.arrayElement(avatarFiles));
+  }
+  for (let i = 0; i < numRandomUsers - numRandomWithAvatars; i++) {
+    randomUserAvatarAssignments.push(null);
+  }
+  faker.helpers.shuffle(randomUserAvatarAssignments);
+
   const avatarAssignments = [];
-  if (avatarFiles.length > 0) {
-    for (let i = 0; i < 20; i++) {
-      avatarAssignments.push(faker.helpers.arrayElement(avatarFiles));
-    }
-  }
-  for (let i = 0; i < 30; i++) {
-    avatarAssignments.push(null);
-  }
-  faker.helpers.shuffle(avatarAssignments);
+  // The fixed users are created last, so their avatars go at the start of the assignment array.
+  // As .pop() is used, the random users will consume the end of the array first.
+  avatarAssignments.push(...fixedUserAvatars, ...randomUserAvatarAssignments);
 
   // -----------------------------------------------------
   // Clean up existing data to prevent conflicts
@@ -192,6 +206,64 @@ async function main() {
     });
   }
 
+  // -----------------------------------------------------
+  // 1.1) Fixed Identifiable Users
+  // -----------------------------------------------------
+  console.log("Creating fixed users...");
+  // 1 superuser
+  usersToCreate.push({
+    name: 'Super User',
+    utorid: 'supuser',
+    email: 'supuser@mail.utoronto.ca',
+    password: hashedPassword,
+    role: "superuser",
+    points: 1000, grossPoints: 5000, isEventOrganizer: true, verified: true,
+    avatarUrl: avatarAssignments.pop(),
+    birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
+  });
+
+  // 3 managers
+  for (let i = 1; i <= 3; i++) {
+    usersToCreate.push({
+      name: `Manager User ${i}`,
+      utorid: `manager${i}`,
+      email: `manager${i}@mail.utoronto.ca`,
+      password: hashedPassword,
+      role: "manager",
+      points: 500, grossPoints: 2000, isEventOrganizer: true, verified: true,
+      avatarUrl: avatarAssignments.pop(),
+      birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
+    });
+  }
+
+  // 5 cashiers
+  for (let i = 1; i <= 5; i++) {
+    usersToCreate.push({
+      name: `Cashier User ${i}`,
+      utorid: `cashier${i}`,
+      email: `cashier${i}@mail.utoronto.ca`,
+      password: hashedPassword,
+      role: "cashier",
+      points: 200, grossPoints: 1000, isEventOrganizer: false, verified: true,
+      avatarUrl: avatarAssignments.pop(),
+      birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
+    });
+  }
+
+  // 9 regular users
+  for (let i = 1; i <= 9; i++) {
+    usersToCreate.push({
+      name: `Regular User ${i}`,
+      utorid: `reguser${i}`,
+      email: `reguser${i}@mail.utoronto.ca`,
+      password: hashedPassword,
+      role: "regular",
+      points: 100, grossPoints: 500, isEventOrganizer: false, verified: true,
+      avatarUrl: avatarAssignments.pop(),
+      birthday: faker.date.birthdate({ min: 18, max: 65, mode: 'age' }).toISOString().split('T')[0],
+    });
+  }
+
   await prisma.user.createMany({
     data: usersToCreate,
   });
@@ -204,6 +276,13 @@ async function main() {
   const regularUsers = createdUsers.filter(u => u.role === 'regular');
   const eventOrganizers = createdUsers.filter(u => u.isEventOrganizer);
 
+  // Get fixed users for connecting later
+  const fixedSupuser = createdUsers.find(u => u.utorid === 'supuser');
+  const fixedManagers = createdUsers.filter(u => u.utorid.startsWith('manager'));
+  const fixedCashiers = createdUsers.filter(u => u.utorid.startsWith('cashier'));
+  const fixedRegulars = createdUsers.filter(u => u.utorid.startsWith('reguser'));
+  const fixedOrganizers = createdUsers.filter(u => u.isEventOrganizer && (u.utorid.startsWith('manager') || u.utorid === 'supuser'));
+
   // -----------------------------------------------------
   // 2) Events
   // -----------------------------------------------------
@@ -211,13 +290,13 @@ async function main() {
   const now = new Date();
   for (let i = 0; i < 32; i++) {
     const startTime = faker.date.between({ from: new Date(new Date().setMonth(now.getMonth() - 6)), to: new Date(new Date().setMonth(now.getMonth() + 6)) });
-    const weekInMs = 7 * 24 * 60 * 60 * 1000;
+    const duration = faker.number.int({ min: 1, max: 14 }) * 24 * 60 * 60 * 1000; // 1-14 days
     eventsToCreate.push({
-      name: faker.company.catchPhrase(),
-      description: faker.lorem.sentence(),
+      name: faker.company.buzzPhrase(),
+      description: faker.company.catchPhraseDescriptor(),
       location: faker.location.streetAddress(),
       startTime: startTime,
-      endTime: new Date(startTime.getTime() + weekInMs + faker.number.int({ max: weekInMs })), // 1-2 weeks duration
+      endTime: new Date(startTime.getTime() + duration),
       capacity: faker.datatype.boolean() ? faker.number.int({ min: 20, max: 200 }) : null,
       points: faker.number.int({ min: 5, max: 50 }),
       pointsRemain: faker.number.int({ min: 5, max: 50 }),
@@ -225,6 +304,45 @@ async function main() {
       published: faker.datatype.boolean(),
     });
   }
+
+  // Add 7 fixed active events
+  console.log("Creating 7 fixed active events...");
+  for (let i = 1; i <= 7; i++) {
+    const startTime = faker.date.past({ years: 0.1 }); // Active now
+    const endTime = faker.date.future({ years: 0.2 });
+    eventsToCreate.push({
+      name: `Active Event ${i}`,
+      description: faker.company.catchPhrase(),
+      location: faker.location.streetAddress(),
+      startTime: startTime,
+      endTime: endTime,
+      capacity: faker.number.int({ min: 50, max: 100 }),
+      points: faker.number.int({ min: 10, max: 30 }),
+      pointsRemain: faker.number.int({ min: 10, max: 30 }),
+      createdById: faker.helpers.arrayElement(fixedOrganizers).id,
+      published: true,
+    });
+  }
+
+  // Add 3 fixed inactive events
+  console.log("Creating 3 fixed inactive events...");
+  for (let i = 1; i <= 3; i++) {
+    const endTime = faker.date.past({ years: 0.1 }); // Ended in the past
+    const startTime = faker.date.past({ years: 0.2, refDate: endTime });
+    eventsToCreate.push({
+      name: `Inactive Event ${i}`,
+      description: faker.company.catchPhrase(),
+      location: faker.location.streetAddress(),
+      startTime: startTime,
+      endTime: endTime,
+      capacity: faker.number.int({ min: 50, max: 100 }),
+      points: faker.number.int({ min: 10, max: 30 }),
+      pointsRemain: 0,
+      createdById: faker.helpers.arrayElement(fixedOrganizers).id,
+      published: true, // It was published, but now it's over
+    });
+  }
+
   await prisma.event.createMany({ data: eventsToCreate });
   const createdEvents = await prisma.event.findMany();
   console.log(`Created ${createdEvents.length} events.`);
@@ -266,8 +384,8 @@ async function main() {
     // Create promotions spanning from 1 year ago to 1 year in the future
     const startTime = faker.date.between({ from: new Date(new Date().setFullYear(new Date().getFullYear() - 1)), to: new Date(new Date().setFullYear(new Date().getFullYear() + 1)) });
     promotionsToCreate.push({
-      name: faker.commerce.productName() + " Promo",
-      description: faker.lorem.sentence(),
+      name: `${faker.commerce.productAdjective()} ${faker.commerce.product()} Promo`,
+      description: faker.commerce.productDescription(),
       type: type,
       points: type === "automatic" ? faker.number.int({ min: 10, max: 100 }) : null,
       rate: type === "onetime" ? faker.number.float({ min: 0.05, max: 0.5, precision: 0.01 }) : null,
@@ -278,13 +396,51 @@ async function main() {
     });
   }
 
+  // Add 7 fixed active promotions
+  console.log("Creating 7 fixed active promotions...");
+  for (let i = 1; i <= 7; i++) {
+    const type = faker.helpers.arrayElement(["automatic", "onetime"]);
+    const startTime = faker.date.past({ years: 0.1 });
+    const endTime = faker.date.future({ years: 0.2 });
+    promotionsToCreate.push({
+      name: `Active Promotion ${i}`,
+      description: faker.commerce.productDescription(),
+      type: type,
+      points: type === "automatic" ? faker.number.int({ min: 10, max: 100 }) : null,
+      rate: type === "onetime" ? faker.number.float({ min: 0.05, max: 0.5, precision: 0.01 }) : null,
+      minSpending: type === "onetime" ? faker.number.int({ min: 10, max: 50 }) : null,
+      startTime: startTime,
+      endTime: endTime,
+      createdById: faker.helpers.arrayElement([...fixedManagers, fixedSupuser]).id,
+    });
+  }
+
+  // Add 3 fixed inactive promotions
+  console.log("Creating 3 fixed inactive promotions...");
+  for (let i = 1; i <= 3; i++) {
+    const type = faker.helpers.arrayElement(["automatic", "onetime"]);
+    const endTime = faker.date.past({ years: 0.1 });
+    const startTime = faker.date.past({ years: 0.2, refDate: endTime });
+    promotionsToCreate.push({
+      name: `Inactive Promotion ${i}`,
+      description: faker.commerce.productDescription(),
+      type: type,
+      points: type === "automatic" ? faker.number.int({ min: 10, max: 100 }) : null,
+      rate: type === "onetime" ? faker.number.float({ min: 0.05, max: 0.5, precision: 0.01 }) : null,
+      minSpending: type === "onetime" ? faker.number.int({ min: 10, max: 50 }) : null,
+      startTime: startTime,
+      endTime: endTime,
+      createdById: faker.helpers.arrayElement([...fixedManagers, fixedSupuser]).id,
+    });
+  }
+
   // Create 10 promotions starting on Dec 1, 2025
   const decFirst2025 = new Date("2025-12-01T00:00:00.000Z");
   for (let i = 0; i < 10; i++) {
     const type = faker.helpers.arrayElement(["automatic", "onetime"]);
     promotionsToCreate.push({
       name: "December Special " + (i + 1),
-      description: faker.lorem.sentence(),
+      description: `A special deal for the month of December!`,
       type: type,
       points: type === "automatic" ? faker.number.int({ min: 20, max: 150 }) : null,
       rate: type === "onetime" ? faker.number.float({ min: 0.1, max: 0.4, precision: 0.01 }) : null,
@@ -298,6 +454,11 @@ async function main() {
   const createdPromotions = await prisma.promotion.findMany();
   console.log(`Created ${createdPromotions.length} promotions.`);
 
+  // Get fixed active events and promotions
+  const fixedActiveEvents = await prisma.event.findMany({ where: { name: { startsWith: 'Active Event' } } });
+  const fixedActivePromotions = await prisma.promotion.findMany({ where: { name: { startsWith: 'Active Promotion' } } });
+  const fixedInactiveEvents = await prisma.event.findMany({ where: { name: { startsWith: 'Inactive Event' } } });
+
   // -----------------------------------------------------
   // 4) Transactions
   // -----------------------------------------------------
@@ -306,19 +467,22 @@ async function main() {
   const usedOnetimePromosByUser = new Map(); // Keep track of used onetime promos to avoid re-using them for a user
 
   // Purchase transactions (50)
-  const activePromos = createdPromotions.filter(p => new Date(p.startTime) < new Date() && new Date(p.endTime) > new Date());
   for (let i = 0; i < 50; i++) {
     const user = faker.helpers.arrayElement(createdUsers);
     const spent = faker.number.int({ min: 50, max: 100 });
     const processor = faker.helpers.arrayElement([...cashiers, ...managers]);
+    const transactionDate = faker.date.past({ years: 1 });
 
     let promosToUse = [];
     // Every other transaction will try to use promos
-    if (i % 2 === 0 && activePromos.length > 0) {
+    if (i % 2 === 0) {
       const userUsedOnetimePromoIds = usedOnetimePromosByUser.get(user.id) || new Set();
-      const eligiblePromos = activePromos.filter(p =>
+      // Find promos that were active at the time of transaction
+      const eligiblePromos = createdPromotions.filter(p =>
         p.type === 'onetime' &&
         p.minSpending <= spent &&
+        new Date(p.startTime) <= transactionDate &&
+        new Date(p.endTime) >= transactionDate &&
         !userUsedOnetimePromoIds.has(p.id)
       );
 
@@ -337,7 +501,7 @@ async function main() {
       remark: `Purchase of ${faker.commerce.product()}`,
       processed: true,
       processedById: processor.id,
-      createdAt: faker.date.past({ years: 1 }),
+      createdAt: transactionDate,
     };
 
     if (promosToUse.length > 0) {
@@ -394,7 +558,7 @@ async function main() {
   for (let i = 0; i < 20; i++) {
     const user = faker.helpers.arrayElement(createdUsers);
     // Only award points for events that have ended
-    const pastEvents = createdEvents.filter(e => new Date(e.endTime) < new Date());
+    const pastEvents = createdEvents.filter(e => new Date(e.endTime) < new Date() && !e.name.startsWith('Inactive Event'));
     if (pastEvents.length === 0) continue;
     const event = faker.helpers.arrayElement(pastEvents);
     const organizer = faker.helpers.arrayElement(eventOrganizers);
@@ -408,7 +572,7 @@ async function main() {
         remark: `Attended ${event.name}`,
         relatedId: event.id,
         eventInvolvedId: event.id,
-        createdAt: faker.date.between({ from: new Date(event.endTime), to: new Date() }),
+        createdAt: faker.date.between({ from: new Date(event.startTime), to: new Date(event.endTime) }),
       }
     });
     transactionCount++;
@@ -420,7 +584,14 @@ async function main() {
     const user = faker.helpers.arrayElement(createdUsers.filter(u => u.points > 50));
     if (!user) continue;
 
-    const availableAutomaticPromos = createdPromotions.filter(p => p.type === 'automatic' && p.points);
+    const transactionDate = faker.date.past({ years: 1 });
+
+    const availableAutomaticPromos = createdPromotions.filter(p =>
+      p.type === 'automatic' &&
+      p.points &&
+      new Date(p.startTime) <= transactionDate &&
+      new Date(p.endTime) >= transactionDate
+    );
     if (availableAutomaticPromos.length === 0) continue;
 
     // Use 1 to 2 automatic promotions
@@ -433,7 +604,6 @@ async function main() {
     const shouldBeProcessed = faker.datatype.boolean();
     const processor = faker.helpers.arrayElement([...cashiers, ...managers]);
 
-    const createdAt = faker.date.past({ years: 1 });
     const redemptionData = {
       type: "redemption",
       userId: user.id,
@@ -444,12 +614,12 @@ async function main() {
       promotions: { connect: promosToRedeem.map(p => ({ id: p.id })) },
       processed: shouldBeProcessed,
       processedById: shouldBeProcessed ? processor.id : null,
-      createdAt: createdAt,
+      createdAt: transactionDate,
     };
 
     // Delete 7 redemptions at different times
     if (i % 5 === 0) {
-      redemptionData.deletedAt = faker.date.between({ from: createdAt, to: new Date() });
+      redemptionData.deletedAt = faker.date.between({ from: transactionDate, to: new Date() });
     }
     const newRedemption = await prisma.transaction.create({ data: redemptionData });
 
@@ -486,6 +656,7 @@ async function main() {
 
   // Suspicious transactions
   const suspiciousUsers = createdUsers.filter(u => u.suspicious);
+  const usersToFlagAsSuspicious = new Set();
   if (suspiciousUsers.length > 0) {
       // 3 suspicious transfer pairs
       for (let i = 0; i < 3; i++) {
@@ -494,6 +665,8 @@ async function main() {
           while (recipient.id === sender.id) { recipient = faker.helpers.arrayElement(regularUsers); }
           const amount = faker.number.int({ min: 500, max: 1500 });
           const transferDate = faker.date.past({ years: 1 });
+
+          usersToFlagAsSuspicious.add(recipient.id);
 
           await prisma.transaction.create({ data: { type: "transfer", userId: sender.id, targetUserId: recipient.id, amount: -amount, spent: 0, remark: "Large suspicious transfer", suspicious: true, relatedId: recipient.id, createdAt: transferDate } });
           await prisma.transaction.create({ data: { type: "transfer", userId: recipient.id, targetUserId: sender.id, amount: amount, spent: 0, remark: `Received large suspicious transfer from ${sender.utorid}`, suspicious: true, relatedId: sender.id, createdAt: transferDate } });
@@ -511,25 +684,152 @@ async function main() {
       }
       console.log(`Created more suspicious transactions.`);
   }
+
+  if (usersToFlagAsSuspicious.size > 0) {
+    await prisma.user.updateMany({
+      where: { id: { in: [...usersToFlagAsSuspicious] } },
+      data: { suspicious: true },
+    });
+    console.log(`Flagged ${usersToFlagAsSuspicious.size} recipient users as suspicious.`);
+  }
+
   console.log(`Created ${transactionCount} transactions.`);
+
+  // -----------------------------------------------------
+  // 4.1) Fixed Transactions
+  // -----------------------------------------------------
+  console.log("Creating fixed transactions...");
+  let fixedTransactionCount = 0;
+
+  // 10 Purchase
+  for (let i = 1; i <= 10; i++) {
+    await prisma.transaction.create({
+      data: {
+        type: "purchase",
+        userId: faker.helpers.arrayElement(fixedCashiers).id,
+        targetUserId: faker.helpers.arrayElement(fixedRegulars).id,
+        amount: faker.number.int({ min: 5, max: 20 }),
+        spent: faker.number.int({ min: 50, max: 200 }),
+        remark: `Purchase ${i}: ${faker.commerce.productMaterial()} ${faker.commerce.product()}`,
+        processed: true,
+        processedById: faker.helpers.arrayElement(fixedCashiers).id,
+        createdAt: faker.date.past({ years: 1 }),
+      }
+    });
+    fixedTransactionCount++;
+  }
+  console.log("Created 10 fixed purchase transactions.");
+
+  // 10 Adjustment
+  for (let i = 1; i <= 10; i++) {
+    await prisma.transaction.create({
+      data: {
+        type: "adjustment",
+        userId: faker.helpers.arrayElement(fixedManagers).id,
+        targetUserId: faker.helpers.arrayElement(fixedRegulars).id,
+        amount: faker.number.int({ min: -15, max: 15 }),
+        spent: 0,
+        remark: `Adjustment ${i}: Correcting ${faker.hacker.noun()}`,
+        processed: true,
+        processedById: faker.helpers.arrayElement(fixedManagers).id,
+        createdAt: faker.date.past({ years: 1 }),
+      }
+    });
+    fixedTransactionCount++;
+  }
+  console.log("Created 10 fixed adjustment transactions.");
+
+  // 10 Event
+  for (let i = 1; i <= 10; i++) {
+    const event = faker.helpers.arrayElement(fixedInactiveEvents);
+    await prisma.transaction.create({
+      data: {
+        type: "event",
+        userId: faker.helpers.arrayElement(fixedOrganizers).id,
+        targetUserId: faker.helpers.arrayElement(fixedRegulars).id,
+        amount: event.points,
+        spent: 0,
+        remark: `Event ${i}: Attended ${event.name}`,
+        eventInvolvedId: event.id,
+        createdAt: faker.date.between({ from: new Date(event.startTime), to: new Date(event.endTime) }),
+      }
+    });
+    fixedTransactionCount++;
+  }
+  console.log("Created 10 fixed event transactions.");
+
+  // 10 Redemption
+  for (let i = 1; i <= 10; i++) {
+    const automaticPromos = fixedActivePromotions.filter(p => p.type === 'automatic');
+    if (automaticPromos.length > 0) {
+      const promo = faker.helpers.arrayElement(automaticPromos);
+      const promoStart = new Date(promo.startTime);
+      const promoEnd = new Date(promo.endTime);
+      const validEnd = promoEnd > new Date() ? new Date() : promoEnd;
+      const transactionDate = faker.date.between({ from: promoStart, to: validEnd });
+      await prisma.transaction.create({
+        data: {
+          type: "redemption",
+          userId: faker.helpers.arrayElement(fixedRegulars).id,
+          amount: -promo.points,
+          spent: promo.points,
+          remark: `Redemption ${i}: Redeemed ${promo.name}`,
+          promotions: { connect: { id: promo.id } },
+          processed: faker.datatype.boolean(),
+          createdAt: transactionDate,
+        }
+      });
+      fixedTransactionCount++;
+    }
+  }
+  console.log("Created 10 fixed redemption transactions.");
+
+  // 10 Transfer (pairs)
+  for (let i = 1; i <= 10; i++) {
+    const sender = faker.helpers.arrayElement(fixedRegulars);
+    let recipient = faker.helpers.arrayElement(fixedRegulars);
+    while (recipient.id === sender.id) { recipient = faker.helpers.arrayElement(fixedRegulars); }
+    const amount = faker.number.int({ min: 5, max: 25 });
+    const transferDate = faker.date.past({ years: 1 });
+
+    await prisma.transaction.create({ data: { type: "transfer", userId: sender.id, targetUserId: recipient.id, amount: -amount, spent: 0, remark: `Transfer ${i}: Gift to ${recipient.utorid}`, createdAt: transferDate } });
+    await prisma.transaction.create({ data: { type: "transfer", userId: recipient.id, targetUserId: sender.id, amount: amount, spent: 0, remark: `Transfer ${i}: Received from ${sender.utorid}`, createdAt: transferDate } });
+    fixedTransactionCount += 2;
+  }
+  console.log("Created 10 fixed transfer transaction pairs.");
 
   // -----------------------------------------------------
   // 5) RSVPs
   // -----------------------------------------------------
+  console.log("Creating RSVPs...");
   const rsvpsToCreate = [];
+
+  // Add fixed RSVPs
+  for (const user of fixedRegulars) {
+    const event = faker.helpers.arrayElement(fixedActiveEvents);
+    rsvpsToCreate.push({
+      userId: user.id,
+      eventId: event.id,
+      status: faker.helpers.arrayElement(["confirmed", "declined"]),
+    });
+  }
+
+  // Add random RSVPs
   for (let i = 0; i < 50; i++) {
     const user = faker.helpers.arrayElement(regularUsers);
     const event = faker.helpers.arrayElement(createdEvents.filter(e => e.published));
-    if (event && !rsvpsToCreate.some(r => r.userId === user.id && r.eventId === event.id)) {
-      rsvpsToCreate.push({
-        userId: user.id,
-        eventId: event.id,
-        status: faker.helpers.arrayElement(["confirmed", "declined"]),
-      });
-    }
+    rsvpsToCreate.push({
+      userId: user.id,
+      eventId: event.id,
+      status: faker.helpers.arrayElement(["confirmed", "declined"]),
+    });
   }
-  await prisma.rsvp.createMany({ data: rsvpsToCreate });
-  console.log(`Created ${rsvpsToCreate.length} RSVPs.`);
+
+  // De-duplicate the list of RSVPs before creation
+  const uniqueRsvps = [...new Map(rsvpsToCreate.map(item => [`${item.userId}-${item.eventId}`, item])).values()];
+
+  await prisma.rsvp.createMany({ data: uniqueRsvps });
+  console.log(`Created ${uniqueRsvps.length} RSVPs.`);
 
   // Update event stats based on RSVPs
   console.log("Updating event stats (numGuests, pointsAwarded)...");
