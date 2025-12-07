@@ -224,6 +224,21 @@ async function updateSpecificUser(req, res) {
 
   if (role) {
     try {
+      const target = await UserService.queryForUser(userId, {});
+
+      // Superuser cannot be changed by anyone
+      if (target.role === RoleType.superuser) {
+        return res
+          .status(403)
+          .json({ error: "Forbidden: The role of a superuser cannot be changed." });
+      }
+
+      // Manager can only be changed by Superuser.
+      if (target.role === RoleType.manager && userRole !== RoleType.superuser) {
+        return res
+          .status(403)
+          .json({ error: "Forbidden: Only a superuser can change the role of a manager." });
+      }
       switch (role) {
         case "regular":
           updateFields.role = RoleType.regular;
