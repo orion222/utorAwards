@@ -160,8 +160,6 @@ class EventService {
         orderBy: orderBy || undefined,
       }),
     ]);
-    console.log(filterDetails);
-    console.log(results);
     return {
       count: count,
       results: results,
@@ -980,13 +978,6 @@ class EventService {
       });
     }
 
-    if (role === RoleType.regular || role === RoleType.cashier) {
-      filterDetails.published = true;
-      tempFilterDetail.OR = [];
-      filterDetails.NOT = { capacity: null };
-      filterDetails.numGuests = { gt: prisma.event.fields.capacity };
-    }
-
     const selectDetails = {
       id: true,
       name: true,
@@ -999,13 +990,9 @@ class EventService {
       description: true,
       published: true,
       createdAt: true,
+      pointsRemain: true,
+      pointsAwarded: true,
     };
-
-    if (role === RoleType.manager || role === RoleType.superuser) {
-      selectDetails.pointsRemain = true;
-      selectDetails.pointsAwarded = true;
-      selectDetails.published = true;
-    }
 
     filterDetails.organizers = { some: { id: userId } };
 

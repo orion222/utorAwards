@@ -742,16 +742,6 @@ async function retrieveMyEventManagement(req, res) {
       .status(400)
       .json({ error: "Bad Request: invalid published value" });
   }
-  if (
-    published &&
-    userRole !== RoleType.manager &&
-    userRole !== RoleType.superuser
-  ) {
-    return res.status(403).json({
-      error: "only managers and superusers can see unpublished events",
-    });
-  }
-
   if (started && ended) {
     return res
       .status(400)
