@@ -85,6 +85,12 @@ export const UserProvider = ({ children }) => {
     };
   }, [logout]);
 
+  useEffect(() => {
+    api.get('auth/csrf-token').then(res => {
+      api.defaults.headers.common['x-csrf-token'] = res.data.token;
+    })
+  }, [])
+
   return (
     <UserContext.Provider
       value={{ user, login, logout, loading, addResetContextFunction, removeResetContextFunction }}
