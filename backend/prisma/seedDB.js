@@ -768,10 +768,15 @@ async function main() {
       const promoEnd = new Date(promo.endTime);
       const validEnd = promoEnd > new Date() ? new Date() : promoEnd;
       const transactionDate = faker.date.between({ from: promoStart, to: validEnd });
+      var user = faker.helpers.arrayElement(fixedRegulars);
+      while (user.points < promo.points) {
+        user = faker.helpers.arrayElement(fixedRegulars);
+      }
       await prisma.transaction.create({
         data: {
           type: "redemption",
-          userId: faker.helpers.arrayElement(fixedRegulars).id,
+          userId: user.id,
+          targetUserId: user.id,
           amount: -promo.points,
           spent: promo.points,
           remark: `Redemption ${i}: Redeemed ${promo.name}`,
