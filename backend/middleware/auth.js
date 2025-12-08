@@ -2,7 +2,10 @@ const jwt = require("jsonwebtoken");
 const { prisma } = require("../prisma/prisma");
 
 const verifyToken = async (req, res, next) => {
-  const token = req.headers["authorization"]?.split(" ")[1];
+  const cookieToken = req.cookies?.auth_token;
+  const headerToken = req.headers["authorization"]?.split(" ")[1];
+  const token = cookieToken || headerToken;
+  
   if (!token) {
     return res.status(401).json({ error: "Unauthorized: No token" });
   }
