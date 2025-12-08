@@ -68,7 +68,13 @@ function PromotionCard({ promotion, hover }) {
                     sx={{                
                         fontSize: 11,
                         maxWidth: "260px",
-                        height: isSmall ? "22.5px" : "45px",}}
+                        height: isSmall ? "20px" : "45px",
+                        overflow: "hidden",
+                        textOverflow: "ellipsis",
+                        display: "-webkit-box",
+                        WebkitLineClamp: isSmall ? 1 : 2,
+                        WebkitBoxOrient: "vertical",
+                        }}
                     > 
                     {description}
                 </Typography>
