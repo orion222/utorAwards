@@ -194,7 +194,25 @@ function FilterableList({
     if (newPage !== page) {
       setPage(newPage);
     }
-    setTempFilters({ ...initialFilters, ...appliedFilters });
+
+    // Fix: Properly sync tempFilters with URL params for boolean values
+    const appliedFilters = getAppliedFilters();
+    const newTempFilters = { ...initialFilters };
+  
+    // Override with actual URL params
+    Object.entries(appliedFilters).forEach(([key, value]) => {
+      if (key !== "page") {
+        newTempFilters[key] = value;
+      }
+    });
+    
+    // Ensure boolean filters are properly set to false when not in URL
+    Object.entries(filterConfig).forEach(([key, config]) => {
+      if (config.type === "boolean" && !(key in appliedFilters)) {
+        newTempFilters[key] = false;
+      }
+    });
+    setTempFilters(newTempFilters);
   }, [searchParams]);
 
   useEffect(() => {
@@ -202,7 +220,7 @@ function FilterableList({
       (key) => key !== "page",
     );
     setHasFilters(filterKeys.length > 0);
-  }, [appliedFilters]);
+  }, [appliedFilters, filterConfig, initialFilters]);
 
   const capitalizeFirst = (str) => {
     if (!str || typeof str !== "string") return str;
