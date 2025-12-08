@@ -2,6 +2,20 @@ const express = require('express');
 const { generateJWT, resetPassword, requestPasswordReset, logout } = require('../controllers/authController');
 const { verifyToken } = require('../middleware/auth')
 const rateLimit = require('express-rate-limit');
+const { doubleCsrf } = require('csrf-csrf');
+const cors = require('cors');
+
+const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
+    getSecret: () => process.env.CSRF_SECRET,
+    getSessionIdentifier: (req) => req.cookies.auth_token,
+    cookieName: 'x-csrf-token',
+    cookieOptions: {
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true
+    }
+});
+
 
 const authRouter = express.Router();
 
@@ -20,5 +34,10 @@ authRouter.get("/verify", verifyToken);
 authRouter.post("/resets", forgotPasswordLimiter, requestPasswordReset);
 
 authRouter.post("/resets/:resetToken", resetPassword);
+
+authRouter.get('/csrf-token', (req, res) => {
+    const token = generateCsrfToken(req, res);
+    res.json({ token });
+})
 
 module.exports = authRouter;
