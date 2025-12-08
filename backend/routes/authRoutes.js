@@ -1,5 +1,6 @@
 const express = require('express');
-const { generateJWT, resetPassword, requestPasswordReset } = require('../controllers/authController');
+const { generateJWT, resetPassword, requestPasswordReset, logout } = require('../controllers/authController');
+const { verifyToken } = require('../middleware/auth')
 const rateLimit = require('express-rate-limit');
 
 const authRouter = express.Router();
@@ -11,6 +12,10 @@ const forgotPasswordLimiter = rateLimit({
 });
 
 authRouter.post("/tokens", generateJWT);
+
+authRouter.post("/logout", logout);
+
+authRouter.get("/verify", verifyToken);
 
 authRouter.post("/resets", forgotPasswordLimiter, requestPasswordReset);
 

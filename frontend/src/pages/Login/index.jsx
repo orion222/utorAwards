@@ -42,12 +42,12 @@ function Login() {
     setServerError("");
 
     try {
-      const { data: authData } = await api.post("/auth/tokens", {
+      const { data } = await api.post("/auth/tokens", {
         utorid: values.utorid,
         password: values.password
       });
 
-      login(authData.token);
+      login();
       navigate("/dashboard");
       reset();
       showToast(`Logged in as ${values.utorid}`, 'success')
