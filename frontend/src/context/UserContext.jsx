@@ -9,7 +9,7 @@ import api from "../api/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const UserContext = createContext();
-
+const contextResetFunctions = []
 export const UserProvider = ({ children }) => {
   const queryClient = useQueryClient();
 
@@ -51,7 +51,28 @@ export const UserProvider = ({ children }) => {
     localStorage.removeItem("token");
     queryClient.setQueryData(["user"], null);
     queryClient.clear();
+
+    contextResetFunctions.forEach(resetFn => {
+      try {
+        resetFn();
+      } catch (error) {
+        console.error("Error resetting context:", error);
+      }
+    });
   }, [queryClient]);
+
+  const addResetContextFunction = useCallback((resetFn) => {
+    if (typeof resetFn === 'function' && !contextResetFunctions.includes(resetFn)) {
+      contextResetFunctions.push(resetFn);
+    }
+  }, []);
+
+  const removeResetContextFunction = useCallback((resetFn) => {
+    const index = contextResetFunctions.indexOf(resetFn);
+    if (index > -1) {
+      contextResetFunctions.splice(index, 1);
+    }
+  }, []);
 
   // intercept invalid tokens as responses and auto-logout user
   useEffect(() => {
@@ -75,7 +96,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ user, login, logout, loading }}
+      value={{ user, login, logout, loading, addResetContextFunction, removeResetContextFunction }}
     >
       {children}
     </UserContext.Provider>
