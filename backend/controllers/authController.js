@@ -92,6 +92,7 @@ async function requestPasswordReset(req, res) {
 }
 
 async function logout(req, res) {
+  const isProduction = process.env.NODE_ENV === 'production';
   res.clearCookie('auth_token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
