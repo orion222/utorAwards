@@ -23,6 +23,7 @@ The backend follows a **RESTful API** design with layered architecture:
 - **Routes**: API endpoint definitions with middleware ([`userRoutes.js`](backend/routes/userRoutes.js))
 - **Database**: Prisma ORM with SQLite (development) / PostgreSQL (production)
 - **Middleware**: JWT authentication, rate limiting, CORS, file uploads
+- **Security**: Protected authenticated requests using CSRF tokens in combination with server‑side cookies
 
 ### Database Design
 - **Users**: Authentication, roles, points, verification status
