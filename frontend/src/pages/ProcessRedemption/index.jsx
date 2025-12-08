@@ -47,7 +47,7 @@ export default function ProcessRedemption() {
             queryClient.invalidateQueries({ queryKey: ['transactions'] });
             queryClient.invalidateQueries({ queryKey: ['past-transactions'] });
             queryClient.invalidateQueries({ queryKey: ['all-transactions'] });
-            queryClient.invalidateQueries({ queryKey: ['user'] });
+            queryClient.invalidateQueries({ queryKey: ['user'], refetchType: 'none' });
         },
 
         onError: (error) => {
