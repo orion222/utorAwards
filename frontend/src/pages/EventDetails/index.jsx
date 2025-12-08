@@ -396,7 +396,14 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
           zIndex: 1300,
         }}
       >
-        <Box sx={{width: isSmall ? "100%":"50%"}}>
+        <Box
+          sx={{
+            width: '100%',
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <DeleteEventForm
             event={data}
             onClose={() => setDeleteModal(false)}

@@ -145,7 +145,7 @@ function PromotionDetails() {
                                 zIndex: 1300,
                             }}
                         >
-                            <Box sx={{width: isSmall ? "100%":"50%"}}>
+                            <Box sx={{width: '100%', justifyContent: 'center', display: 'flex', alignItems: 'center'}}>
                                 <DeletePromotionForm
                                     promotion={data}
                                     onClose={() => setDeleteModal(false)}      

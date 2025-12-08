@@ -13,7 +13,7 @@ function FormCard({
   const theme = useTheme();
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
   const padding = contentPadding || 4;
-  const cardWidth = isSmall ? '90%': width || 420;
+  const cardWidth = width || 420;
 
   return (
     <Box
