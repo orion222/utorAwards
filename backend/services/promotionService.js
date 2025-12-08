@@ -156,7 +156,7 @@ class PromotionService {
 
     const [count, results] = await prisma.$transaction([
       prisma.promotion.count({ where }),
-      prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { createdAt: "asc" } }),
+      prisma.promotion.findMany({ where, skip, take, select, orderBy: orderBy ? orderBy : { createdAt: "desc" } }),
     ]);
 
     return { count, results };

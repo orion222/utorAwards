@@ -135,11 +135,19 @@ class TransactionService {
         `User with given utorid ${targetUtorid} does not exist`,
       );
 
+    const existingPromos = await prisma.promotion.findMany({
+      where: { id: { in: promotionIds.map(Number) } },
+    });
+
+    if (existingPromos.length !== promotionIds.length) {
+      throw new NotFoundError("One or more promotion IDs do not exist");
+    }
+
     const newTransaction = await prisma.transaction.create({
       data: {
         type: type,
         userId: creator.id,
-        spent: 0, //This could become an error so it is only temporary
+        spent: 0,
         amount,
         promotions: { connect: promotionIds.map((id) => ({ id })) },
         targetUserId: targetUser.id,
@@ -613,7 +621,7 @@ class TransactionService {
           relatedId: true,
           processed: true,
         },
-        orderBy: orderBy ? orderBy : { createdAt: "asc" },
+        orderBy: orderBy ? orderBy : { createdAt: "desc" },
       }),
     ]);
 
@@ -671,7 +679,7 @@ class TransactionService {
           },
           take: limit,
           skip: (page - 1) * limit,
-          orderBy: orderBy ? orderBy : { createdAt: "asc" },
+          orderBy: orderBy ? orderBy : { createdAt: "desc" },
         })
     ]);
 
