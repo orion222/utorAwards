@@ -5,3 +5,4 @@ We used a variety of AI models including ChatGPT, Claude, Gemini to...
 - Troubleshoot deployment issues
 - Explain concepts of how to use certain dependencies and libraries
 - Code review
+- Seeding the database (seedDB.js) with realistic entities, including creating almost 200 transactions with different scenarios and relations corresponding to each user type
