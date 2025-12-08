@@ -98,6 +98,12 @@ async function logout(req, res) {
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     path: '/'
   });
+  res.clearCookie('x-csrf-token', {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'strict',
+    path: '/'
+  });
   
   return res.status(200).json({ message: 'Logged out successfully' });
 }

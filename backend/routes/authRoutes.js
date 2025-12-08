@@ -10,8 +10,8 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
     getSessionIdentifier: (req) => req.cookies.auth_token,
     cookieName: 'x-csrf-token',
     cookieOptions: {
-        sameSite: 'none',
-        secure: true,
+        sameSite: isProduction ? 'none' : 'strict',
+        secure: isProduction,
         httpOnly: true
     }
 });
