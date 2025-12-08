@@ -37,13 +37,14 @@ const transactionRouter = require("./routes/transactionRoutes");
 const eventRouter = require("./routes/eventRoutes");
 const authRouter = require("./routes/authRoutes");
 const promotionRouter = require("./routes/promotionRoutes");
+const { doubleCsrfProtection } = require("./routes/authRoutes");
 
-app.use("/users", userRouter);
-app.use("/transactions", transactionRouter);
-app.use("/events", eventRouter);
+app.use("/users", doubleCsrfProtection, userRouter);
+app.use("/transactions", doubleCsrfProtection, transactionRouter);
+app.use("/events", doubleCsrfProtection, eventRouter);
+app.use("/promotions", doubleCsrfProtection, promotionRouter);
+
 app.use("/auth", authRouter);
-app.use("/promotions", promotionRouter);
-
 // catch any non-existing routes
 app.all("*", (_req, res) => {
   res.status(405).json({ error: "Method not allowed" });

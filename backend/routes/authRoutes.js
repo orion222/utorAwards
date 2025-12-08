@@ -16,7 +16,6 @@ const { generateCsrfToken, doubleCsrfProtection } = doubleCsrf({
     }
 });
 
-
 const authRouter = express.Router();
 
 const forgotPasswordLimiter = rateLimit({
@@ -41,3 +40,4 @@ authRouter.get('/csrf-token', (req, res) => {
 })
 
 module.exports = authRouter;
+module.exports.doubleCsrfProtection = doubleCsrfProtection;
