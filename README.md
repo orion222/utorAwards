@@ -1,6 +1,6 @@
 # UTORAwards
 
-UTORAwards is a comprehensive campus engagement platform that allows student participation through events, rewards, and leaderboards. Students can discover events, earn points for attendance, redeem rewards, and compete on leaderboards while building a vibrant campus community.
+UTORAwards is a comprehensive campus engagement platform that allows student participation through events, rewards, and leaderboards. Students can discover events, earn points for attendance, redeem rewards, and compete on leaderboards while building a vibrant campus community. Administrative functionality is also implemented, allowing users of higher roles to see the extended layouts and have extra capabilities to facilitate UTORAwards.
 
 ## Project Architecture
 
@@ -76,3 +76,11 @@ The backend follows a **RESTful API** design with layered architecture:
 
 ### Third Party APIS
 - **GeoApify**: A geocoding api that integrates with our events, allowing users to use real locations around the world. 
+
+## Demo Accounts
+
+All demo acounts use the password `Password@123`. Use the utorids below to login as each role.
+- `supuser`
+- `manager1`
+- `cashier1`
+- `reguser1`
