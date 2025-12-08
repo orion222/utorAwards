@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
 } from "react";
-import { jwtDecode } from "jwt-decode";
 import api from "../api/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -16,25 +15,18 @@ export const UserProvider = ({ children }) => {
   const { data: user, isFetching: loading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        return null;
+      try {
+        const userResponse = await api.get("/users/me");
+        return userResponse.data;
+      } catch (error) {
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
       }
-
-      const decoded = jwtDecode(token);
-
-      if (decoded.exp * 1000 < Date.now()) {
-        localStorage.removeItem("token");
-        return null;
-      }
-
-      const res = await api.get("/users/me");
-      return res.data;
     },
     onError: (error) => {
       console.log(error);
-      logout();
       return null;
     },
     retry: false,
@@ -42,36 +34,22 @@ export const UserProvider = ({ children }) => {
     refetchOnWindowFocus: false,
   });
 
-  const login = (tokenValue) => {
-    localStorage.setItem("token", tokenValue);
+  const login = () => {
     queryClient.invalidateQueries(["user"]);
   };
 
-  const logout = useCallback(() => {
-    localStorage.removeItem("token");
-    queryClient.setQueryData(["user"], null);
-    queryClient.clear();
+  const logout = useCallback(async () => {
+    try {
+      // Call logout endpoint to clear server-side cookie
+      await api.post("/auth/logout");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Clear client-side data regardless of server response
+      queryClient.setQueryData(["user"], null);
+      queryClient.clear();
+    }
   }, [queryClient]);
-
-  // intercept invalid tokens as responses and auto-logout user
-  useEffect(() => {
-    const invalidTokenInterceptor = api.interceptors.response.use(
-      (res) => res,
-      (error) => {
-        if (
-          error.response?.status === 401 &&
-          error.response?.data?.error.includes("token")
-        ) {
-          logout();
-        }
-        return Promise.reject(error);
-      },
-    );
-
-    return () => {
-      api.interceptors.response.eject(invalidTokenInterceptor);
-    };
-  }, [logout]);
 
   return (
     <UserContext.Provider

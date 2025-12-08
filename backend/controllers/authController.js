@@ -16,8 +16,20 @@ async function generateJWT(req, res) {
   }
 
   try {
-    const token = await AuthService.generateJWT(utorid, password);
-    return res.status(200).json(token);
+    const { token, expiresAt } = await AuthService.generateJWT(utorid, password);
+    
+    res.cookie('auth_token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: '/'
+    });
+
+    return res.status(200).json({
+      message: 'Login successful',
+      expiresAt
+    });
   } catch (error) {
     return res.status(error.statusCode || 500).json({ error: error.message });
   }
@@ -78,4 +90,15 @@ async function requestPasswordReset(req, res) {
   }
 }
 
-module.exports = { generateJWT, resetPassword, requestPasswordReset };
+async function logout(req, res) {
+  res.clearCookie('auth_token', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    path: '/'
+  });
+  
+  return res.status(200).json({ message: 'Logged out successfully' });
+}
+
+module.exports = { generateJWT, resetPassword, requestPasswordReset, logout };
