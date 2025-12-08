@@ -12,11 +12,6 @@ function AppLayout() {
   const navigate = useNavigate();
 
   const { user } = useUser();
-  const token = localStorage.getItem("token");
-
-  useEffect(() => {
-    if (!token) navigate("/login");
-  }, [token]);
 
   useEffect(() => {
     if (isMobileWidth) setIsNavOpen(false);

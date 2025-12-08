@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
 } from "react";
-import { jwtDecode } from "jwt-decode";
 import api from "../api/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -16,25 +15,18 @@ export const UserProvider = ({ children }) => {
   const { data: user, isFetching: loading } = useQuery({
     queryKey: ["user"],
     queryFn: async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        return null;
+      try {
+        const userResponse = await api.get("/users/me");
+        return userResponse.data;
+      } catch (error) {
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
       }
-
-      const decoded = jwtDecode(token);
-
-      if (decoded.exp * 1000 < Date.now()) {
-        localStorage.removeItem("token");
-        return null;
-      }
-
-      const res = await api.get("/users/me");
-      return res.data;
     },
     onError: (error) => {
       console.log(error);
-      logout();
       return null;
     },
     retry: false,
@@ -42,8 +34,7 @@ export const UserProvider = ({ children }) => {
     refetchOnWindowFocus: false,
   });
 
-  const login = (tokenValue) => {
-    localStorage.setItem("token", tokenValue);
+  const login = () => {
     queryClient.invalidateQueries(["user"]);
   };
 
