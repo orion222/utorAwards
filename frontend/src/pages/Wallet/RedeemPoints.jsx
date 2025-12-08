@@ -23,8 +23,9 @@ import { useWallet } from "../../context/WalletContext.jsx";
 export default function RedeemPoints() {
   const { showToast, ToastComponent } = useToast();
   const { redemptionData, setRedemption } = useWallet();
-  const status = Boolean(redemptionData?.processedBy);
+  const processed = Boolean(redemptionData?.processedBy);
   const { canvasRef, isGenerating } = useQRCode(redemptionData);
+  console.log(redemptionData);
 
   const {
     control,
@@ -129,13 +130,20 @@ export default function RedeemPoints() {
               />
               {hasGeneratedQR ? (
                 <Button
-                  type="submit"
                   variant="contained"
                   sx={{ mt: 2 }}
                   disabled={isSubmitting || isGenerating}
-                  color="error"
+                  color={processed ? "info" : "error"}
+                  onClick={processed ? (e) => {
+                    e.preventDefault();
+                    setRedemption(null);
+                    reset({
+                      points: "",
+                      remarks: "",
+                    }, { keepErrors: false });
+                  } : handleSubmit(onSubmit)}
                 >
-                  {isSubmitting ? "Cancelling..." : "Cancel Redemption"}
+                  {processed ? "Reset" : isSubmitting ? "Cancelling..." : "Cancel Redemption"}
                 </Button>
               ) : (
                 <Button
@@ -170,7 +178,7 @@ export default function RedeemPoints() {
                       alignItems: "center",
                     }}
                   >
-                    {status ? (
+                    {processed ? (
                       <Chip
                         icon={<VerifiedIcon />}
                         label="PROCESSED"
@@ -185,7 +193,12 @@ export default function RedeemPoints() {
                         sx={{ color: "white" }}
                       />
                     )}
-                    Created at {convertToMDY(redemptionData.createdAt)}
+                    <Box>
+                      {processed
+                        ? `Processed at ${convertToMDY(redemptionData.processedAt)}`
+                        : `Created at ${convertToMDY(redemptionData.createdAt)}`
+                      }
+                    </Box>
                   </Box>
                 </Stack>
               )}

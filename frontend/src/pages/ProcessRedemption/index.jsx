@@ -13,6 +13,7 @@ import RedemptionCard from "../../components/common/RedemptionCard.jsx";
 import ConfirmDialog from "../../components/common/ConfirmDialog.jsx";
 import { useUser } from "../../context/UserContext";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useWallet } from "../../context/WalletContext";
 
 export default function ProcessRedemption() {
     const { showToast, ToastComponent } = useToast();
@@ -20,6 +21,7 @@ export default function ProcessRedemption() {
     const [showConfirmDialog, setShowConfirmDialog] = useState(false);
     const { user } = useUser();
     const queryClient = useQueryClient();
+    const { setRedemption } = useWallet();
 
     const processMutation = useMutation({
         mutationFn: async () => {
@@ -33,6 +35,12 @@ export default function ProcessRedemption() {
                 ...prev,
                 processed: true,
                 processedBy: user.utorid,
+            }));
+            setRedemption(prev => ({
+              ...prev,
+              processed: true,
+              processedBy: user.utorid,
+              processedAt: new Date(),
             }));
             showToast("Redemption processed successfully", "success");
             queryClient.invalidateQueries({ queryKey: ['transaction-details', String(transactionData.id)] });

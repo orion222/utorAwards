@@ -21,7 +21,6 @@ export default function TransferPoints() {
       remarks: "",
     },
   });
-
   const onSubmit = async (data) => {
     const { userid, amount, remarks } = data;
     const payload = {
