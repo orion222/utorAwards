@@ -47,6 +47,13 @@ function Login() {
         password: values.password
       });
 
+      try {
+        const csrfResponse = await api.get('/auth/csrf-token');
+        api.defaults.headers.common['x-csrf-token'] = csrfResponse.data.token;
+      } catch (csrfError) {
+        console.warn('CSRF token fetch failed:', csrfError);
+      }
+
       login();
       navigate("/dashboard");
       reset();
