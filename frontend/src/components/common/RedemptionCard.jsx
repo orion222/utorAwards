@@ -52,7 +52,7 @@ export default function RedemptionCard({ redemption, onProcess, processing }) {
             {/* Left Side */}
             <Stack spacing={1}>
                 <DetailsItem label="Transaction ID" value={`#${redemption.id}`} />
-                <DetailsItem label="UTORid" value={redemption.utorid} />
+                <DetailsItem label="UTORid" value={redemption.user.utorid} />
                 {redemption.remark && (
                     <DetailsItem label="Remark" value={redemption.remark} />
                 )}
