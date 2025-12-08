@@ -2,6 +2,8 @@
 
 UTORAwards is a comprehensive campus engagement platform that allows student participation through events, rewards, and leaderboards. Students can discover events, earn points for attendance, redeem rewards, and compete on leaderboards while building a vibrant campus community. Administrative functionality is also implemented, allowing users of higher roles to see the extended layouts and have extra capabilities to facilitate UTORAwards.
 
+https://utor-awards.vercel.app
+
 ## Project Architecture
 
 ### Frontend Architecture
