@@ -195,8 +195,8 @@ export default function RedeemPoints() {
                     )}
                     <Box>
                       {processed
-                        ? `Processed at ${convertToMDY(redemptionData.processedAt)}`
-                        : `Created at ${convertToMDY(redemptionData.createdAt)}`
+                        ? `Transaction ${redemptionData.id} processed at ${convertToMDY(redemptionData.processedAt)}`
+                        : `Transaction ${redemptionData.id} created at ${convertToMDY(redemptionData.createdAt)}`
                       }
                     </Box>
                   </Box>
