@@ -15,7 +15,6 @@ import {
 import TableActions from "./TableActions.jsx";
 import SaveCancelButtons from "../../components/common/SaveCancelButtons.jsx";
 import AwardAllButton from "../../components/common/AwardAllButton.jsx";
-import {useMemo} from "react";
 export default function UsersTable({
   refetch,
   eventId,
@@ -27,6 +26,7 @@ export default function UsersTable({
   onAwardAll,
   numGuests,
   isSaving = false,
+  callback = () => {},
 }) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -188,6 +188,7 @@ export default function UsersTable({
                 <TableCell sx={bodyCellSx}>
                   <TableActions
                     refetch={refetch}
+                    callback={callback}
                     eventId={eventId}
                     utorid={user.utorid}
                     userId={user.id}

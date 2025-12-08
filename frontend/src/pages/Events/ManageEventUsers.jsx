@@ -21,23 +21,23 @@ function ManageEventUsers() {
   const { user } = useUser();
   const { eventId } = useParams();
   const [event, setEvent] = useState(null);
-  useEffect(() => {
-    async function fetchEvent() {
-      try {
-        const { data } = await api.get(`/events/${parseInt(eventId, 10)}`);
+  async function fetchEvent() {
+    try {
+      const { data } = await api.get(`/events/${parseInt(eventId, 10)}`);
 
-        const isManagerOrSuperuser = ['manager', 'superuser'].includes(user.role);
-        const isOrganizerOfEvent = data.organizers?.some((org) => org.id === user.id);
-        if (!isManagerOrSuperuser && !isOrganizerOfEvent) {
-          console.error("Unauthorized access to event users management");
-          navigate("/unauthorized");
-          return;
-        }
-        setEvent(data);
-      } catch (err) {
-        console.error("Error fetching event:", err);
+      const isManagerOrSuperuser = ['manager', 'superuser'].includes(user.role);
+      const isOrganizerOfEvent = data.organizers?.some((org) => org.id === user.id);
+      if (!isManagerOrSuperuser && !isOrganizerOfEvent) {
+        console.error("Unauthorized access to event users management");
+        navigate("/unauthorized");
+        return;
       }
+      setEvent(data);
+    } catch (err) {
+      console.error("Error fetching event:", err);
     }
+  }
+  useEffect( () => {
     fetchEvent();
   }, [eventId, navigate, user.id, user.role]);
 
@@ -197,6 +197,7 @@ function ManageEventUsers() {
           additionalParams={{ eventId: eventId }}
           limit={5}
           initialFilters={{ is_guest: true }}
+          callBack = {fetchEvent}
         >
           {({ data, isFetching, error, getAppliedFilters, refetch }) => {
             const queriedUserType = handleChangeQueriedUserType(
@@ -235,6 +236,7 @@ function ManageEventUsers() {
                   </Box>
                 ) : (
                   <EventUsersTable
+                    callback={fetchEvent}
                     setQueriedUserType={handleChangeQueriedUserType}
                     refetch={refetch}
                     eventId={event.id}

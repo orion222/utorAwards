@@ -121,7 +121,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
 
       <Stack direction="row" gap={1} alignItems="center">
         <EventStatusChip startTime={data.startTime} endTime={data.endTime} published={data.published} />
-        {(isOrganizer || isManagerOrSuperuser) && !hasEnded && (
+        {(isOrganizer || isManagerOrSuperuser) && !(hasEnded && data.published) && (
           <Button
             startIcon={<FiEdit color="grey" />}
             onClick={(e) => {

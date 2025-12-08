@@ -41,7 +41,7 @@ const defaultValues = {
   location: "",
   pointsRemain: 0,
   numGuests: 0,
-  capacity: "None",
+  capacity: null,
   published: false,
 }
 export default function EditEventForm({
@@ -60,6 +60,7 @@ export default function EditEventForm({
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: yupResolver(schema),
+    context: { hadCapacity: event.capacity !== null },
     defaultValues: {
       name: event.name,
       description: event.description,
@@ -372,7 +373,7 @@ export default function EditEventForm({
                             disabled={event.published}
                           />
                         }
-                        label="Published"
+                        label={event.published ? "Published": "Publish"}
                       />
                     )}
                   />

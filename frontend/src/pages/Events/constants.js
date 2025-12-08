@@ -29,13 +29,23 @@ export const editEventSchema = yup.object({
     .min(0, "Points must be at least 0")
     .required("Points are required"),
   capacity: yup
-    .mixed()
-    .test(
-      "is-valid-capacity",
-      "Capacity must be a positive number or 'None'",
-      value =>
-        value === "None" ||
-        (typeof value === "number" && value >= 1)
-    )
-    .required("Capacity is required"),
+    .string()
+    .nullable()
+    .when('$hadCapacity', ([hadCapacity], schema) => {
+      if (hadCapacity) {
+        return schema.test(
+          'positive-int-when-had-capacity',
+          'Capacity must be a positive integer',
+          (value) => !!value && /^[1-9]\d*$/.test(value)
+        );
+      }
+      return schema.test(
+        'none-or-positive-int',
+        'Capacity must be empty or a positive integer',
+        (value) => {
+          if (!value) return true;
+          return /^[1-9]\d*$/.test(value);
+        }
+      );
+    }),
 });

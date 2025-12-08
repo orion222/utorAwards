@@ -19,6 +19,7 @@ export default function TableActions({
   userId,
   is_guest,
   is_organizer,
+  callback = () => {},
 }) {
   const { showToast } = useToast();
   const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -34,6 +35,7 @@ export default function TableActions({
       const status = await fetcher(eventId, utorid);
       if (status === 201) {
         showToast(`Successfully added ${utorid} as a ${role}!`, toastColour);
+        callback();
         refetch();
       } else {
         showToast(`Failed to add ${utorid} as a ${role}.`, "error");
@@ -49,6 +51,7 @@ export default function TableActions({
       const status = await fetcher(eventId, userId);
       if (status === 204) {
         showToast(`Removed ${utorid} from ${role} list!`, "success");
+        callback();
         refetch();
       } else {
         showToast(`Failed to remove ${utorid} from ${role} list.`, "error");

@@ -303,7 +303,7 @@ class EventService {
           updateParams.description ||
           updateParams.location ||
           updateParams.capacity) &&
-        event.startTime < now
+        event.startTime < now && event.published
       ) {
         throw new BadRequestError("event has already started");
       }
