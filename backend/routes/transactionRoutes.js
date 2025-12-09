@@ -7,6 +7,7 @@ const {
   updateTransactionProcessed,
 } = require("../controllers/transactionController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
+const { doubleCsrfProtection } = require("./authRoutes");
 
 const transactionRouter = express.Router();
 
@@ -29,6 +30,7 @@ transactionRouter.param("transactionId", (req, res, next, transactionId) => {
 
 transactionRouter.post(
   "/",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["cashier", "manager", "superuser"]),
   createTransaction,
@@ -49,6 +51,7 @@ transactionRouter.get(
 
 transactionRouter.patch(
   "/:transactionId/suspicious",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   updateTransactionSuspicion,
@@ -56,6 +59,7 @@ transactionRouter.patch(
 
 transactionRouter.patch(
   "/:transactionId/processed",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["cashier", "manager", "superuser"]),
   updateTransactionProcessed,

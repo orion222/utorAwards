@@ -16,6 +16,7 @@ const {
 } = require("../controllers/eventController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
 const {getSpecificUser} = require("../controllers/userController");
+const { doubleCsrfProtection } = require("./authRoutes");
 
 const eventRouter = express.Router();
 
@@ -59,6 +60,7 @@ eventRouter.get(
 
 eventRouter.post(
   "/",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   createEvent,
@@ -80,6 +82,7 @@ eventRouter.get(
 
 eventRouter.patch(
   "/:eventId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["organizer", "manager", "superuser"]),
   updateEvent,
@@ -87,6 +90,7 @@ eventRouter.patch(
 
 eventRouter.delete(
   "/:eventId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   deleteEvent,
@@ -94,6 +98,7 @@ eventRouter.delete(
 
 eventRouter.post(
   "/:eventId/guests/me",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["regular", "cashier", "manager", "superuser"]),
   signUpForEvent,
@@ -101,6 +106,7 @@ eventRouter.post(
 
 eventRouter.delete(
   "/:eventId/guests/me",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["regular", "cashier", "manager", "superuser"]),
   removeFromEvent,
@@ -108,6 +114,7 @@ eventRouter.delete(
 
 eventRouter.post(
   "/:eventId/transactions",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["regular", "cashier", "manager", "superuser"]),
   createReward,
@@ -115,6 +122,7 @@ eventRouter.post(
 
 eventRouter.post(
   "/:eventId/organizers",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   addEventOrganizer,
@@ -122,6 +130,7 @@ eventRouter.post(
 
 eventRouter.delete(
   "/:eventId/organizers/:userId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   removeEventOrganizer,
@@ -129,6 +138,7 @@ eventRouter.delete(
 
 eventRouter.post(
   "/:eventId/guests",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["organizer", "manager", "superuser"]),
   addEventGuest,
@@ -136,6 +146,7 @@ eventRouter.post(
 
 eventRouter.delete(
   "/:eventId/guests/:userId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   removeEventGuest,

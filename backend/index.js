@@ -37,12 +37,11 @@ const transactionRouter = require("./routes/transactionRoutes");
 const eventRouter = require("./routes/eventRoutes");
 const authRouter = require("./routes/authRoutes");
 const promotionRouter = require("./routes/promotionRoutes");
-const { doubleCsrfProtection } = require("./routes/authRoutes");
 
-app.use("/users", doubleCsrfProtection, userRouter);
-app.use("/transactions", doubleCsrfProtection, transactionRouter);
-app.use("/events", doubleCsrfProtection, eventRouter);
-app.use("/promotions", doubleCsrfProtection, promotionRouter);
+app.use("/users", userRouter);
+app.use("/transactions", transactionRouter);
+app.use("/events", eventRouter);
+app.use("/promotions", promotionRouter);
 
 app.use("/auth", authRouter);
 // catch any non-existing routes

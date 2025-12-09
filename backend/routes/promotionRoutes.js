@@ -7,6 +7,7 @@ const {
   deleteSinglePromotion,
 } = require("../controllers/promotionController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
+const { doubleCsrfProtection } = require("./authRoutes");
 
 const promotionRouter = express.Router();
 
@@ -27,6 +28,7 @@ promotionRouter.param("promotionId", (req, res, next, promotionId) => {
 
 promotionRouter.post(
   "/",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   createPromotion,
@@ -42,6 +44,7 @@ promotionRouter.get("/:promotionId", verifyToken, retrieveSinglePromotion);
 
 promotionRouter.patch(
   "/:promotionId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   updateSinglePromotion,
@@ -49,6 +52,7 @@ promotionRouter.patch(
 
 promotionRouter.delete(
   "/:promotionId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   deleteSinglePromotion,

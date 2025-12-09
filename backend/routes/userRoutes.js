@@ -18,6 +18,7 @@ const {
 } = require("../controllers/userController");
 const { verifyToken, checkClearance } = require("../middleware/auth");
 const upload = require("../middleware/upload");
+const { doubleCsrfProtection } = require("./authRoutes");
 
 const userRouter = express.Router();
 
@@ -39,6 +40,7 @@ userRouter.param("userId", (req, res, next, userId) => {
 
 userRouter.post(
   "/",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["cashier", "manager", "superuser"]),
   registerUser,
@@ -51,7 +53,7 @@ userRouter.get(
   getFilteredUsers,
 );
 
-userRouter.patch("/me", verifyToken, upload.single("avatar"), updateMyUserInfo);
+userRouter.patch("/me", doubleCsrfProtection, verifyToken, upload.single("avatar"), updateMyUserInfo);
 
 userRouter.get("/me", verifyToken, getMyUserInfo);
 
@@ -66,16 +68,17 @@ userRouter.get(
 
 userRouter.patch(
   "/:userId",
+  doubleCsrfProtection,
   verifyToken,
   checkClearance(["manager", "superuser"]),
   updateSpecificUser,
 );
 
-userRouter.patch("/me/password", verifyToken, updateMyPassword);
+userRouter.patch("/me/password", doubleCsrfProtection, verifyToken, updateMyPassword);
 
-userRouter.post("/me/transactions", verifyToken, createRedemption);
+userRouter.post("/me/transactions", doubleCsrfProtection, verifyToken, createRedemption);
 
-userRouter.delete("/me/transactions", verifyToken, deleteRedemption);
+userRouter.delete("/me/transactions", doubleCsrfProtection, verifyToken, deleteRedemption);
 
 userRouter.get("/me/transactions", verifyToken, retrieveTransactions);
 
@@ -85,7 +88,7 @@ userRouter.get("/me/events/invitations", verifyToken, retrieveMyEventInvitations
 
 userRouter.get("/me/events/management", verifyToken, retrieveMyEventManagement);
 
-userRouter.post("/:userId/transactions", verifyToken, createTransfer);
+userRouter.post("/:userId/transactions", doubleCsrfProtection, verifyToken, createTransfer);
 
 
 module.exports = userRouter;

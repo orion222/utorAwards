@@ -8,7 +8,8 @@ import api from "../api/api";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 const UserContext = createContext();
-const contextResetFunctions = []
+const contextResetFunctions = [];
+
 export const UserProvider = ({ children }) => {
   const queryClient = useQueryClient();
 
@@ -34,12 +35,25 @@ export const UserProvider = ({ children }) => {
     refetchOnWindowFocus: false,
   });
 
-  const login = () => {
+  useEffect(() => {
+    refreshCsrf();
+  }, []);
+
+  const refreshCsrf = async () => {
+    try {
+      const { data } = await api.get("/auth/csrf-token");
+      api.defaults.headers.common["x-csrf-token"] = data.token;
+    } catch (err) {
+      console.warn("Failed to load CSRF token", err);
+    }
+  };
+
+  const login = async () => {
     queryClient.invalidateQueries(["user"]);
+    await refreshCsrf();
   };
 
   const logout = useCallback(() => {
-    localStorage.removeItem("token");
     queryClient.setQueryData(["user"], null);
     queryClient.clear();
 
