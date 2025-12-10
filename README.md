@@ -21,7 +21,7 @@ The backend follows a **RESTful API** design with layered architecture:
 - **Controllers**: Handle HTTP requests and responses ([`userController.js`](backend/controllers/userController.js), [`eventController.js`](backend/controllers/eventController.js))
 - **Services**: Business logic layer ([`userService.js`](backend/services/userService.js), [`eventService.js`](backend/services/eventService.js))
 - **Routes**: API endpoint definitions with middleware ([`userRoutes.js`](backend/routes/userRoutes.js))
-- **Database**: Prisma ORM with SQLite (development) / PostgreSQL (production)
+- **Database**: Prisma ORM with SQLite (development + production)
 - **Middleware**: JWT authentication, rate limiting, CORS, file uploads
 - **Security**: Protected authenticated requests using CSRF tokens in combination with server‑side cookies
 
@@ -50,7 +50,6 @@ The backend follows a **RESTful API** design with layered architecture:
 - **Express.js** - Web framework for REST API
 - **Prisma** - Database ORM and migration tool
 - **SQLite** - Development database (file-based)
-- **PostgreSQL** - Production database (Railway deployment)
 - **JWT (jsonwebtoken)** - Authentication and authorization
 - **bcrypt** - Password hashing and verification
 - **Multer** - File upload handling (avatars)
@@ -62,7 +61,7 @@ The backend follows a **RESTful API** design with layered architecture:
 ### Development & Deployment
 - **Development**: Vite dev server (frontend) + Nodemon (backend)
 - **Production**: Vercel (frontend static hosting) + Railway (backend PaaS)
-- **Database**: SQLite (local) → PostgreSQL (production)
+- **Database**: SQLite
 - **Environment**: Node.js 18+, npm package management
 - **Email**: Gmail SMTP with app passwords
 - **File Storage**: Local filesystem (uploads directory)
@@ -78,7 +77,10 @@ The backend follows a **RESTful API** design with layered architecture:
 - **QR Code Integration**: Digital wallet with QR codes for transactions
 
 ### Third Party APIS
-- **GeoApify**: A geocoding api that integrates with our events, allowing users to use real locations around the world. 
+- **GeoApify**: A geocoding api that integrates with our events, allowing users to use real locations around the world.
+
+## Disclaimers
+Email functionality does not work on production due to Railway blocking Google SMTP servers. As a result, emails sent from the app (such as password resets, account confirmations, or notifications) will not be delivered. For testing email features, use a local development environment with a supported SMTP provider or a third-party email API that works with Railway.
 
 ## Demo Accounts
 
