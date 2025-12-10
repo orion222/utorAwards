@@ -229,7 +229,7 @@ function FilterableList({
 
   return (
     <Box>
-      {/* actual search bar + btn */}
+      {/* Search bar + button */}
       <Box
         sx={{
           display: "flex",
@@ -248,12 +248,13 @@ function FilterableList({
               endAdornment: (
                 <IconButton size="small" onClick={applyFilters}>
                   <SearchIcon />
-                </IconButton>                
-              )
-            }
+                </IconButton>
+              ),
+            },
           }}
           sx={{
             width: isMobileWidth ? "100%" : "50%",
+            "& .MuiInputBase-root": { height: 40 },
           }}
         />
 
@@ -262,147 +263,130 @@ function FilterableList({
           startIcon={<FilterListIcon />}
           onClick={() => setShowFilters(!showFilters)}
           size="small"
+          sx={{ height: 40, flexShrink: 0 }}
         >
           Filters
         </Button>
       </Box>
 
-      {/* filter options */}
+      {/* Filter options */}
       <Collapse in={showFilters} sx={{ maxWidth: "100%", minWidth: 0 }}>
-        <Box sx={{ mb: 1.5 }}>
+        <Box
+          sx={{
+            mb: 1.5,
+            p: 2,
+            backgroundColor: "#F5F5F5",
+            borderRadius: 1,
+          }}
+        >
           <Box
             sx={{
-              display: "flex",
-              gap: 1,
-              alignItems: isMobileWidth ? "stretch" : "center",
-              flexDirection: isMobileWidth ? "column" : "row",
-              minWidth: 0,
-              width: "100%",
+              display: "grid",
+              gap: 2,
+              gridTemplateColumns: {
+                xs: "1fr", // 1 per row on mobile
+                sm: "repeat(2, 1fr)", // 2 per row on small tablets
+                md: "repeat(3, 1fr)", // 3 per row on larger tablets
+                lg: "repeat(4, 1fr)", // 4 per row on desktop
+              },
+              alignItems: "center",
             }}
           >
-            <Box
-              sx={{
-                display: "flex",
-                flexWrap: "wrap",
-                gap: 1,
-                width: "100%",
-                alignItems: "center",
-              }}
-            >
-              {Object.entries(filterConfig).map(([key, config]) => {
-                const dependsValue = config.dependsOn
-                  ? tempFilters[config.dependsOn]
-                  : null;
-                const isDisabled = config.dependsOn && !dependsValue;
+            {Object.entries(filterConfig).map(([key, config]) => {
+              const dependsValue = config.dependsOn
+                ? tempFilters[config.dependsOn]
+                : null;
+              const isDisabled = config.dependsOn && !dependsValue;
 
-                if (config.type === "text") {
-                  return (
-                    <TextField
-                      key={key}
-                      label={config.label}
-                      value={tempFilters[key] || ""}
+              if (config.type === "text" || config.type === "number") {
+                return (
+                  <TextField
+                    key={key}
+                    label={config.label}
+                    type={config.type === "number" ? "number" : "text"}
+                    value={tempFilters[key] || ""}
+                    onChange={(e) => updateTempFilter(key, e.target.value)}
+                    size="small"
+                    disabled={isDisabled}
+                    sx={{ minWidth: 120 }}
+                    InputProps={{
+                      inputProps:
+                        config.type === "number"
+                          ? { min: config.min, max: config.max }
+                          : {},
+                    }}
+                  />
+                );
+              }
+
+              if (config.type === "select") {
+                return (
+                  <FormControl key={key} size="small" sx={{ minWidth: 140 }}>
+                    <InputLabel>{config.label}</InputLabel>
+                    <Select
+                      value={capitalizeFirst(tempFilters[key]) ?? ""}
                       onChange={(e) => updateTempFilter(key, e.target.value)}
-                      size="small"
-                      disabled={isDisabled}
-                    />
-                  );
-                }
-
-                if (config.type === "number") {
-                  return (
-                    <TextField
-                      key={key}
-                      type="number"
                       label={config.label}
-                      value={tempFilters[key] || ""}
-                      onChange={(e) => updateTempFilter(key, e.target.value)}
-                      size="small"
                       disabled={isDisabled}
-                      InputProps={{
-                        inputProps: {
-                          min: config.min ?? undefined,
-                          max: config.max ?? undefined,
-                        },
-                      }}
-                    />
-                  );
-                }
+                    >
+                      <MenuItem value="">All</MenuItem>
+                      {config.options.map((opt) => (
+                        <MenuItem key={opt} value={opt}>
+                          {opt}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+                );
+              }
 
-                if (config.type === "select") {
-                  return (
-                    <FormControl key={key} size="small" sx={{ width: 130 }}>
-                      <InputLabel>{config.label}</InputLabel>
-                      <Select
-                        value={capitalizeFirst(tempFilters[key]) ?? ""}
-                        onChange={(e) => updateTempFilter(key, e.target.value)}
-                        label={config.label}
+              if (config.type === "boolean") {
+                return (
+                  <FormControlLabel
+                    key={key}
+                    control={
+                      <Checkbox
+                        checked={!!tempFilters[key]}
+                        onChange={(e) =>
+                          updateTempFilter(key, e.target.checked)
+                        }
                         disabled={isDisabled}
-                      >
-                        <MenuItem value="">All</MenuItem>
-                        {config.options.map((opt) => (
-                          <MenuItem key={opt} value={opt}>
-                            {opt}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                  );
-                }
-
-                if (config.type === "boolean") {
-                  return (
-                    <FormControlLabel
-                      key={key}
-                      control={
-                        <Checkbox
-                          checked={!!tempFilters[key]}
-                          onChange={(e) =>
-                            updateTempFilter(key, e.target.checked)
-                          }
-                          disabled={isDisabled}
-                        />
-                      }
-                      label={config.label}
-                    />
-                  );
-                }
-
-                return null;
-              })}
-
-              {/* ORDER BY SELECT */}
-              {(orderByConfig && orderByConfig.length > 0) && (
-                <FormControl size="small" sx={{ width: 160 }}>
-                  <InputLabel>Order By</InputLabel>
-                  <Select
-                    label="Order By"
-                    value={tempFilters["orderBy"] || ""}
-                    onChange={(e) =>
-                      updateTempFilter("orderBy", e.target.value)
+                      />
                     }
-                  >
-                    {orderByConfig.map((opt) => (
-                      <MenuItem key={opt.value} value={opt.value}>
-                        {opt.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-              )}
+                    label={config.label}
+                  />
+                );
+              }
 
-              <Button
-                variant="contained"
-                onClick={applyFilters}
-                size="small"
-                sx={{
-                  flex: "0 0 auto",
-                  minWidth: 120,
-                  height: 37,
-                }}
-              >
-                Apply
-              </Button>
-            </Box>
+              return null;
+            })}
+
+            {/* ORDER BY SELECT */}
+            {orderByConfig && orderByConfig.length > 0 && (
+              <FormControl size="small" sx={{ minWidth: 160 }}>
+                <InputLabel>Order By</InputLabel>
+                <Select
+                  label="Order By"
+                  value={tempFilters["orderBy"] || ""}
+                  onChange={(e) => updateTempFilter("orderBy", e.target.value)}
+                >
+                  {orderByConfig.map((opt) => (
+                    <MenuItem key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+
+            <Button
+              variant="contained"
+              onClick={applyFilters}
+              size="small"
+              sx={{ minWidth: 120, height: 36, gridColumn: "span 1" }}
+            >
+              Apply
+            </Button>
           </Box>
         </Box>
       </Collapse>
@@ -421,7 +405,7 @@ function FilterableList({
           ))}
       </Box>
 
-      {/* actual list content */}
+      {/* Actual list content */}
       {children({ data, isFetching, error, refetch, getAppliedFilters })}
 
       {totalPages > 1 && (
