@@ -561,11 +561,14 @@ class TransactionService {
       where.remark = { contains: remark };
     }
 
-    const userFilter = {};
-    if (createdBy) userFilter.utorid = { contains: createdBy };
-    if (typeof suspicious === "boolean") userFilter.suspicious = suspicious;
-    if (Object.keys(userFilter).length > 0) {
-      where.user = { is: userFilter };
+    if (createdBy) {
+      where.user = { 
+        utorid: createdBy,
+      }
+    }
+
+    if (suspicious !== null) {
+      where.suspicious = suspicious;
     }
 
     if (promotionId) {
