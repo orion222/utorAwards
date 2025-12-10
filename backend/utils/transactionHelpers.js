@@ -34,8 +34,7 @@ function validRetrieveBody(req) {
     page,
     limit,
   } = req.query;
-  const suspiciousBool =
-    suspicious === "true" ? true : suspicious === "false" ? false : null;
+
   const promotionIdNum = promotionId ? Number(promotionId) : null;
 
   // name can be user's name or utorid
@@ -46,7 +45,7 @@ function validRetrieveBody(req) {
       (typeof createdBy !== "string" ||
         createdBy.length < 7 ||
         createdBy.length > 8)) ||
-    suspiciousBool ||
+    (suspicious && suspicious !== "true" && suspicious !== "false") ||
     (promotionId && Number.isNaN(promotionIdNum))
   ) {
     return false;

@@ -5,7 +5,7 @@ const NotFoundError = require("../utils/errors/notFoundError");
 const BadRequestError = require("../utils/errors/badRequestError");
 const UnauthorizedError = require("../utils/errors/unauthorizedError");
 const TooManyRequestsError = require("../utils/errors/tooManyRequestsError");
-const { sendResetPasswordEmail } = require("../utils/emailSender");
+const { sendResetPasswordEmail, sendPasswordChangeEmail } = require("../utils/emailSender");
 const SECRET_KEY = process.env.JWT_SECRET;
 
 class AuthService {
@@ -63,6 +63,8 @@ class AuthService {
         data: {resetToken: null}
       });
     });
+
+    sendPasswordChangeEmail(email);
   }
 
   static async generateJWT(utorid, password) {

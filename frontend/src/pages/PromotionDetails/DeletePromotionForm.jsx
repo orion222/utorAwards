@@ -37,7 +37,6 @@ export default function DeletePromotionForm({ promotion, onClose }) {
             navigate(-1);
         },
         onError: (error) => {
-            console.log(error);
             showToast(`Error: ${error.message || 'Failed to delete promotion'}`, "error");
         }
     });

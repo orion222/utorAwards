@@ -25,7 +25,6 @@ export default function RedeemPoints() {
   const { redemptionData, setRedemption } = useWallet();
   const processed = Boolean(redemptionData?.processedBy);
   const { canvasRef, isGenerating } = useQRCode(redemptionData);
-  console.log(redemptionData);
 
   const {
     control,

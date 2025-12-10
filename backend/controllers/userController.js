@@ -37,6 +37,7 @@ async function registerUser(req, res) {
 async function getFilteredUsers(req, res) {
   const {
     search,
+    suspicious,
     name,
     role,
     verified,
@@ -53,6 +54,11 @@ async function getFilteredUsers(req, res) {
     return res
       .status(400)
       .json({ error: "Bad Request: invalid verified value" });
+  }
+  if (suspicious && suspicious !== "true" && suspicious !== "false") {
+    return res
+      .status(400)
+      .json({ error: "Bad Request: invalid suspicious value" });
   }
   if (is_guest && is_guest !== "true" && is_guest !== "false") {
     return res
@@ -114,6 +120,7 @@ async function getFilteredUsers(req, res) {
     const filteredUsersData = await UserService.getFilteredUsers(
       id,
       search,
+      suspicious,
       name,
       role,
       verified,

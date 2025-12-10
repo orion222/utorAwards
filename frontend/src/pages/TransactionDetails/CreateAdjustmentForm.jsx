@@ -82,7 +82,6 @@ function CreateAdjustmentForm({ transaction, onClose }) {
             onClose();
         }, 
         onError: (error) => {
-            console.log(error)
             const message =
                 error.response?.data?.error ||
                 error.response?.data?.message ||

@@ -140,7 +140,6 @@ export default function EditEventForm({
         }
       } else {
         showToast(`${action} event failed`, "error");
-        console.log(res);
       }
     } catch (error) {
       const msg =
@@ -148,7 +147,6 @@ export default function EditEventForm({
         error.response?.data?.message ||
         `${action} event failed`;
       showToast(msg, "error");
-      console.log(error);
     }
   };
   const isSmall = useMediaQuery("(max-width: 1170px)");

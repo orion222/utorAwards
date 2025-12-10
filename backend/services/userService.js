@@ -52,6 +52,7 @@ class UserService {
   static async getFilteredUsers(
     userId,
     search,
+    suspicious,
     name,
     role,
     verified,
@@ -90,6 +91,13 @@ class UserService {
     }
     else if (verified === "false") {
       filterOptions.verified = false;
+    }
+
+    if (suspicious === "true") {
+      filterOptions.suspicious = true;
+    }
+    else if (suspicious === "false") {
+      filterOptions.suspicious = false;
     }
 
     if (activated === "true") {
