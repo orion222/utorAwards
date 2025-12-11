@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import EditPromotionForm from "./EditPromotionForm.jsx";
 import FormCard from "../../components/common/FormCard.jsx";
 import DeletePromotionForm from "./DeletePromotionForm.jsx";
+import StatusChip from "../../components/common/StatusChip.jsx";
 
 
 function PromotionDetails() {
@@ -55,14 +56,16 @@ function PromotionDetails() {
                             )}                    
                         </Box>
                     </Box>
-                    <Stack direction="row" spacing={1}>
-                        <Chip 
+                    <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+                        <StatusChip 
                             label={data.type.toUpperCase()}
-                            size="medium"
+                            size="small"
                             sx={{
-                                fontWeight: 600,
-                                fontSize: "0.9rem",
-                            }} 
+                                paddingTop: 2,
+                                paddingBottom: 2,
+                                paddingLeft: 1,
+                                paddingRight: 1,
+                            }}
                         />
                          {["manager", "superuser"].includes(user.role) && (
                             <>

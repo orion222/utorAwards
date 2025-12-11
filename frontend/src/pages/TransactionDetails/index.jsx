@@ -73,26 +73,18 @@ function TransactionDetails() {
                             </Typography>
                         </Box>
 
-                        <Stack direction="row" spacing={1}>
+                        <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
                             <StatusChip
                                 label={data.processed ? "PROCESSED" : "PENDING"}
                                 color={data.processed ? "primary" : "warning"}
-                                size="medium"
-                                sx={{
-                                    fontWeight: 600,
-                                    fontSize: "0.9rem",
-                                }} 
+                                size="small"
                             />
                             {data.suspicious && (
                                 <StatusChip
-                                    label="SUSPICIOUS"
-                                    color="error"
-                                    size="medium"
-                                    sx={{
-                                        fontWeight: 600,
-                                        fontSize: "0.9rem",
-                                    }} 
-                                />
+                                    label="SUSPICIOUS" 
+                                    color="error" 
+                                    size="small" 
+                                />                                
                             )}
                             {isManagerOrSuperuser && (
                                 <>

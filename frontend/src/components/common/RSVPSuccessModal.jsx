@@ -27,7 +27,7 @@ function RSVPSuccessModal({ event, onClose }) {
 
     return (
     <Box sx={{borderRadius: "8px", boxShadow: 3, width: isSmall ? "90%" : "25%", height: "auto", backgroundColor: theme.palette.background.paper,
-        display: "flex", flexDirection: "column", gap: "8px", padding: "16px"}}>
+        display: "flex", flexDirection: "column", gap: "8px", padding: 3.5 }}>
         
             <Typography sx={{fontSize: 20}}>All Set!</Typography>
             <Typography sx={{fontSize: 16, color: theme.palette.text.secondary}}> You have successfully RSVP'ed for this event</Typography>

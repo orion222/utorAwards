@@ -161,7 +161,7 @@ function EventDetailsContent({ data, refetch, rsvpSuccess, setRsvpSuccess, unRsv
           )
         }
         {!isOrganizer && !hasEnded && (
-          <Box>
+          <Box ml="auto">
             {!rsvp ? (
               <Button
                 onClick={() => rsvpMutation.mutate()}
