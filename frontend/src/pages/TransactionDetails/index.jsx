@@ -7,7 +7,10 @@ import { useUser } from "../../context/UserContext.jsx";
 import TuneIcon from '@mui/icons-material/Tune';
 import { useState } from "react";
 import CreateAdjustmentForm from "./CreateAdjustmentForm.jsx";
+import ToggleSuspiciousForm from "./ToggleSuspiciousForm.jsx";
 import { Link } from "react-router-dom";
+import FlagIcon from "@mui/icons-material/Flag";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 
 function TransactionDetails() {
     const backendURL = import.meta.env.VITE_BACKEND_URL;
@@ -22,6 +25,7 @@ function TransactionDetails() {
     const isManagerOrSuperuser = ["manager", "superuser"].includes(user.role);
     const theme = useTheme();
     const [createAdjustmentModal, setCreateAdjustmentModal] = useState(false);
+    const [toggleSuspiciousModal, setToggleSuspiciousModal] = useState(false);
     const isSmall = useMediaQuery("(max-width: 670px)");
 
     const formatDate = (isoString) => {
@@ -91,22 +95,45 @@ function TransactionDetails() {
                                 />
                             )}
                             {isManagerOrSuperuser && (
-                                <Button
-                                    startIcon={<TuneIcon color="grey" />}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setCreateAdjustmentModal(true);
-                                    }}
-                                    sx={{
-                                        fontSize: 12,
-                                        color: "grey",
-                                        borderRadius: "8px",
-                                        width: "fit-content",
-                                        "&:hover": { backgroundColor: theme.palette.action.hover },
-                                    }}
-                                >
-                                    Create Adjustment
-                                </Button>
+                                <>
+                                    <Button
+                                        startIcon={<TuneIcon color="grey" />}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setCreateAdjustmentModal(true);
+                                        }}
+                                        sx={{
+                                            fontSize: 12,
+                                            color: "grey",
+                                            borderRadius: "8px",
+                                            width: "fit-content",
+                                            "&:hover": { backgroundColor: theme.palette.action.hover },
+                                        }}
+                                    >
+                                        Create Adjustment
+                                    </Button>
+                                    <Button
+                                        startIcon={data.suspicious ? (
+                                            <FlagIcon color="error" />
+                                        ) : (
+                                            <FlagOutlinedIcon sx={{ color: "grey" }} />
+                                        )}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setToggleSuspiciousModal(true);
+                                        }}
+                                        sx={{
+                                            fontSize: 12,
+                                            color: data.suspicious ? "error.main" : "grey",
+                                            borderRadius: "8px",
+                                            width: "fit-content",
+                                            "&:hover": { backgroundColor: theme.palette.action.hover },
+                                        }}
+                                    >
+                                        {data.suspicious ? "Clear Suspicious" : "Mark Suspicious"}
+                                    </Button>
+                                </>
+
                             )}
                         </Stack>
 
@@ -238,6 +265,30 @@ function TransactionDetails() {
                                 <CreateAdjustmentForm 
                                     transaction={data}
                                     onClose={() => setCreateAdjustmentModal(false)}
+                                />
+                            </Box>
+                        </Modal>
+
+                        <Modal
+                            open={toggleSuspiciousModal}
+                            onClose={(e) => {
+                                e.stopPropagation();
+                                setToggleSuspiciousModal(false);
+                            }}
+                            aria-labelledby="toggle-suspicious-modal"
+                            sx={{
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                zIndex: 1300,
+                                padding: 0,
+                            }}
+                        >
+                            <Box sx={{ width: isSmall ? "100%" : "40%" }}>
+                                <ToggleSuspiciousForm
+                                    transaction={data}
+                                    onClose={() => setToggleSuspiciousModal(false)}
                                 />
                             </Box>
                         </Modal>

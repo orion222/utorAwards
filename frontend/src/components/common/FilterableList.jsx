@@ -275,8 +275,9 @@ function FilterableList({
           sx={{
             mb: 1.5,
             p: 2,
-            backgroundColor: "#F5F5F5",
-            borderRadius: 1,
+            backgroundColor: "#F8FAF4",
+            borderRadius: 3,
+            border: "1px solid #ccc",
           }}
         >
           <Box

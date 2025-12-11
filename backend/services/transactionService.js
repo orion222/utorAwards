@@ -790,6 +790,7 @@ class TransactionService {
         remark: true,
         user: {
           select: {
+            id: true,
             name: true,
             utorid: true,
             avatarUrl: true, 
@@ -797,6 +798,7 @@ class TransactionService {
         },
         targetUser: {
           select: {
+            id: true,
             name: true,
             utorid: true,
             avatarUrl: true, 
@@ -855,62 +857,69 @@ class TransactionService {
 
   static async updateTransactionSuspicion(transactionId, isNowSuspicious) {
     const transactionDetails = await prisma.$transaction(async (tx) => {
+
       const transaction = await tx.transaction.findUnique({
-        where: {
-          id: transactionId,
-        },
+        where: { id: transactionId },
         include: {
-          targetUser: true,
+          targetUser: true, // user receiving points
+          user: true,       // user who created transaction
         },
       });
 
       if (!transaction) throw new NotFoundError();
       if (!transaction.targetUser)
-        throw new NotFoundError("No user associated with this transaction");
+        throw new NotFoundError("No target user associated with this transaction");
+      if (!transaction.user)
+        throw new NotFoundError("No creator user associated with this transaction");
 
-      const { suspicious: wasSuspicious } = transaction;
+      const creatorUser = transaction.user;
+      const targetUser = transaction.targetUser;
+      const wasSuspicious = transaction.suspicious;
 
       const newTransaction = await tx.transaction.update({
-        where: {
-          id: transactionId,
-        },
-        data: {
-          suspicious: isNowSuspicious,
-        },
-        select: {
-          id: true,
-          targetUserId: true,
-          type: true,
-          spent: true,
-          amount: true,
-          promotions: true,
-          suspicious: true,
-          remark: true,
+        where: { id: transactionId },
+        data: { suspicious: isNowSuspicious },
+        include: {
           user: true,
           targetUser: true,
+          promotions: true,
         },
       });
 
-      const { targetUser, amount } = transaction;
-      let newAmount = targetUser.points;
+      let newPoints = targetUser.points;
 
-      // going from true -> false
-      if (wasSuspicious && !isNowSuspicious) newAmount += amount;
-
-      // going from false -> true
-      if (!wasSuspicious && isNowSuspicious) newAmount -= amount;
+      if (wasSuspicious && !isNowSuspicious) newPoints += transaction.amount;   // unflag → refund points
+      if (!wasSuspicious && isNowSuspicious) newPoints -= transaction.amount;   // flag → deduct points
 
       if (wasSuspicious !== isNowSuspicious) {
-        const { targetUserId } = transaction;
-
         await tx.user.update({
-          where: {
-            id: targetUserId,
-          },
-          data: {
-            points: newAmount,
-          },
+          where: { id: targetUser.id },
+          data: { points: newPoints },
         });
+      }
+
+      if (isNowSuspicious) {
+        // flag user immediately
+        await tx.user.update({
+          where: { id: creatorUser.id },
+          data: { suspicious: true },
+        });
+      } 
+      else {
+        // unflag: check if they still have suspicious transactions
+        const remainingSuspicious = await tx.transaction.count({
+          where: {
+            userId: creatorUser.id,
+            suspicious: true,
+          }
+        });
+
+        if (remainingSuspicious === 0) {
+          await tx.user.update({
+            where: { id: creatorUser.id },
+            data: { suspicious: false },
+          });
+        }
       }
 
       return newTransaction;
@@ -922,8 +931,7 @@ class TransactionService {
       type: transactionDetails.type,
       spent: transactionDetails.spent,
       amount: transactionDetails.amount,
-      promotionIds:
-        transactionDetails.promotions.map((promotion) => promotion.id) ?? [],
+      promotionIds: transactionDetails.promotions?.map((p) => p.id) ?? [],
       suspicious: transactionDetails.suspicious,
       remark: transactionDetails.remark,
       createdBy: transactionDetails.user.utorid,

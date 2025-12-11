@@ -72,6 +72,9 @@ function UserDetails() {
                                 )}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
+                                User ID: {data.id}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary">
                                 {data.utorid}
                             </Typography>
                             <Typography variant="body2" color="text.secondary">
@@ -138,42 +141,62 @@ function UserDetails() {
                             User Details
                         </Typography>
 
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                            <SavingsIcon sx={{ color: "primary.main" }} />
-                            <Typography variant="body1">
-                                <strong>Points:</strong> {data.points}
-                            </Typography>
-                        </Box>
+                        <Box
+                            sx={{
+                                display: "grid",
+                                gap: 2,
+                                gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }
+                            }}
+                        >
+                            <Box>
+                                <Typography variant="caption" color="text.secondary">
+                                    Points
+                                </Typography>
+                                <Typography variant="body1" fontWeight="600">
+                                    {data.points}
+                                </Typography>
+                            </Box>
 
-                        {["manager", "superuser"].includes(user.role) && (
-                            <>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                    <CakeIcon sx={{ color: "secondary.main" }} />
-                                    <Typography variant="body1">
-                                        <strong>Birthday:</strong> {data.birthday || "N/A"}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                    <BadgeIcon sx={{ color: "info.main" }} />
-                                    <Typography variant="body1">
-                                        <strong>Role:</strong> {data.role}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                    <CalendarMonthIcon sx={{ color: "success.main" }} />
-                                    <Typography variant="body1">
-                                        <strong>Created:</strong> {formatDate(data.createdAt)}
-                                    </Typography>
-                                </Box>
-                                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-                                    <LoginIcon sx={{ color: "warning.main" }} />
-                                    <Typography variant="body1">
-                                        <strong>Last Login:</strong>{" "}
-                                        {data.lastLogin ? formatDate(data.lastLogin) : "N/A"}
-                                    </Typography>
-                                </Box>
-                            </>
-                        )}
+                            {["manager", "superuser"].includes(user.role) && (
+                                <>
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Birthday
+                                        </Typography>
+                                        <Typography variant="body1" fontWeight="600">
+                                            {data.birthday || "N/A"}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Role
+                                        </Typography>
+                                        <Typography variant="body1" fontWeight="600">
+                                            {data.role}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Created
+                                        </Typography>
+                                        <Typography variant="body1" fontWeight="600">
+                                            {formatDate(data.createdAt)}
+                                        </Typography>
+                                    </Box>
+
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Last Login
+                                        </Typography>
+                                        <Typography variant="body1" fontWeight="600">
+                                            {data.lastLogin ? formatDate(data.lastLogin) : "N/A"}
+                                        </Typography>
+                                    </Box>
+                                </>
+                            )}
+                        </Box>
                     </Box>
 
                     {data.promotions.length > 0 && (
